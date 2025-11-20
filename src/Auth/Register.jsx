@@ -129,12 +129,10 @@ const Register = () => {
         e.preventDefault();
 
         const res = await fetch.post("/users/create", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),
         });
 
-        console.log(await res.json());
+        console.log(res.data);
     };
 
     return (
