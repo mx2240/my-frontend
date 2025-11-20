@@ -15,3 +15,10 @@ export default defineConfig({
     tailwindcss(),
   ],
 })
+
+// export default defineConfig({
+//   plugins: [react()],
+//   build: {
+//     outDir: 'dist'
+//   }
+// })
