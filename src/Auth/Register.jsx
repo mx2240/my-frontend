@@ -129,7 +129,7 @@ const Register = () => {
         e.preventDefault();
 
         try {
-            const res = await fetch.post("/users/create", {
+            const res = await fetch.post("/register", {
                 body: JSON.stringify(form),
             });
 
