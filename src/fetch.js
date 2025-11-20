@@ -3,7 +3,7 @@ import axios from "axios";
 
 const fetch = axios.create({
     baseURL: 'https://express-js-on-vercel-mu-orpin.vercel.app/',
-    timeout: 1000,
+    timeout: 50000,
     headers: { 'content-type': 'application/json' }
 });
 
