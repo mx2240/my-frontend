@@ -1,0 +1,108 @@
+/* PAGE BACKGROUND */
+.login-page {
+    height: 100vh;
+    width: 100%;
+    background: url("https://images.unsplash.com/photo-1523050854058-8df90110c9f1") no-repeat center center/cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px);
+}
+
+/* LOGIN CARD */
+.login-card {
+    width: 380px;
+    background: rgba(4, 21, 45, 0.85);
+    border-radius: 12px;
+    padding: 35px;
+    color: white;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* TITLE */
+.title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: gold;
+}
+
+.subtitle {
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 25px;
+    color: #e8dcb9;
+}
+
+/* INPUT FIELDS */
+.input-group {
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    margin-bottom: 6px;
+    color: gold;
+    font-size: 15px;
+}
+
+.input-group input {
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 15px;
+    background: #fff;
+}
+
+/* FORGOT PASSWORD */
+.forgot-password {
+    text-align: right;
+    margin-bottom: 18px;
+}
+
+.forgot-password a {
+    color: gold;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;
+}
+
+/* LOGIN BUTTON */
+.login-btn {
+    width: 100%;
+    background: gold;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 17px;
+    font-weight: 600;
+    color: navy;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-btn:hover {
+    background: #ffdb4d;
+}
+
+/* BOTTOM TEXT */
+.register-text {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.register-text a {
+    color: gold;
+    text-decoration: none;
+}
+
+.register-text a:hover {
+    text-decoration: underline;
+}

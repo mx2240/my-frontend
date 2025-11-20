@@ -1,0 +1,105 @@
+/* LAYOUT */
+.student-dashboard {
+    display: flex;
+    min-height: 100vh;
+    background: #f3f5f9;
+    font-family: Arial, sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 230px;
+    background: #0a1a33;
+    color: white;
+    padding: 20px;
+}
+
+.logo {
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: gold;
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+}
+
+.menu li {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+}
+
+.menu li:hover {
+    color: gold;
+}
+
+/* MAIN CONTENT */
+.main-content {
+    flex: 1;
+    padding: 30px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+.sub {
+    margin-bottom: 30px;
+    color: gray;
+}
+
+/* CARDS */
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    transition: 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+.card h3 {
+    margin: 0 0 5px;
+}
+
+.card h2 {
+    margin: 10px 0;
+    color: #0a1a33;
+}
+
+.card button {
+    padding: 10px 12px;
+    border: none;
+    background: #0a1a33;
+    color: gold;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.card button:hover {
+    background: #051124;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+}
