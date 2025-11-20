@@ -128,11 +128,17 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const res = await fetch.post("/users/create", {
-            body: JSON.stringify(form),
-        });
+        try {
+            const res = await fetch.post("/users/create", {
+                body: JSON.stringify(form),
+            });
 
-        console.log(res.data);
+            console.log(res.data);
+        } catch (error) {
+
+            console.error(error);
+
+        }
     };
 
     return (
