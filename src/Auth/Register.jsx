@@ -128,7 +128,7 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const res = await fetch.post("/api/auth/register", {
+        const res = await fetch.post("/users/create", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),
