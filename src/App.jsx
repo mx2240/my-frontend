@@ -8,7 +8,7 @@ import './css/Auth.css';
 
 
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as BrowserRouter, Routes, Route } from 'react-router-dom'
 
 
 import AdminLayout from './layouts/AdminLayout'
