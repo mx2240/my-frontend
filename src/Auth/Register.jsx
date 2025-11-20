@@ -129,7 +129,7 @@ const Register = () => {
         e.preventDefault();
 
         try {
-            const res = await fetch.post("/register", {
+            const res = await fetch.post("/auth", {
                 body: JSON.stringify(form),
             });
 
