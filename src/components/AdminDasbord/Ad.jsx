@@ -61,6 +61,9 @@ const Ad = () => {
             }
         };
 
+
+
+
         fetchStats();
     }, []);
 

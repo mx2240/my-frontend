@@ -59,6 +59,7 @@ const EnrollStudent = () => {
             }
         } catch (err) {
             console.error(err);
+
         }
     };
 
