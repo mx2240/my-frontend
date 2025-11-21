@@ -115,10 +115,9 @@ export default function AddCourse() {
         e.preventDefault();
 
         try {
-            const res = await fetch.post("/courses/create", course);
+            const res = await fetch.post("/courses", course);
 
             toast.success("Course created");
-
             setCourse({ title: "", description: "", duration: "" });
         } catch (err) {
             toast.error(err.response?.data?.message || "Server error");
