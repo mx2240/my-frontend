@@ -1,23 +1,20 @@
 import axios from "axios";
 
-
 const fetch = axios.create({
     baseURL: 'https://express-js-on-vercel-mu-orpin.vercel.app/api',
     timeout: 50000,
-    headers: { 'content-type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' }
 });
 
-
-// Add a request interceptor
-fetch.interceptors.request.use(function (config) {
-    // Do something before request is sent
+// Add token automatically to every request
+fetch.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token"); // get JWT from localStorage
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
-}, function (error) {
-    // Do something with request error
+}, (error) => {
     return Promise.reject(error);
-},
-
-
-);
+});
 
 export default fetch;
