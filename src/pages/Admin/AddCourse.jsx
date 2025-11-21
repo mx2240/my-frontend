@@ -22,7 +22,7 @@ const AddCourse = () => {
         e.preventDefault();
 
         try {
-            const res = await fetch("/courses/create", {
+            const res = await fetch("/admin/courses/create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(form)
