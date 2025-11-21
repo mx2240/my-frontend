@@ -19,7 +19,7 @@ const AddStudent = () => {
         if (!token) return toast.error("No token found. Please login.");
 
         try {
-            const res = await fetch(`${process.env}/admin/students`, {
+            const res = await fetch(`/admin/students`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
