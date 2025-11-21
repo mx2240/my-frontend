@@ -12,17 +12,14 @@ import toast from "react-hot-toast";
 const AdminFeesPage = () => {
     const [fees, setFees] = useState([]);
     const [students, setStudents] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    const [assignData, setAssignData] = useState({
-        studentId: "",
-        feeId: "",
-    });
-
+    const [assignData, setAssignData] = useState({ studentId: "", feeId: "" });
     const [newFee, setNewFee] = useState({ title: "", amount: "" });
 
     const token = localStorage.getItem("token");
 
-    // LOAD FEES + STUDENTS
+    // --- Load Fees & Students ---
     useEffect(() => {
         fetchFees();
         fetchStudents();
@@ -30,13 +27,17 @@ const AdminFeesPage = () => {
 
     const fetchFees = async () => {
         try {
-            const res = await fetch("/fees", {
+            setLoading(true);
+            const res = await fetch("http://localhost:5000/api/fees", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
             setFees(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error(err);
+            toast.error("Failed to load fees");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -49,13 +50,13 @@ const AdminFeesPage = () => {
             setStudents(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error(err);
+            toast.error("Failed to load students");
         }
     };
 
-    // ADD NEW FEE
+    // --- Add New Fee ---
     const addFee = async () => {
-        if (!newFee.title || !newFee.amount)
-            return toast.error("Please fill all fields");
+        if (!newFee.title || !newFee.amount) return toast.error("All fields required");
 
         try {
             const res = await fetch("/fees", {
@@ -66,7 +67,6 @@ const AdminFeesPage = () => {
                 },
                 body: JSON.stringify(newFee),
             });
-
             const data = await res.json();
 
             if (res.ok) {
@@ -78,16 +78,17 @@ const AdminFeesPage = () => {
             }
         } catch (err) {
             console.error(err);
+            toast.error("Server error");
         }
     };
 
-    // ASSIGN FEE TO STUDENT
+    // --- Assign Fee to Student ---
     const assignFee = async () => {
         if (!assignData.studentId || !assignData.feeId)
-            return toast.error("Please select both fields");
+            return toast.error("Select both student and fee");
 
         try {
-            const res = await fetch("fees/assign", {
+            const res = await fetch("/fees/assign", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -95,7 +96,6 @@ const AdminFeesPage = () => {
                 },
                 body: JSON.stringify(assignData),
             });
-
             const data = await res.json();
 
             if (res.ok) {
@@ -106,25 +106,27 @@ const AdminFeesPage = () => {
             }
         } catch (err) {
             console.error(err);
+            toast.error("Server error");
         }
     };
 
-    // DELETE FEE
+    // --- Delete Fee ---
     const deleteFee = async (id) => {
         try {
-            const res = await fetch(`/fees/${id}`, {
+            const res = await fetch(`/fees ${id}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
             });
 
             if (res.ok) {
-                toast.success("Fee deleted");
+                toast.success("Fee deleted successfully");
                 fetchFees();
             } else {
-                toast.error("Failed to delete");
+                toast.error("Failed to delete fee");
             }
         } catch (err) {
             console.error(err);
+            toast.error("Server error");
         }
     };
 
@@ -133,35 +135,27 @@ const AdminFeesPage = () => {
             <div className="p-6">
                 {/* PAGE HEADER */}
                 <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
-                    <FaMoneyBill className="text-green-600" />
-                    Fees Management
+                    <FaMoneyBill className="text-green-600" /> Fees Management
                 </h1>
 
-                {/* ADD FEE CARD */}
+                {/* ADD FEE */}
                 <div className="bg-white rounded-xl p-6 shadow-md mb-8">
                     <h2 className="text-xl font-semibold mb-4">Add New Fee</h2>
-
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <input
                             type="text"
                             placeholder="Fee Title"
                             value={newFee.title}
-                            onChange={(e) =>
-                                setNewFee({ ...newFee, title: e.target.value })
-                            }
+                            onChange={(e) => setNewFee({ ...newFee, title: e.target.value })}
                             className="border p-3 rounded-lg"
                         />
-
                         <input
                             type="number"
                             placeholder="Fee Amount"
                             value={newFee.amount}
-                            onChange={(e) =>
-                                setNewFee({ ...newFee, amount: e.target.value })
-                            }
+                            onChange={(e) => setNewFee({ ...newFee, amount: e.target.value })}
                             className="border p-3 rounded-lg"
                         />
-
                         <button
                             onClick={addFee}
                             className="flex items-center justify-center gap-2 bg-blue-600 text-white rounded-lg p-3 hover:bg-blue-700"
@@ -176,14 +170,10 @@ const AdminFeesPage = () => {
                     <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
                         <FaUserPlus className="text-purple-600" /> Assign Fee to Student
                     </h2>
-
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* STUDENT DROPDOWN */}
                         <select
                             value={assignData.studentId}
-                            onChange={(e) =>
-                                setAssignData({ ...assignData, studentId: e.target.value })
-                            }
+                            onChange={(e) => setAssignData({ ...assignData, studentId: e.target.value })}
                             className="border p-3 rounded-lg"
                         >
                             <option value="">Select Student</option>
@@ -194,12 +184,9 @@ const AdminFeesPage = () => {
                             ))}
                         </select>
 
-                        {/* FEE DROPDOWN */}
                         <select
                             value={assignData.feeId}
-                            onChange={(e) =>
-                                setAssignData({ ...assignData, feeId: e.target.value })
-                            }
+                            onChange={(e) => setAssignData({ ...assignData, feeId: e.target.value })}
                             className="border p-3 rounded-lg"
                         >
                             <option value="">Select Fee</option>
@@ -210,7 +197,6 @@ const AdminFeesPage = () => {
                             ))}
                         </select>
 
-                        {/* BUTTON */}
                         <button
                             onClick={assignFee}
                             className="flex items-center justify-center gap-2 bg-green-600 text-white rounded-lg p-3 hover:bg-green-700"
@@ -223,6 +209,8 @@ const AdminFeesPage = () => {
                 {/* FEES LIST */}
                 <h2 className="text-xl font-semibold mb-4">All Fees</h2>
                 <div className="space-y-4">
+                    {loading && <p>Loading...</p>}
+                    {!loading && fees.length === 0 && <p>No fees found.</p>}
                     {fees.map((fee) => (
                         <div
                             key={fee._id}
