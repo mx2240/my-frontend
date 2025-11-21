@@ -2,8 +2,7 @@
 import React, { useState } from "react";
 import { FaUserPlus, FaSave } from "react-icons/fa";
 import AdminLayout from "../../layouts/AdminLayout";
-
-import fetch from "../fetch";
+import fetch from "../../fetch";
 
 const AddStudent = () => {
     const [student, setStudent] = useState({
