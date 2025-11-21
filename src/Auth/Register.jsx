@@ -129,15 +129,15 @@ const Register = () => {
         e.preventDefault();
 
         try {
-            const res = await fetch.post("/auth/register", {
-                body: JSON.stringify(form),
+            const res = await fetch.post("/auth/register", form, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
             });
 
             console.log(res.data);
         } catch (error) {
-
-            console.error(error);
-
+            console.error(error.response?.data || error.message);
         }
     };
 
