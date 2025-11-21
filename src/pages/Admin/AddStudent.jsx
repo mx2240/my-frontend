@@ -15,7 +15,7 @@ const AddStudent = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        fetch.post("/api/students", student);
+        fetch.post("/admin/students", student);
 
         setStudent({
             name: "",
