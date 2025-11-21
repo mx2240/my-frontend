@@ -68,7 +68,7 @@ const AdminFeesPage = () => {
 
     const deleteFee = async (id) => {
         try {
-            const res = await fetch(`${process.env}/fees/${id}`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/fees/${id}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
             });

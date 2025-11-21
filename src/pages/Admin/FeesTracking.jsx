@@ -14,7 +14,7 @@ const FeeTracking = () => {
 
     const loadFees = async () => {
         try {
-            const res = await fetch(`${process.env}/fees/records`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/fees/records`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

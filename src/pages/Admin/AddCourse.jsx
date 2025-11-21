@@ -18,7 +18,7 @@ const AddCourse = () => {
         if (!token) return toast.error("No token found, please login.");
 
         try {
-            const res = await fetch(`${process.env}/courses`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/courses`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
