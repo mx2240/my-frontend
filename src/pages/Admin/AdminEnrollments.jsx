@@ -9,7 +9,7 @@ const AdminEnrollments = () => {
 
         async function load() {
             try {
-                const res = await fetch("/enrollments/admin/enroll", {
+                const res = await fetch("/admin/enroll", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
