@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import fetch from "../utils/fetch";
+import fetch from "../fetch";
 
 const Register = () => {
     const navigate = useNavigate();
