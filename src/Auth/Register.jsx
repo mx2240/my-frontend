@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-
-import toast from "react-hot-toast";
+import { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
+import fetch from "../fetch";
 
 const Register = () => {
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext);
 
     const [form, setForm] = useState({
         name: "",
@@ -16,78 +17,149 @@ const Register = () => {
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-    const submitForm = async (e) => {
+
+    const handleRegister = async (e) => {
         e.preventDefault();
 
         try {
-            const data = await api("/auth/register", "POST", form);
+            const res = await fetch.post("/auth/register", form);
+            login(res.data.user);
 
-            if (data.success) {
-                alert("Account created");
-                window.location.href = "/login";
+            if (res.data.user.role === "admin") {
+                navigate("/admin");
             } else {
-                alert(data.message);
+                navigate("/student/dashboard");
             }
-        } catch (err) {
-            alert("Server error");
+        } catch (error) {
+            console.error(error);
+            alert("Registration failed");
         }
     };
+
     return (
-        <div className="register-container">
-            <div className="register-card">
-                <h1>Create Account</h1>
-                <p className="subtitle">Join our portal today</p>
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+            <form onSubmit={handleRegister} className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+                <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
 
-                <form onSubmit={handleSubmit}>
-                    <label>Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={form.name}
-                        onChange={handleChange}
-                        placeholder="Enter full name"
-                    />
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Full Name"
+                    className="w-full p-3 border rounded-lg mb-3"
+                    onChange={handleChange}
+                />
 
-                    <label>Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={form.email}
-                        onChange={handleChange}
-                        placeholder="Enter email"
-                    />
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
+                    className="w-full p-3 border rounded-lg mb-3"
+                    onChange={handleChange}
+                />
 
-                    <label>Password</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={form.password}
-                        onChange={handleChange}
-                        placeholder="Enter password"
-                    />
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    className="w-full p-3 border rounded-lg mb-3"
+                    onChange={handleChange}
+                />
 
-                    <label>Select Role</label>
-                    <select name="role" value={form.role} onChange={handleChange}>
-                        <option value="student">Student</option>
-                        <option value="admin">Admin</option>
-                    </select>
+                {/* ROLE SELECTION */}
+                <select
+                    name="role"
+                    className="w-full p-3 border rounded-lg mb-4"
+                    onChange={handleChange}
+                >
+                    <option value="student">Student</option>
+                    <option value="admin">Admin</option>
+                </select>
 
-                    <button type="submit" className="btn-register">
-                        Register
-                    </button>
-                </form>
+                <button
+                    type="submit"
+                    className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
+                >
+                    Register
+                </button>
 
-                <p className="bottom-text">
-                    Already have an account?{" "}
-                    <span className="link" onClick={() => navigate("/login")}>
+                <p className="text-center mt-4 text-sm">
+                    Already have an account?
+                    <span
+                        onClick={() => navigate("/login")}
+                        className="text-blue-600 cursor-pointer ml-1"
+                    >
                         Login
                     </span>
                 </p>
-            </div>
+            </form>
         </div>
     );
 };
 
 export default Register;
 
+
+
+
+
+
+
+
+
+
+
+
+// import { useState } from "react";
+// import fetch from "../fetch";
+
+
+// const Register = () => {
+//     const [form, setForm] = useState({
+//         name: "",
+//         email: "",
+//         password: "",
+//         role: "student",
+//     });
+
+//     const handleChange = (e) => {
+//         setForm({ ...form, [e.target.name]: e.target.value });
+//     };
+
+//     const handleSubmit = async (e) => {
+//         e.preventDefault();
+
+//         try {
+//             const res = await fetch.post("/auth/register", form, {
+//                 headers: {
+//                     "Content-Type": "application/json",
+//                 },
+//             });
+
+//             console.log(res.data);
+//         } catch (error) {
+//             console.error(error.response?.data || error.message);
+//         }
+//     };
+
+//     return (
+//         <div className="auth-container luxury-bg">
+//             <form className="auth-card luxury-card" onSubmit={handleSubmit}>
+//                 <h2>Create Account</h2>
+
+//                 <input name="name" placeholder="Full Name" onChange={handleChange} required />
+//                 <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
+//                 <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
+
+//                 <select name="role" onChange={handleChange}>
+//                     <option value="student">Student</option>
+//                     <option value="admin">Admin</option>
+//                 </select>
+
+//                 <button type="submit" className="luxury-btn">Register</button>
+//             </form>
+//         </div>
+//     );
+// };
+
+// export default Register;
 

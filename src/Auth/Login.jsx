@@ -16,28 +16,43 @@ export default function Login() {
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-    const submitLogin = async (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!formData.email || !formData.password) {
+            return toast.error("Email and password are required");
+        }
+
         try {
-            const data = await api("/auth/login", "POST", form);
+            setLoading(true);
 
-            if (data.success) {
-                login(data.user, data.token);
+            const res = await fetch.post("/auth/login", formData);
 
-                if (data.user.role === "admin") {
-                    window.location.href = "/admin";
-                } else {
-                    window.location.href = "/student";
-                }
+            const { token, user } = res.data;
+
+            // Save login session
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(user));
+
+            toast.success("Login successful!");
+
+            // Role-based redirect
+            if (user.role === "admin") {
+                navigate("/admin");
+            } else if (user.role === "student") {
+                navigate("/student");
             } else {
-                alert(data.message);
+                navigate("/"); // fallback
             }
-        } catch (err) {
-            alert("Server error");
+
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message || "Login failed");
+        } finally {
+            setLoading(false);
         }
     };
-
 
 
 
@@ -113,44 +128,5 @@ const styles = {
         borderRadius: "8px",
         cursor: "pointer",
         border: "none",
-
-    }
+    },
 };
-
-
-
-
-// import React, { useState, useContext } from "react";
-// import toast from "react-hot-toast";
-// import { api } from "../api";
-// import { AuthContext } from "../context/AuthProvider";
-
-// export default function Login() {
-//     const [form, setForm] = useState({ email: "", password: "" });
-//     const { login } = useContext(AuthContext);
-
-//     const submit = async e => {
-//         e.preventDefault();
-//         try {
-//             const res = await api("/auth/login", "POST", form);
-//             if (res.ok) {
-//                 const { token, user } = res.body;
-//                 login(user, token);
-//                 toast.success("Welcome " + user.name);
-//                 if (user.role === "admin") window.location.href = "/admin"; else window.location.href = "/student";
-//             } else toast.error(res.body.message || "Invalid credentials");
-//         } catch (err) { toast.error("Server error"); }
-//     };
-
-//     return (
-//         <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-//             <form onSubmit={submit} className="w-full max-w-md bg-white p-6 rounded shadow">
-//                 <h2 className="text-2xl font-bold mb-4">Login</h2>
-//                 <input required className="border p-3 rounded w-full mb-3" placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-//                 <input required type="password" className="border p-3 rounded w-full mb-3" placeholder="Password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
-//                 <button className="bg-blue-600 text-white px-4 py-2 rounded w-full">Login</button>
-//             </form>
-//         </div>
-//     );
-// }
-
