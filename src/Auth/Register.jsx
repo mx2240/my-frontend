@@ -61,4 +61,15 @@ const Register = () => {
     );
 };
 
+
+c
+
+
+
+
+
+
+
+
+
 export default Register;
