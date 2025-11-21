@@ -43,7 +43,7 @@ const AdminFeesPage = () => {
 
     const fetchStudents = async () => {
         try {
-            const res = await fetch("/students", {
+            const res = await fetch("/students/all", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
