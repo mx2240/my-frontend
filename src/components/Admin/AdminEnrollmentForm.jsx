@@ -18,7 +18,7 @@ const EnrollStudent = () => {
 
     const fetchStudents = async () => {
         try {
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/students`, {
+            const res = await fetch("/admin/students", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
@@ -30,7 +30,7 @@ const EnrollStudent = () => {
 
     const fetchCourses = async () => {
         try {
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/courses`, {
+            const res = await fetch("/courses", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
@@ -44,7 +44,7 @@ const EnrollStudent = () => {
         if (!enrollData.studentId || !enrollData.courseId) return toast.error("Select both fields");
 
         try {
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/admin/enroll`, {
+            const res = await fetch("/enrollments/admin/enroll", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify(enrollData),

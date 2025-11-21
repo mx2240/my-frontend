@@ -145,13 +145,14 @@ export default function AdminFeesPage() {
     const [newFee, setNewFee] = useState({ title: "", amount: "" }); const [assign, setAssign] = useState({ studentId: "", feeId: "" });
 
     useEffect(() => { load(); }, []);
-    async function load() { const f = await api("/fees"); if (f.ok) setFees(f.body); const s = await api("/students"); if (s.ok) setStudents(s.body); }
+    async function load() { const f = await api("/fees/create"); if (f.ok) setFees(f.body); const s = await api("/students"); if (s.ok) setStudents(s.body); }
 
     const addFee = async () => { if (!newFee.title || newFee.amount === "") return toast.error("Fill fields"); const res = await api("/fees", "POST", newFee); if (res.ok) { toast.success("Added"); setNewFee({ title: "", amount: "" }); load(); } else toast.error(res.body.message || "Failed"); };
 
     const assignFee = async () => { if (!assign.studentId || !assign.feeId) return toast.error("Select both"); const res = await api("/fees/assign", "POST", assign); if (res.ok) { toast.success("Assigned"); setAssign({ studentId: "", feeId: "" }); } else toast.error(res.body.message || "Failed"); };
 
     const del = async (id) => { const r = await api(`/fees/${id}`, "DELETE"); if (r.ok) { toast.success("Deleted"); load(); } else toast.error("Failed"); };
+
 
     return (
         <AdminLayout>

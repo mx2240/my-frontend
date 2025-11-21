@@ -122,6 +122,7 @@ import AdminLayout from "../../layouts/AdminLayout";
 import toast from "react-hot-toast";
 import { api } from "../../api";
 import { AuthContext } from "../../context/AuthProvider";
+import fetch from "../../fetch";
 
 export default function AddStudent() {
     const [student, setStudent] = useState({ name: "", email: "", phone: "", course: "" });

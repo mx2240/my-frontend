@@ -126,7 +126,9 @@ export default function EnrollStudent() {
     useEffect(() => { load(); }, []);
     const load = async () => { try { const s = await api("/students"); if (s.ok) setStudents(s.body); const c = await api("/courses"); if (c.ok) setCourses(c.body); } catch (e) { } };
 
-    const submit = async e => { e.preventDefault(); try { const res = await api("/enrollments", "POST", data); if (res.ok) { toast.success("Enrolled"); setData({ studentId: "", courseId: "" }); } else toast.error(res.body.message || "Failed"); } catch (err) { toast.error("Server error"); } };
+    const submit = async e => { e.preventDefault(); try { const res = await api("/enrollments/admin/enroll", "POST", data); if (res.ok) { toast.success("Enrolled"); setData({ studentId: "", courseId: "" }); } else toast.error(res.body.message || "Failed"); } catch (err) { toast.error("Server error"); } };
+
+
 
     return (
         <AdminLayout>
