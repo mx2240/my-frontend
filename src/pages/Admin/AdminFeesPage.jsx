@@ -13,7 +13,7 @@ const AdminAssignFees = () => {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const res = await fetch.get("/admin/student`", {
+                const res = await fetch.get("/admin/student/`", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 // Ensure we always have an array
