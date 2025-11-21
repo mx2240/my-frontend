@@ -20,7 +20,7 @@ const AdminFeesPage = () => {
 
     const fetchFees = async () => {
         try {
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/fees`, {
+            const res = await fetch(`${process.env}/fees`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
@@ -30,7 +30,7 @@ const AdminFeesPage = () => {
 
     const fetchStudents = async () => {
         try {
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/students`, {
+            const res = await fetch(`${process.env}/students`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
@@ -41,7 +41,7 @@ const AdminFeesPage = () => {
     const addFee = async () => {
         if (!newFee.title || !newFee.amount) return toast.error("Fill all fields");
         try {
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/fees`, {
+            const res = await fetch(`${process.env}/fees`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify(newFee),
@@ -55,7 +55,7 @@ const AdminFeesPage = () => {
     const assignFee = async () => {
         if (!assignData.studentId || !assignData.feeId) return toast.error("Select both fields");
         try {
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/fees/assign`, {
+            const res = await fetch(`${process.env}/fees/assign`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify(assignData),
@@ -68,7 +68,7 @@ const AdminFeesPage = () => {
 
     const deleteFee = async (id) => {
         try {
-            const res = await fetch(`${process.env.REACT_APP_API_URL}/fees/${id}`, {
+            const res = await fetch(`${process.env}/fees/${id}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
             });

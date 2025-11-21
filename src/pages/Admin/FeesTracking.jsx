@@ -1,75 +1,101 @@
-// src/pages/Admin/FeesTracking.jsx
-import React, { useState, useEffect } from "react";
-import { FaDollarSign, FaCheckCircle } from "react-icons/fa";
+// src/pages/Admin/FeeTracking.jsx
+import React, { useEffect, useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
+import toast from "react-hot-toast";
+import { FaMoneyBill, FaCheck, FaTimes, FaClock } from "react-icons/fa";
 
-const FeesTracking = () => {
-    const [feesList, setFeesList] = useState([]);
+const FeeTracking = () => {
+    const [records, setRecords] = useState([]);
+    const token = localStorage.getItem("token");
 
-    // Mock fetch - replace with your API
     useEffect(() => {
-        setFeesList([
-            { id: 1, student: "John Doe", class: "Math 101", amount: 200, paid: false },
-            { id: 2, student: "Jane Smith", class: "Physics 201", amount: 150, paid: true },
-            { id: 3, student: "Michael Johnson", class: "Chemistry 301", amount: 180, paid: false },
-        ]);
+        loadFees();
     }, []);
 
-    const markPaid = (id) => {
-        setFeesList((prev) =>
-            prev.map((f) => (f.id === id ? { ...f, paid: true } : f))
-        );
+    const loadFees = async () => {
+        try {
+            const res = await fetch(`${process.env}/fees/records`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const data = await res.json();
+            setRecords(Array.isArray(data) ? data : []);
+        } catch (err) {
+            toast.error("Failed to load records");
+        }
+    };
+
+    const updateStatus = async (id, status) => {
+        try {
+            const res = await fetch(`${process.env}/fees/status/${id}`, {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ status }),
+            });
+
+            if (res.ok) {
+                toast.success("Status updated");
+                loadFees();
+            }
+        } catch (err) {
+            toast.error("Error updating status");
+        }
     };
 
     return (
         <AdminLayout>
             <div className="p-6">
                 <h1 className="text-3xl font-bold mb-6 flex items-center gap-3">
-                    <FaDollarSign className="text-green-600" /> Fees Payment Tracking
+                    <FaMoneyBill className="text-green-600" /> Fee Tracking
                 </h1>
 
-                <table className="min-w-full border rounded-lg overflow-hidden">
-                    <thead className="bg-gray-100">
-                        <tr>
-                            <th className="p-3 text-left">Student</th>
-                            <th className="p-3 text-left">Class</th>
-                            <th className="p-3 text-left">Amount (GH₵)</th>
-                            <th className="p-3 text-left">Status</th>
-                            <th className="p-3 text-left">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {feesList.map((f) => (
-                            <tr key={f.id} className="border-b hover:bg-gray-50">
-                                <td className="p-3">{f.student}</td>
-                                <td className="p-3">{f.class}</td>
-                                <td className="p-3">{f.amount}</td>
-                                <td className="p-3">
-                                    {f.paid ? (
-                                        <span className="text-green-600 flex items-center gap-1">
-                                            <FaCheckCircle /> Paid
-                                        </span>
-                                    ) : (
-                                        <span className="text-red-600">Pending</span>
-                                    )}
-                                </td>
-                                <td className="p-3">
-                                    {!f.paid && (
-                                        <button
-                                            onClick={() => markPaid(f.id)}
-                                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                                        >
-                                            Mark as Paid
-                                        </button>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <div className="space-y-4">
+                    {records.map((r) => (
+                        <div key={r._id} className="p-6 bg-white rounded-xl shadow flex justify-between items-center">
+                            <div>
+                                <h3 className="font-bold text-lg">{r.student.name}</h3>
+                                <p className="text-gray-600">{r.fee.title} - GH₵{r.fee.amount}</p>
+                                <p className="mt-1">
+                                    Status:{" "}
+                                    <span className="font-bold">
+                                        {r.status === "paid" && "Paid"}
+                                        {r.status === "pending" && "Pending"}
+                                        {r.status === "unpaid" && "Unpaid"}
+                                    </span>
+                                </p>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => updateStatus(r._id, "paid")}
+                                    className="p-3 bg-green-600 text-white rounded-lg flex items-center gap-1"
+                                >
+                                    <FaCheck /> Paid
+                                </button>
+
+                                <button
+                                    onClick={() => updateStatus(r._id, "pending")}
+                                    className="p-3 bg-yellow-500 text-white rounded-lg flex items-center gap-1"
+                                >
+                                    <FaClock /> Pending
+                                </button>
+
+                                <button
+                                    onClick={() => updateStatus(r._id, "unpaid")}
+                                    className="p-3 bg-red-600 text-white rounded-lg flex items-center gap-1"
+                                >
+                                    <FaTimes /> Unpaid
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </AdminLayout>
     );
 };
 
-export default FeesTracking;
+export default FeeTracking;
