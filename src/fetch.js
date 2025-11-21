@@ -6,11 +6,11 @@ const fetch = axios.create({
     headers: { 'Content-Type': 'application/json' }
 });
 
-// Add token automatically to every request
+// Interceptor to add token automatically
 fetch.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token"); // get JWT from localStorage
+    const token = localStorage.getItem("token");  // get token
     if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        config.headers.Authorization = `Bearer ${token}`;  // send it
     }
     return config;
 }, (error) => {
