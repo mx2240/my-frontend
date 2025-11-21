@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { FaUserPlus, FaSave } from "react-icons/fa";
 import AdminLayout from "../../layouts/AdminLayout";
+import fetch from "../fetch";
 
 const AddStudent = () => {
     const [student, setStudent] = useState({
@@ -13,6 +14,25 @@ const AddStudent = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        try {
+            const res = fetch.post("/api/students", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+
+                },
+                body: JSON.stringify(student),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log(data);
+                });
+        } catch (error) {
+            console.error("Error adding student:", error);
+        }
+
         alert(`Student ${student.name} added successfully!`);
     };
 
