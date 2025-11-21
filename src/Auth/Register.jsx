@@ -62,7 +62,7 @@ const Register = () => {
 };
 
 
-c
+
 
 
 
