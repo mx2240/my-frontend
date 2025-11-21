@@ -1,58 +1,126 @@
-import React, { useState, useContext } from "react";
-import { AuthContext } from "../context/AuthProvider";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import fetch from "../fetch";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
-const Login = () => {
-    const { login } = useContext(AuthContext);
+export default function Login() {
     const navigate = useNavigate();
-    const [data, setData] = useState({ email: "", password: "" });
+
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+    });
+
+    const [loading, setLoading] = useState(false);
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const res = await fetch.post("/auth/login", data);
-        const json = await res.json();
-
-        if (!json.success) {
-            alert(json.message);
-            return;
+        if (!formData.email || !formData.password) {
+            return toast.error("Email and password are required");
         }
 
-        login(json.user, json.token);
+        try {
+            setLoading(true);
 
-        // ROLE REDIRECT
-        if (json.user.role === "admin") navigate("/admin");
-        else navigate("/student");
+            const res = await fetch.post("/auth/login", formData);
+
+            const { token, user } = res.data;
+
+            // Save login session
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(user));
+
+            toast.success("Login successful!");
+
+            // Role-based redirect
+            if (user.role === "admin") {
+                navigate("/admin");
+            } else if (user.role === "student") {
+                navigate("/student");
+            } else {
+                navigate("/"); // fallback
+            }
+
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message || "Login failed");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div className="login-container">
-            <h1>Login</h1>
+        <div style={styles.container}>
+            <form style={styles.card} onSubmit={handleSubmit}>
+                <h2 style={styles.title}>Login</h2>
 
-            <form onSubmit={handleSubmit}>
                 <input
                     type="email"
-                    placeholder="Email"
-                    value={data.email}
-                    onChange={(e) => setData({ ...data, email: e.target.value })}
+                    name="email"
+                    placeholder="Enter email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    style={styles.input}
                 />
 
                 <input
                     type="password"
-                    placeholder="Password"
-                    value={data.password}
-                    onChange={(e) => setData({ ...data, password: e.target.value })}
+                    name="password"
+                    placeholder="Enter password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    style={styles.input}
                 />
 
-                <button type="submit">Login</button>
+                <button type="submit" style={styles.button} disabled={loading}>
+                    {loading ? "Logging in..." : "Login"}
+                </button>
             </form>
-
-            <a href="/forgot-password">Forgot Password?</a>
-
-            <a href="/register">Create Account</a>
         </div>
     );
-};
+}
 
-export default Login;
+// Simple inline styles
+const styles = {
+    container: {
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "#f1f5f9",
+    },
+    card: {
+        width: "350px",
+        padding: "25px",
+        borderRadius: "12px",
+        background: "#fff",
+        boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "15px",
+    },
+    title: {
+        textAlign: "center",
+        marginBottom: "10px",
+    },
+    input: {
+        padding: "12px",
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+        fontSize: "16px",
+    },
+    button: {
+        padding: "12px",
+        background: "#2563eb",
+        color: "#fff",
+        fontSize: "17px",
+        borderRadius: "8px",
+        cursor: "pointer",
+        border: "none",
+    },
+};
