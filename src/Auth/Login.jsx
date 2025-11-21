@@ -28,7 +28,7 @@ const Login = () => {
 
         // ROLE-BASED REDIRECT
         if (res.user.role === "admin") {
-            window.location.href = "/admin";
+            window.location.href = "/admin/dasbord";
         } else if (res.user.role === "student") {
             window.location.href = "/student/dashboard";
         } else {
