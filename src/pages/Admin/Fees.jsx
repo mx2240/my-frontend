@@ -28,7 +28,7 @@ const AdminFeesPage = () => {
     const fetchFees = async () => {
         try {
             setLoading(true);
-            const res = await fetch("http://localhost:5000/api/fees", {
+            const res = await fetch("/fees", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
