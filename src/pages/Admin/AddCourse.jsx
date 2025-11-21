@@ -111,15 +111,25 @@ import { api } from "../../api";
 import fetch from "../../fetch";
 
 export default function AddCourse() {
-    const [course, setCourse] = useState({ title: "", description: "", duration: "" });
-    const submit = async e => {
+    const submit = async (e) => {
         e.preventDefault();
+
         try {
-            const res = await fetch.post("/courses/create", "POST", course);
-            if (res.ok) { toast.success("Course created"); setCourse({ title: "", description: "", duration: "" }); }
-            else toast.error(res.body.message || "Failed");
-        } catch (err) { toast.error("Server error"); }
+            const res = await fetch.post("/courses/create", course);
+
+            toast.success("Course created");
+
+            setCourse({ title: "", description: "", duration: "" });
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Server error");
+        }
     };
+
+    const [course, setCourse] = useState({
+        title: "",
+        description: "",
+        duration: "",
+    });
 
 
     return (
