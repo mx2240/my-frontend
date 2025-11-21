@@ -115,7 +115,7 @@ export default function AddCourse() {
     const submit = async e => {
         e.preventDefault();
         try {
-            const res = await api.post("/courses/create", "POST", course);
+            const res = await fetch.post("/courses/create", "POST", course);
             if (res.ok) { toast.success("Course created"); setCourse({ title: "", description: "", duration: "" }); }
             else toast.error(res.body.message || "Failed");
         } catch (err) { toast.error("Server error"); }
