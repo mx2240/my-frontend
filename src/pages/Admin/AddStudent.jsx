@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { FaUserPlus, FaSave } from "react-icons/fa";
 import AdminLayout from "../../layouts/AdminLayout";
-import api from "../../fetch";   // axios instance
+import toast from "react-hot-toast";
 
 const AddStudent = () => {
     const [student, setStudent] = useState({
@@ -12,22 +12,32 @@ const AddStudent = () => {
         phone: "",
     });
 
+    const token = localStorage.getItem("token");
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!token) return toast.error("No token found. Please login.");
 
         try {
-            const res = await api.post("/admin/students", student);
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/admin/students`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(student),
+            });
+            const data = await res.json();
 
-            if (res.status === 201 || res.data.success) {
-                alert(`Student ${student.name} added successfully!`);
+            if (res.ok) {
+                toast.success(`Student ${student.name} added successfully!`);
                 setStudent({ name: "", email: "", course: "", phone: "" });
-                window.location.href = "/admin/students";
             } else {
-                alert(res.data.message || "Failed to add student");
+                toast.error(data.message || "Failed to add student");
             }
-        } catch (error) {
-            console.error(error);
-            alert(error.response?.data?.message || "Server error");
+        } catch (err) {
+            console.error(err);
+            toast.error("Server error");
         }
     };
 
@@ -42,63 +52,50 @@ const AddStudent = () => {
                     onSubmit={handleSubmit}
                     className="bg-white p-6 rounded-xl shadow grid grid-cols-1 md:grid-cols-2 gap-4"
                 >
-                    {/* Name */}
                     <div>
                         <label className="block font-medium">Full Name</label>
                         <input
                             type="text"
                             value={student.name}
-                            onChange={(e) =>
-                                setStudent({ ...student, name: e.target.value })
-                            }
+                            onChange={(e) => setStudent({ ...student, name: e.target.value })}
                             className="border p-3 w-full rounded-lg mt-1"
                             required
                         />
                     </div>
 
-                    {/* Email */}
                     <div>
                         <label className="block font-medium">Email</label>
                         <input
                             type="email"
                             value={student.email}
-                            onChange={(e) =>
-                                setStudent({ ...student, email: e.target.value })
-                            }
+                            onChange={(e) => setStudent({ ...student, email: e.target.value })}
                             className="border p-3 w-full rounded-lg mt-1"
                             required
                         />
                     </div>
 
-                    {/* Course */}
                     <div>
                         <label className="block font-medium">Course</label>
                         <input
                             type="text"
                             value={student.course}
-                            onChange={(e) =>
-                                setStudent({ ...student, course: e.target.value })
-                            }
+                            onChange={(e) => setStudent({ ...student, course: e.target.value })}
                             className="border p-3 w-full rounded-lg mt-1"
                             required
                         />
                     </div>
 
-                    {/* Phone */}
                     <div>
-                        <label className="block font-medium">Phone Number</label>
+                        <label className="block font-medium">Phone</label>
                         <input
                             type="text"
                             value={student.phone}
-                            onChange={(e) =>
-                                setStudent({ ...student, phone: e.target.value })
-                            }
+                            onChange={(e) => setStudent({ ...student, phone: e.target.value })}
                             className="border p-3 w-full rounded-lg mt-1"
                             required
                         />
                     </div>
 
-                    {/* Submit */}
                     <div className="md:col-span-2 mt-4">
                         <button
                             type="submit"
