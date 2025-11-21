@@ -49,6 +49,10 @@ import { AuthProvider } from "./context/AuthContext";
 
 import LandingPage from './pages/LandingPage';
 
+import Env from './components/Env';
+
+
+
 
 
 
@@ -87,6 +91,11 @@ function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+
+        <Route path="/En" element={<Env />} />
+
+
 
 
         {/* Protected Routes */}

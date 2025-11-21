@@ -4,6 +4,11 @@ import React, { useState } from "react";
 const LandingPage = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
+
+
+
+
+
     return (
 
         <div className="landing-container" >
@@ -58,6 +63,9 @@ const LandingPage = () => {
                 </div>
             </header>
         </div>
+
+
+
     );
 };
 
