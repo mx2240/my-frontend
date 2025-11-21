@@ -4,6 +4,7 @@ import './css/admin.css';
 import './css/LandingPage.css';
 import './css/Login.css';
 import './css/Auth.css';
+import './css/Register.css';
 // import './css/StudentDashboard.css';
 
 
