@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import toast from "react-hot-toast";
-import fetch from "../../fetch"; // axios instance with token
+import fetch from "../../fetch";
 
 export default function AddCourse() {
     const [course, setCourse] = useState({ title: "", description: "", duration: "" });
@@ -9,17 +9,27 @@ export default function AddCourse() {
 
     const submit = async (e) => {
         e.preventDefault();
+
+        // Debug: check token before sending
+        const token = localStorage.getItem("token");
+        console.log("Token in submit:", token);
+        if (!token) {
+            return toast.error("No token found. Please login first.");
+        }
+
         if (!course.title || !course.description || !course.duration) {
             return toast.error("All fields are required");
         }
 
         setLoading(true);
+
         try {
-            const res = await fetch.post("/courses", course); // correct backend endpoint
+            const res = await fetch.post("/courses", course); // backend route
+            console.log("Server response:", res.data); // debug
             toast.success("Course created successfully!");
-            setCourse({ title: "", description: "", duration: "" }); // reset form
+            setCourse({ title: "", description: "", duration: "" });
         } catch (err) {
-            console.error(err.response?.data);
+            console.error("Error response:", err.response?.data);
             toast.error(err.response?.data?.message || "Server error");
         } finally {
             setLoading(false);
