@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import fetch from "../../fetch";
 import toast from "react-hot-toast";
 
 export default function StudentForm({ student, onClose, onSave }) {
@@ -38,7 +38,7 @@ export default function StudentForm({ student, onClose, onSave }) {
         setSaving(true);
         const token = localStorage.getItem("token");
         try {
-            const url = student ? `/api/admin/students/${student._id}` : "/api/admin/students";
+            const url = student ? `/admin/students/${student._id}` : "/admin/students";
             const method = student ? "put" : "post";
             const res = await axios({
                 method,

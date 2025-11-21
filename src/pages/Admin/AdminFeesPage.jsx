@@ -13,7 +13,7 @@ const AdminAssignFees = () => {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const res = await fetch.get("/admin/courses`", {
+                const res = await fetch.get("/admin/student`", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 // Ensure we always have an array
@@ -34,8 +34,8 @@ const AdminAssignFees = () => {
         }
 
         try {
-            const res = await axios.post(
-                "/api/fees/assign",
+            const res = await fetch.post(
+                "/fees/assign",
                 { student: studentId, amount: Number(amount) },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

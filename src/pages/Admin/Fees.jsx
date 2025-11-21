@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     FaMoneyBill,
     FaPlus,
@@ -6,20 +6,12 @@ import {
     FaUserPlus,
     FaCheckCircle,
 } from "react-icons/fa";
-
 import AdminLayout from "../../layouts/AdminLayout";
+import toast from "react-hot-toast";
 
-const AdminFees = () => {
-    const [fees, setFees] = useState([
-        { id: 1, title: "School Fees", amount: 1500 },
-        { id: 2, title: "Hostel Fees", amount: 700 },
-    ]);
-
-    const [students] = useState([
-        { id: "STU-001", name: "John Doe" },
-        { id: "STU-002", name: "Sarah Mensah" },
-        { id: "STU-003", name: "Michael Brown" },
-    ]);
+const AdminFeesPage = () => {
+    const [fees, setFees] = useState([]);
+    const [students, setStudents] = useState([]);
 
     const [assignData, setAssignData] = useState({
         studentId: "",
@@ -28,48 +20,113 @@ const AdminFees = () => {
 
     const [newFee, setNewFee] = useState({ title: "", amount: "" });
 
-    // ADD FEE
-    const addFee = () => {
-        if (!newFee.title || !newFee.amount) return alert("Please fill all fields");
+    const token = localStorage.getItem("token");
 
-        setFees([
-            ...fees,
-            { id: Date.now(), title: newFee.title, amount: Number(newFee.amount) },
-        ]);
+    // LOAD FEES + STUDENTS
+    useEffect(() => {
+        fetchFees();
+        fetchStudents();
+    }, []);
 
-        setNewFee({ title: "", amount: "" });
+    const fetchFees = async () => {
+        try {
+            const res = await fetch("/fees", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            setFees(Array.isArray(data) ? data : []);
+        } catch (err) {
+            console.error(err);
+        }
     };
 
-    // DELETE
-    const deleteFee = (id) => {
-        setFees(fees.filter((f) => f.id !== id));
+    const fetchStudents = async () => {
+        try {
+            const res = await fetch("/students", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            setStudents(Array.isArray(data) ? data : []);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    // ADD NEW FEE
+    const addFee = async () => {
+        if (!newFee.title || !newFee.amount)
+            return toast.error("Please fill all fields");
+
+        try {
+            const res = await fetch("/fees", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(newFee),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                toast.success("Fee added successfully");
+                setNewFee({ title: "", amount: "" });
+                fetchFees();
+            } else {
+                toast.error(data.message || "Failed to add fee");
+            }
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     // ASSIGN FEE TO STUDENT
-    const assignFee = () => {
-
-
-
-
-
-
-
+    const assignFee = async () => {
         if (!assignData.studentId || !assignData.feeId)
-            return alert("Select both fields");
+            return toast.error("Please select both fields");
 
-        const student = students.find((s) => s.id === assignData.studentId);
-        const fee = fees.find((f) => f.id === Number(assignData.feeId));
+        try {
+            const res = await fetch("fees/assign", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(assignData),
+            });
 
-        alert(
-            `Fee Assigned Successfully:\n\nStudent: ${student.name}\nFee: ${fee.title} - $${fee.amount}`
-        );
+            const data = await res.json();
 
-        setAssignData({ studentId: "", feeId: "" });
+            if (res.ok) {
+                toast.success("Fee assigned successfully");
+                setAssignData({ studentId: "", feeId: "" });
+            } else {
+                toast.error(data.message || "Failed to assign fee");
+            }
+        } catch (err) {
+            console.error(err);
+        }
     };
 
+    // DELETE FEE
+    const deleteFee = async (id) => {
+        try {
+            const res = await fetch(`/fees/${id}`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` },
+            });
 
-
-
+            if (res.ok) {
+                toast.success("Fee deleted");
+                fetchFees();
+            } else {
+                toast.error("Failed to delete");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     return (
         <AdminLayout>
@@ -121,7 +178,7 @@ const AdminFees = () => {
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* SELECT STUDENT */}
+                        {/* STUDENT DROPDOWN */}
                         <select
                             value={assignData.studentId}
                             onChange={(e) =>
@@ -131,13 +188,13 @@ const AdminFees = () => {
                         >
                             <option value="">Select Student</option>
                             {students.map((s) => (
-                                <option key={s.id} value={s.id}>
-                                    {s.name} ({s.id})
+                                <option key={s._id} value={s._id}>
+                                    {s.name} ({s.studentId})
                                 </option>
                             ))}
                         </select>
 
-                        {/* SELECT FEE */}
+                        {/* FEE DROPDOWN */}
                         <select
                             value={assignData.feeId}
                             onChange={(e) =>
@@ -147,19 +204,19 @@ const AdminFees = () => {
                         >
                             <option value="">Select Fee</option>
                             {fees.map((fee) => (
-                                <option key={fee.id} value={fee.id}>
-                                    {fee.title} — ${fee.amount}
+                                <option key={fee._id} value={fee._id}>
+                                    {fee.title} — GH₵{fee.amount}
                                 </option>
                             ))}
                         </select>
 
-                        {/* ASSIGN BUTTON */}
-                        {/* <button
+                        {/* BUTTON */}
+                        <button
                             onClick={assignFee}
                             className="flex items-center justify-center gap-2 bg-green-600 text-white rounded-lg p-3 hover:bg-green-700"
                         >
                             <FaCheckCircle /> Assign Fee
-                        </button> */}
+                        </button>
                     </div>
                 </div>
 
@@ -168,16 +225,16 @@ const AdminFees = () => {
                 <div className="space-y-4">
                     {fees.map((fee) => (
                         <div
-                            key={fee.id}
+                            key={fee._id}
                             className="flex justify-between items-center p-5 bg-white rounded-xl shadow"
                         >
                             <div>
                                 <h3 className="text-lg font-bold">{fee.title}</h3>
-                                <p className="text-gray-600">${fee.amount}</p>
+                                <p className="text-gray-600">GH₵{fee.amount}</p>
                             </div>
 
                             <button
-                                onClick={() => deleteFee(fee.id)}
+                                onClick={() => deleteFee(fee._id)}
                                 className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600"
                             >
                                 <FaTrash />
@@ -190,4 +247,4 @@ const AdminFees = () => {
     );
 };
 
-export default AdminFees;
+export default AdminFeesPage;

@@ -14,7 +14,7 @@ const CourseEnrollment = () => {
 
     const fetchCourses = async () => {
         try {
-            const res = await axios.get("/api/courses");
+            const res = await axios.get("/courses");
             // Ensure res.data is an array
             setCourses(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
@@ -25,7 +25,7 @@ const CourseEnrollment = () => {
 
     const fetchStudents = async () => {
         try {
-            const res = await axios.get("/api/users?role=student");
+            const res = await axios.get("/users?role=student");
             setStudents(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error("Failed to fetch students:", err);
@@ -49,7 +49,7 @@ const CourseEnrollment = () => {
     const handleSaveAssignments = async () => {
         if (!selectedCourse) return;
         try {
-            await axios.put(`/api/courses/${selectedCourse._id}/assign-students`, {
+            await axios.put(`/courses/${selectedCourse._id}/assign-students`, {
                 students: assignedStudents,
             });
             alert("Students assigned successfully!");

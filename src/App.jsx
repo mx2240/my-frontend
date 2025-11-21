@@ -35,6 +35,7 @@ import CourseEnrollment from './pages/Admin/Courses/CourseEnrollment';
 import CoursesList from './pages/Admin/Courses/CoursesList';
 import EditCourse from './pages/Admin/Courses/EditCourse';
 import DeleteCourseModal from './pages/Admin/Courses/DeleteCourseModal';
+import StudentForm from './components/Admin/StudentForm';
 
 
 
@@ -88,22 +89,24 @@ function App() {
 
         {/* Protected Routes */}
 
-        <Route
+        {/* <Route
           path="/admin/dashboard"
           element={
             <PrivateRoute allowedRoles={["admin"]}>
               <AdminDashboard />
             </PrivateRoute>
           }
-        />
+        /> */}
+
         {/* <Route
           path="/admin/add-course"
           element={
             <PrivateRoute allowedRoles={["admin"]}>
               <AddCourse />
-            </PrivateRoute>
+            
           }
         /> */}
+
 
         {/* <Route
           path="/student/dashboard"
@@ -138,6 +141,8 @@ function App() {
         <Route path="/courses-list" element={<CoursesList />} />
         <Route path="/edit-course" element={<EditCourse />} />
         <Route path="/delete-course" element={<DeleteCourseModal />} />
+        <Route path="/student-form" element={<StudentForm />} />
+
 
 
         {/* Landing Page */}

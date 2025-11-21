@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 
 const handleDelete = async (id) => {
     try {
-        await axios.delete(`/api/admin/students/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.delete(`/admin/students/${id}`, { headers: { Authorization: `Bearer ${token}` } });
         toast.success("Student deleted");
         setConfirm({ open: false, id: null });
         if (students.length === 1 && page > 1) setPage(page - 1);

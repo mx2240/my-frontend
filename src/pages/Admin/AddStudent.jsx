@@ -17,7 +17,7 @@ const AddStudent = () => {
 
 
 
-        /*************  ✨ Windsurf Command ⭐  *************/
+
         const login = async () => {
             try {
                 const res = await fetch.post("/admin/students", student, {

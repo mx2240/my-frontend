@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import fetch from "../../../fetch";
 
 const CoursesList = () => {
     const [courses, setCourses] = useState([]); // default to empty array
@@ -9,7 +9,7 @@ const CoursesList = () => {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const res = await axios.get("/api/courses");
+                const res = await fetch.get("/courses");
                 // Make sure res.data is an array
                 setCourses(Array.isArray(res.data) ? res.data : []);
             } catch (err) {

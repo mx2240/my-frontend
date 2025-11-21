@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import fetch from "../../../fetch";
 
 const EditCourse = () => {
     const { id } = useParams(); // course ID from route
@@ -20,7 +20,7 @@ const EditCourse = () => {
 
     const fetchCourse = async () => {
         try {
-            const res = await axios.get(`/api/courses/${id}`);
+            const res = await fetch.get(`/courses/${id}`);
             setCourse({
                 title: res.data.title,
                 description: res.data.description,
