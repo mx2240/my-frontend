@@ -26,7 +26,7 @@ const Register = () => {
             login(res.data.user);
 
             if (res.data.user.role === "admin") {
-                navigate("/admin/dashboard");
+                navigate("/admin");
             } else {
                 navigate("/student/dashboard");
             }
