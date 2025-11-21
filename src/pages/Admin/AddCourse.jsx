@@ -119,6 +119,8 @@ export default function AddCourse() {
             else toast.error(res.body.message || "Failed");
         } catch (err) { toast.error("Server error"); }
     };
+
+
     return (
         <AdminLayout>
             <div className="p-6 max-w-3xl mx-auto">
