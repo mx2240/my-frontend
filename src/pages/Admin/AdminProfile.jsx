@@ -9,9 +9,41 @@ const AdminProfile = () => {
         role: "Administrator",
     });
 
+
+
     const handleSave = () => {
+
+        const handleSave = async () => {
+            try {
+                const res = await fetch(`/admin/profile/${profile._id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    body: JSON.stringify(profile),
+                });
+                const data = await res.json();
+                if (res.ok) setProfile(data.admin);
+                alert("Profile updated!");
+            } catch (err) {
+                console.error(err.response?.data || err.message);
+                alert("Save failed");
+            }
+        };
+
+
+
+
+
+
         alert("Profile updated!");
     };
+
+
+
+
+
 
     return (
         <div className="p-6">

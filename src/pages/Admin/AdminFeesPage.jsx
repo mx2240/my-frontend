@@ -1,6 +1,6 @@
 // src/pages/Admin/AdminAssignFees.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import fetch from '../../fetch'
 import toast from "react-hot-toast";
 import AdminLayout from "../../layouts/AdminLayout";
 
@@ -13,7 +13,7 @@ const AdminAssignFees = () => {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const res = await axios.get("/api/users?role=student", {
+                const res = await fetch.get("/admin/courses`", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 // Ensure we always have an array

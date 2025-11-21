@@ -7,6 +7,34 @@ const AdminSettings = () => {
 
     const toggleDark = () => setDarkMode(!darkMode);
 
+    const handleSave = () => {
+        /*************  ✨ Windsurf Command ⭐  *************/
+        const handleSave = async () => {
+            try {
+                const res = await fetch('/admin/settings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ darkMode })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    toast.success(data.message);
+                } else {
+                    toast.error(data.message);
+                }
+            } catch (err) {
+                console.error(err);
+                toast.error('Save failed');
+            }
+        };
+
+    };
+
+
+
+
+
+
     return (
 
         <AdminLayout>

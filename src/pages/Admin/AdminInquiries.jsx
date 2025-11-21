@@ -9,7 +9,7 @@ const AdminInquiries = () => {
     // Fetch inquiries from backend
     const fetchInquiries = async () => {
         try {
-            const res = await fetch("/api/inquiries", {
+            const res = await fetch("/inquiries", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();

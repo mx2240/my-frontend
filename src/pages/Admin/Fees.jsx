@@ -47,6 +47,13 @@ const AdminFees = () => {
 
     // ASSIGN FEE TO STUDENT
     const assignFee = () => {
+
+
+
+
+
+
+
         if (!assignData.studentId || !assignData.feeId)
             return alert("Select both fields");
 
@@ -59,6 +66,10 @@ const AdminFees = () => {
 
         setAssignData({ studentId: "", feeId: "" });
     };
+
+
+
+
 
     return (
         <AdminLayout>
@@ -143,12 +154,12 @@ const AdminFees = () => {
                         </select>
 
                         {/* ASSIGN BUTTON */}
-                        <button
+                        {/* <button
                             onClick={assignFee}
                             className="flex items-center justify-center gap-2 bg-green-600 text-white rounded-lg p-3 hover:bg-green-700"
                         >
                             <FaCheckCircle /> Assign Fee
-                        </button>
+                        </button> */}
                     </div>
                 </div>
 

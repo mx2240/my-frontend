@@ -8,24 +8,45 @@ const AddStudent = () => {
     const [student, setStudent] = useState({
         name: "",
         email: "",
-        class: "",
-        rollNumber: "",
+        course: "",
+        phone: "",
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        fetch.post("/admin/students", student);
 
-        setStudent({
-            name: "",
-            email: "",
-            class: "",
-            rollNumber: "",
-        });
 
-        alert(`Student ${student.name} added successfully!`);
+        /*************  ✨ Windsurf Command ⭐  *************/
+        const login = async () => {
+            try {
+                const res = await fetch.post("/admin/students", student, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem("token", data.token);
+                    window.location.href = "/admin";
+                    alert(`Student ${student.name} added successfully!`);
+                } else {
+                    alert(data.message || "Add student Fail");
+                }
+            } catch (error) {
+                console.error(error.response?.data || error.message);
+            }
+        };
+
     };
+
+
+
+
+
+
+
+
 
     return (
 
@@ -59,7 +80,7 @@ const AddStudent = () => {
                     </div>
 
                     <div>
-                        <label className="block font-medium">Class</label>
+                        <label className="block font-medium">Course</label>
                         <input
                             type="text"
                             value={student.class}
@@ -70,11 +91,11 @@ const AddStudent = () => {
                     </div>
 
                     <div>
-                        <label className="block font-medium">Roll Number</label>
+                        <label className="block font-medium"> Phone</label>
                         <input
                             type="text"
                             value={student.rollNumber}
-                            onChange={(e) => setStudent({ ...student, rollNumber: e.target.value })}
+                            onChange={(e) => setStudent({ ...student, phone: e.target.value })}
                             className="border p-3 w-full rounded-lg mt-1"
                             required
                         />
@@ -95,3 +116,8 @@ const AddStudent = () => {
 };
 
 export default AddStudent;
+
+
+
+
+

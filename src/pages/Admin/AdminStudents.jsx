@@ -10,7 +10,7 @@ const AdminStudents = () => {
         const token = localStorage.getItem("token");
         async function fetchStudents() {
             try {
-                const res = await fetch("/api/student/all", {
+                const res = await fetch("/student/all", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const data = await res.json();
