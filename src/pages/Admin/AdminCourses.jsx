@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from '../../layouts/AdminLayout'
+import fetch from "../../fetch";
 
 const AdminCourses = () => {
     const [courses, setCourses] = useState([]);
@@ -9,7 +10,7 @@ const AdminCourses = () => {
 
         async function load() {
             try {
-                const res = await fetch("/api/courses", {
+                const res = await fetch.get("/courses", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const data = await res.json();
