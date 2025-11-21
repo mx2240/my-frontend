@@ -1,9 +1,9 @@
-import axios from "axios";
+import fetch from "../../fetch";
 import toast from "react-hot-toast";
 
 const handleDelete = async (id) => {
     try {
-        await axios.delete(`/admin/students/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+        await fetch.delete(`/admin/students/${id}`, { headers: { Authorization: `Bearer ${token}` } });
         toast.success("Student deleted");
         setConfirm({ open: false, id: null });
         if (students.length === 1 && page > 1) setPage(page - 1);
@@ -26,7 +26,7 @@ const handleDelete = async (id) => {
         formData.append("file", file);
 
         try {
-            const res = await axios.post("/api/admin/students/bulk-upload", formData, {
+            const res = await axios.post("/admin/students/bulk-upload", formData, {
                 headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
             });
             toast.success(res.data.message || "Upload complete");
