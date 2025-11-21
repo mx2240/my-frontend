@@ -1,116 +1,56 @@
-import React, { useState } from "react";
-import { useAuth } from "../context/AuthProvider";
-import { FaUser, FaLock, FaSpinner } from "react-icons/fa";
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthProvider";
+import { useNavigate } from "react-router-dom";
+import fetch from "../fetch";
 
 const Login = () => {
-    const { login } = useAuth();
-
-    const [form, setForm] = useState({
-        email: "",
-        password: "",
-    });
-
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+    const { login } = useContext(AuthContext);
+    const navigate = useNavigate();
+    const [data, setData] = useState({ email: "", password: "" });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError("");
 
-        const res = await login(form.email, form.password);
+        const res = await fetch.post("/auth/login", data);
+        const json = await res.json();
 
-        if (!res.success) {
-            setError(res.message);
-            setLoading(false);
+        if (!json.success) {
+            alert(json.message);
             return;
         }
 
-        // ROLE-BASED REDIRECT
-        if (res.user.role === "admin") {
-            window.location.href = "/admin/dasbord";
-        } else if (res.user.role === "student") {
-            window.location.href = "/student/dashboard";
-        } else {
-            setError("Unknown role. Contact support.");
-        }
+        login(json.user, json.token);
 
-        setLoading(false);
+        // ROLE REDIRECT
+        if (json.user.role === "admin") navigate("/admin");
+        else navigate("/student");
     };
 
     return (
-        <div className="min-h-screen flex justify-center items-center bg-gray-100 p-4">
-            <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
+        <div className="login-container">
+            <h1>Login</h1>
 
-                <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">
-                    Login
-                </h1>
+            <form onSubmit={handleSubmit}>
+                <input
+                    type="email"
+                    placeholder="Email"
+                    value={data.email}
+                    onChange={(e) => setData({ ...data, email: e.target.value })}
+                />
 
-                {error && (
-                    <p className="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">
-                        {error}
-                    </p>
-                )}
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={data.password}
+                    onChange={(e) => setData({ ...data, password: e.target.value })}
+                />
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <button type="submit">Login</button>
+            </form>
 
-                    <div>
-                        <label className="font-semibold">Email</label>
-                        <div className="flex items-center border rounded-lg p-3 mt-1">
-                            <FaUser className="text-gray-600 mr-2" />
-                            <input
-                                type="email"
-                                placeholder="Enter Email"
-                                value={form.email}
-                                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                className="w-full outline-none"
-                                required
-                            />
-                        </div>
-                    </div>
+            <a href="/forgot-password">Forgot Password?</a>
 
-                    <div>
-                        <label className="font-semibold">Password</label>
-                        <div className="flex items-center border rounded-lg p-3 mt-1">
-                            <FaLock className="text-gray-600 mr-2" />
-                            <input
-                                type="password"
-                                placeholder="Enter Password"
-                                value={form.password}
-                                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                                className="w-full outline-none"
-                                required
-                            />
-                        </div>
-
-                        <a
-                            href="/forgot-password"
-                            className="text-sm text-blue-600 float-right mt-2 hover:underline"
-                        >
-                            Forgot Password?
-                        </a>
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-blue-700 text-white py-3 rounded-lg font-semibold hover:bg-blue-800 transition flex justify-center"
-                    >
-                        {loading ? (
-                            <FaSpinner className="animate-spin text-xl" />
-                        ) : (
-                            "Login"
-                        )}
-                    </button>
-                </form>
-
-                <p className="text-center mt-4">
-                    Don't have an account?{" "}
-                    <a href="/register" className="text-blue-700 font-semibold hover:underline">
-                        Register
-                    </a>
-                </p>
-            </div>
+            <a href="/register">Create Account</a>
         </div>
     );
 };
