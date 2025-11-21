@@ -142,6 +142,7 @@ function App() {
         <Route path="/edit-course" element={<EditCourse />} />
         <Route path="/delete-course" element={<DeleteCourseModal />} />
         <Route path="/student-form" element={<StudentForm />} />
+        <Route path="/admin/dasbord" element={<Ad />} />
 
 
 
