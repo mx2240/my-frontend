@@ -15,7 +15,7 @@ fetch.interceptors.request.use(
 
         if (token) {
             config.headers["Authorization"] = `Token ${token}`;
-            config.headers["authorization"] = `Token ${token}`;  // (backup lowercase for CORS/Vercel)
+            config.headers["authorization"] = `token ${token}`;  // (backup lowercase for CORS/Vercel)
         }
 
         return config;
