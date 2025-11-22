@@ -1,22 +1,13 @@
-import fetch from "../fetch";
+import { api } from "../api";
 
-// Helper to add token
-const authHeader = () => {
-    const token = localStorage.getItem("token");
-    return {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    };
-};
+// Get all courses
+export const getAllCourses = () => api("/courses", "GET");
 
-// Get all courses (public)
-export const getAllCourses = async () => fetch.get("/courses");
+// Create a course
+export const createCourse = (data) => api("/courses", "POST", data);
 
-// Create course (admin only)
-export const createCourse = async (data) =>
-    fetch.post("/courses", data, authHeader());
+// Delete a course
+export const deleteCourse = (id) => api(`/courses/${id}`, "DELETE");
 
-// Delete course (admin only)
-export const deleteCourse = async (id) =>
-    fetch.delete(`/courses/${id}`, authHeader());
+// Update a course
+export const updateCourse = (id, data) => api(`/courses/${id}`, "PUT", data);
