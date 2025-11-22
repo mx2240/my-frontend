@@ -14,8 +14,8 @@ fetch.interceptors.request.use(
         const token = localStorage.getItem("token");
 
         if (token) {
-            config.headers["Authorization"] = `Bearer ${token}`;
-            config.headers["authorization"] = `Bearer ${token}`;  // (backup lowercase for CORS/Vercel)
+            config.headers["Authorization"] = `Token ${token}`;
+            config.headers["authorization"] = `Token ${token}`;  // (backup lowercase for CORS/Vercel)
         }
 
         return config;
