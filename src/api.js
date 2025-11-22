@@ -1,8 +1,7 @@
 // src/api.js
-const API_URL = import.meta.env.VITE_API_URL; // backend base URL
+const API_URL = import.meta.env.VITE_API_URL;
 const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY || "token";
 
-// Generic API request function
 export const api = async (endpoint, method = "GET", data = null) => {
     try {
         const token = localStorage.getItem(TOKEN_KEY);
@@ -13,17 +12,15 @@ export const api = async (endpoint, method = "GET", data = null) => {
                 "Content-Type": "application/json",
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
+            body: data ? JSON.stringify(data) : undefined,
         };
-
-        if (data) options.body = JSON.stringify(data);
-
-        console.log(`[API] ${method} ${endpoint}`, data, "Token:", token);
 
         const res = await fetch(`${API_URL}${endpoint}`, options);
         const text = await res.text();
 
         try {
-            return JSON.parse(text);
+            const json = JSON.parse(text);
+            return json; // always returns { ok: true/false, body: ... }
         } catch (err) {
             console.error("❌ Server returned non-JSON:", text);
             return { ok: false, message: "Invalid JSON from server" };
