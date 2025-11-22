@@ -1,20 +1,12 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import toast from "react-hot-toast";
-import fetch from "../../fetch";
-
-// --- Helper to always return a VALID array ---
-const safeList = (data) => {
-    if (!data) return [];
-    if (Array.isArray(data)) return data;
-    if (Array.isArray(data.body)) return data.body;
-    return [];
-};
+import fetch from "../../fetch"; // axios instance with token
 
 export default function AdminFeesPage() {
     const [fees, setFees] = useState([]);
     const [students, setStudents] = useState([]);
-    const [tracking, setTracking] = useState([]);
+    const [assignments, setAssignments] = useState([]);
 
     const [loading, setLoading] = useState(true);
 
@@ -29,37 +21,39 @@ export default function AdminFeesPage() {
         feeId: "",
     });
 
+    // Load everything on mount
     useEffect(() => {
         loadAll();
     }, []);
 
-    const loadAll = async () => {
+    async function loadAll() {
         try {
             setLoading(true);
 
             const fRes = await fetch.get("/fees");
-            const sRes = await fetch.get("/admin/students");
-            const tRes = await fetch.get("/fees/assigned");
+            setFees(Array.isArray(fRes.data) ? fRes.data : []);
 
-            setFees(safeList(fRes.data));
-            setStudents(safeList(sRes.data));
-            setTracking(safeList(tRes.data));
+            const sRes = await fetch.get("/admin/students");
+            setStudents(Array.isArray(sRes.data) ? sRes.data : []);
+
+            const aRes = await fetch.get("/fees/assigned");
+            setAssignments(Array.isArray(aRes.data) ? aRes.data : []);
 
         } catch (err) {
-            console.error("LOAD ERROR:", err.response?.data || err.message);
-            toast.error("Failed loading fees/students");
+            console.error(err);
+            toast.error("Failed to load data");
         }
         setLoading(false);
-    };
+    }
 
-    // Add Fee
+    // Add new fee
     const addFee = async () => {
         if (!newFee.title || !newFee.amount)
-            return toast.error("Fill required fields");
+            return toast.error("Fill all required fields");
 
         try {
             await fetch.post("/fees", newFee);
-            toast.success("Fee created");
+            toast.success("Fee added");
             setNewFee({ title: "", amount: "", description: "" });
             loadAll();
         } catch (err) {
@@ -67,10 +61,10 @@ export default function AdminFeesPage() {
         }
     };
 
-    // Assign Fee
+    // Assign fee to student
     const assignFee = async () => {
         if (!assign.studentId || !assign.feeId)
-            return toast.error("Select student and fee");
+            return toast.error("Select student & fee");
 
         try {
             await fetch.post("/fees/assign", assign);
@@ -82,168 +76,212 @@ export default function AdminFeesPage() {
         }
     };
 
-    // Delete fee
-    const deleteFee = async (id) => {
+    // Mark fee as paid
+    const markPaid = async (id) => {
         try {
-            await fetch.delete(`/fees/${id}`);
-            toast.success("Fee deleted");
+            await fetch.post(`/fees/pay/${id}`);
+            toast.success("Marked as paid");
             loadAll();
         } catch (err) {
-            toast.error("Delete failed");
+            toast.error("Failed to update payment");
+        }
+    };
+
+    // Delete fee
+    const del = async (id) => {
+        try {
+            await fetch.delete(`/fees/${id}`);
+            toast.success("Deleted");
+            loadAll();
+        } catch (err) {
+            toast.error("Failed to delete");
         }
     };
 
     return (
         <AdminLayout>
-            <div className="p-6 max-w-5xl mx-auto space-y-10">
+            <div className="p-6 max-w-6xl mx-auto">
 
-                {/* PAGE HEADER */}
-                <h2 className="text-3xl font-extrabold text-gray-800 mb-4">
-                    Fees & Payment Tracking
+                <h2 className="text-4xl font-bold text-gray-800 mb-6">
+                    Fees & Tracking Dashboard
                 </h2>
 
-                {/* ADD FEE */}
-                <div className="bg-white p-6 rounded-xl shadow-xl space-y-4 border-l-4 border-blue-600">
-                    <h3 className="text-xl font-semibold text-gray-700">Add New Fee</h3>
+                {loading ? (
+                    <p className="text-gray-600">Loading...</p>
+                ) : (
+                    <>
+                        {/* --- Add Fee --- */}
+                        <div className="bg-white p-6 rounded-xl shadow mb-8">
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">
+                                Create Fee Type
+                            </h3>
 
-                    <div className="grid md:grid-cols-3 gap-4">
-                        <input
-                            type="text"
-                            placeholder="Fee Title"
-                            value={newFee.title}
-                            onChange={(e) => setNewFee({ ...newFee, title: e.target.value })}
-                            className="border p-3 rounded w-full"
-                        />
-                        <input
-                            type="number"
-                            placeholder="Amount"
-                            value={newFee.amount}
-                            onChange={(e) => setNewFee({ ...newFee, amount: e.target.value })}
-                            className="border p-3 rounded w-full"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Description"
-                            value={newFee.description}
-                            onChange={(e) =>
-                                setNewFee({ ...newFee, description: e.target.value })
-                            }
-                            className="border p-3 rounded w-full"
-                        />
-                    </div>
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <input
+                                    type="text"
+                                    className="border p-3 rounded"
+                                    placeholder="Fee Title"
+                                    value={newFee.title}
+                                    onChange={(e) =>
+                                        setNewFee({ ...newFee, title: e.target.value })
+                                    }
+                                />
+                                <input
+                                    type="number"
+                                    className="border p-3 rounded"
+                                    placeholder="Amount"
+                                    value={newFee.amount}
+                                    onChange={(e) =>
+                                        setNewFee({ ...newFee, amount: e.target.value })
+                                    }
+                                />
+                                <input
+                                    type="text"
+                                    className="border p-3 rounded"
+                                    placeholder="Description"
+                                    value={newFee.description}
+                                    onChange={(e) =>
+                                        setNewFee({ ...newFee, description: e.target.value })
+                                    }
+                                />
+                            </div>
 
-                    <button
-                        onClick={addFee}
-                        className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
-                    >
-                        Add Fee
-                    </button>
-                </div>
-
-                {/* ASSIGN FEE */}
-                <div className="bg-white p-6 rounded-xl shadow-xl space-y-4 border-l-4 border-green-600">
-                    <h3 className="text-xl font-semibold text-gray-700">Assign Fee to Student</h3>
-
-                    <div className="grid md:grid-cols-3 gap-4">
-                        <select
-                            value={assign.studentId}
-                            onChange={(e) =>
-                                setAssign({ ...assign, studentId: e.target.value })
-                            }
-                            className="border p-3 rounded"
-                        >
-                            <option value="">Select Student</option>
-                            {students.map((s) => (
-                                <option key={s._id} value={s._id}>
-                                    {s.name}
-                                </option>
-                            ))}
-                        </select>
-
-                        <select
-                            value={assign.feeId}
-                            onChange={(e) =>
-                                setAssign({ ...assign, feeId: e.target.value })
-                            }
-                            className="border p-3 rounded"
-                        >
-                            <option value="">Select Fee</option>
-                            {fees.map((f) => (
-                                <option key={f._id} value={f._id}>
-                                    {f.title} – GH₵{f.amount}
-                                </option>
-                            ))}
-                        </select>
-
-                        <button
-                            onClick={assignFee}
-                            className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition"
-                        >
-                            Assign
-                        </button>
-                    </div>
-                </div>
-
-                {/* FEES LIST */}
-                <div className="space-y-4">
-                    <h3 className="text-xl font-semibold text-gray-700 mb-2">All Fees</h3>
-
-                    {fees.length === 0 ? (
-                        <p>No fees available.</p>
-                    ) : (
-                        fees.map((f) => (
-                            <div
-                                key={f._id}
-                                className="p-4 bg-white rounded-xl shadow-md flex justify-between items-center hover:shadow-xl transition"
+                            <button
+                                onClick={addFee}
+                                className="mt-4 bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700"
                             >
-                                <div>
-                                    <h4 className="font-bold text-gray-800">{f.title}</h4>
-                                    <p className="text-gray-600">GH₵{f.amount}</p>
-                                    {f.description && (
-                                        <p className="text-sm text-gray-500">{f.description}</p>
-                                    )}
-                                </div>
-                                <button
-                                    onClick={() => deleteFee(f._id)}
-                                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+                                Add Fee
+                            </button>
+                        </div>
+
+                        {/* --- Assign Fee --- */}
+                        <div className="bg-white p-6 rounded-xl shadow mb-8">
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">
+                                Assign Fee to Student
+                            </h3>
+
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <select
+                                    className="border p-3 rounded"
+                                    value={assign.studentId}
+                                    onChange={(e) =>
+                                        setAssign({ ...assign, studentId: e.target.value })
+                                    }
                                 >
-                                    Delete
+                                    <option value="">Select Student</option>
+                                    {students.map((s) => (
+                                        <option key={s._id} value={s._id}>
+                                            {s.name}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <select
+                                    className="border p-3 rounded"
+                                    value={assign.feeId}
+                                    onChange={(e) =>
+                                        setAssign({ ...assign, feeId: e.target.value })
+                                    }
+                                >
+                                    <option value="">Select Fee</option>
+                                    {fees.map((f) => (
+                                        <option key={f._id} value={f._id}>
+                                            {f.title} – GH₵{f.amount}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <button
+                                    onClick={assignFee}
+                                    className="bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700"
+                                >
+                                    Assign
                                 </button>
                             </div>
-                        ))
-                    )}
-                </div>
+                        </div>
 
-                {/* FEE TRACKING */}
-                <div className="space-y-4">
-                    <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                        Fee Payment Tracking
-                    </h3>
+                        {/* --- Student Fees Tracking --- */}
+                        <div className="bg-white p-6 rounded-xl shadow mb-8">
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">
+                                Student Fee Tracking
+                            </h3>
 
-                    {tracking.length === 0 ? (
-                        <p>No fee assignments yet.</p>
-                    ) : (
-                        tracking.map((t) => (
-                            <div
-                                key={t._id}
-                                className="p-4 bg-gray-50 border rounded-xl shadow-sm"
-                            >
-                                <h4 className="font-semibold text-lg text-gray-800">
-                                    {t.student?.name}
-                                </h4>
-                                <p className="text-gray-700">
-                                    Fee: <strong>{t.fee?.title}</strong> – GH₵{t.fee?.amount}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                    Status:{" "}
-                                    <span className="font-semibold text-green-600">
-                                        {t.status || "Pending"}
-                                    </span>
-                                </p>
-                            </div>
-                        ))
-                    )}
-                </div>
+                            {assignments.length === 0 ? (
+                                <p className="text-gray-500">No fees assigned yet.</p>
+                            ) : (
+                                assignments.map((a) => (
+                                    <div
+                                        key={a._id}
+                                        className="p-4 border rounded-lg flex justify-between items-center mb-3"
+                                    >
+                                        <div>
+                                            <p className="font-bold text-gray-800">
+                                                {a.student?.name}
+                                            </p>
+                                            <p className="text-gray-600">
+                                                Fee: {a.fee?.title} – GH₵{a.fee?.amount}
+                                            </p>
+
+                                            <p
+                                                className={`font-semibold mt-1 ${a.status === "paid"
+                                                        ? "text-green-600"
+                                                        : "text-red-500"
+                                                    }`}
+                                            >
+                                                Status: {a.status.toUpperCase()}
+                                            </p>
+                                        </div>
+
+                                        {/* Mark as paid */}
+                                        {a.status !== "paid" && (
+                                            <button
+                                                onClick={() => markPaid(a._id)}
+                                                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                                            >
+                                                Mark Paid
+                                            </button>
+                                        )}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        {/* --- All Fees --- */}
+                        <div className="bg-white p-6 rounded-xl shadow">
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">
+                                All Fee Types
+                            </h3>
+
+                            {fees.length === 0 ? (
+                                <p className="text-gray-500">No fees created yet.</p>
+                            ) : (
+                                fees.map((f) => (
+                                    <div
+                                        key={f._id}
+                                        className="p-4 border rounded-lg flex justify-between items-center mb-3"
+                                    >
+                                        <div>
+                                            <p className="font-bold">{f.title}</p>
+                                            <p className="text-gray-600">GH₵{f.amount}</p>
+                                            {f.description && (
+                                                <p className="text-sm text-gray-500">
+                                                    {f.description}
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <button
+                                            onClick={() => del(f._id)}
+                                            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </>
+                )}
             </div>
         </AdminLayout>
     );
