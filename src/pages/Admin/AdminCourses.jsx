@@ -20,18 +20,25 @@ export default function AdminCoursesPage() {
     };
 
     const addCourse = async () => {
-        const res = await api("/courses", "POST", {
-            title,
-            description,
-            duration
-        });
+        try {
+            const res = await createCourse({
+                title: newCourse.title,
+                description: newCourse.description,
+                duration: newCourse.duration
+            });
 
-        console.log("Create course response:", res);
+            console.log("Create course response:", res.data);
 
-        if (res.ok) {
-            toast.success("Created!");
-        } else {
-            toast.error(res.message || "Failed");
+            if (res.data?.ok) {
+                toast.success("Course created successfully");
+                setNewCourse({ title: "", description: "", duration: "" });
+                loadCourses(); // refresh list
+            } else {
+                toast.error(res.data?.message || "Failed to create course");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Server error while creating course");
         }
     };
 
