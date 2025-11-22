@@ -18,56 +18,64 @@ export default function AdminCoursesPage() {
         loadCourses();
     }, []);
 
-    // Load all courses safely
+    // Load all courses cleanly
     const loadCourses = async () => {
         setLoading(true);
         try {
             const res = await getAllCourses();
 
-            // SAFE ARRAY FIX
-            const list = Array.isArray(res.data?.body) ? res.data.body : [];
+            const list = Array.isArray(res.data?.courses)
+                ? res.data.courses
+                : Array.isArray(res.data?.body)
+                    ? res.data.body
+                    : [];
 
             setCourses(list);
         } catch (err) {
-            console.error(err);
+            console.error("COURSE LOAD ERROR:", err);
             toast.error("Failed to load courses");
-            setCourses([]); // Prevent map errors
+            setCourses([]);
         }
         setLoading(false);
     };
 
-    // Create course
+    // Create new course
     const addCourse = async () => {
-        if (!newCourse.title || !newCourse.description)
-            return toast.error("Fill all fields");
+        if (!newCourse.title || !newCourse.description) {
+            return toast.error("Title & description required");
+        }
 
         try {
             const res = await createCourse(newCourse);
 
             if (res.data?.ok) {
-                toast.success("Course created successfully");
+                toast.success("Course created");
                 setNewCourse({ title: "", description: "", duration: "" });
                 loadCourses();
             } else {
-                toast.error(res.data?.message || "Failed to create course");
+                toast.error(res.data?.message || "Failed to create");
             }
         } catch (err) {
-            console.error(err);
-            toast.error(err.response?.data?.message || "Failed to create course");
+            console.error("CREATE ERROR:", err);
+            toast.error(err.response?.data?.message || "Error creating course");
         }
     };
 
-    // Delete course
+    // Delete a course
     const removeCourse = async (id) => {
+        if (!confirm("Are you sure you want to delete this course?")) return;
+
         try {
             const res = await deleteCourse(id);
 
             if (res.data?.ok) {
                 toast.success("Course deleted");
                 loadCourses();
+            } else {
+                toast.error("Delete failed");
             }
         } catch (err) {
-            console.error(err);
+            console.error("DELETE ERROR:", err);
             toast.error("Failed to delete");
         }
     };
@@ -75,7 +83,7 @@ export default function AdminCoursesPage() {
     return (
         <AdminLayout>
             <div className="p-6 max-w-5xl mx-auto">
-                <h2 className="text-3xl font-bold mb-6 text-gray-800">Course Management</h2>
+                <h1 className="text-3xl font-bold mb-6 text-gray-800">Course Management</h1>
 
                 {/* Add Course Section */}
                 <div className="bg-white p-6 rounded-xl shadow-md mb-8">
@@ -84,7 +92,7 @@ export default function AdminCoursesPage() {
                     <div className="space-y-4">
                         <input
                             type="text"
-                            className="border p-3 rounded-lg w-full focus:ring focus:border-blue-400"
+                            className="border p-3 rounded-lg w-full"
                             placeholder="Course Title"
                             value={newCourse.title}
                             onChange={(e) =>
@@ -93,7 +101,7 @@ export default function AdminCoursesPage() {
                         />
 
                         <textarea
-                            className="border p-3 rounded-lg w-full focus:ring focus:border-blue-400"
+                            className="border p-3 rounded-lg w-full"
                             placeholder="Course Description"
                             rows={3}
                             value={newCourse.description}
@@ -104,7 +112,7 @@ export default function AdminCoursesPage() {
 
                         <input
                             type="text"
-                            className="border p-3 rounded-lg w-full focus:ring focus:border-blue-400"
+                            className="border p-3 rounded-lg w-full"
                             placeholder="Duration (optional)"
                             value={newCourse.duration}
                             onChange={(e) =>
@@ -114,7 +122,7 @@ export default function AdminCoursesPage() {
 
                         <button
                             onClick={addCourse}
-                            className="bg-blue-600 text-white px-5 py-3 rounded-lg shadow hover:bg-blue-700 transition"
+                            className="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition"
                         >
                             Add Course
                         </button>
@@ -122,18 +130,18 @@ export default function AdminCoursesPage() {
                 </div>
 
                 {/* Course List */}
-                <div className="space-y-4">
-                    <h3 className="text-xl font-semibold mb-2 text-gray-700">Available Courses</h3>
+                <h3 className="text-xl font-semibold mb-3 text-gray-700">Available Courses</h3>
 
-                    {loading ? (
-                        <p className="text-gray-500">Loading courses...</p>
-                    ) : courses.length === 0 ? (
-                        <p className="text-gray-500">No courses available.</p>
-                    ) : (
-                        courses.map((c) => (
+                {loading ? (
+                    <p className="text-gray-500">Loading courses...</p>
+                ) : courses.length === 0 ? (
+                    <p className="text-gray-500">No courses found.</p>
+                ) : (
+                    <div className="space-y-4">
+                        {courses.map((c) => (
                             <div
                                 key={c._id}
-                                className="p-4 bg-white rounded-xl shadow flex justify-between items-center"
+                                className="bg-white p-4 rounded-xl shadow flex justify-between items-center"
                             >
                                 <div>
                                     <h4 className="font-bold text-lg">{c.title}</h4>
@@ -152,13 +160,10 @@ export default function AdminCoursesPage() {
                                     Delete
                                 </button>
                             </div>
-                        ))
-                    )}
-                </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </AdminLayout>
     );
 }
-
-
-

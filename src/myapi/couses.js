@@ -1,27 +1,75 @@
 // src/myapi/couses.js
-import axios from "axios";
+import fetch from "../fetch";
 
-// Auto-detect backend URL (fixes undefined/courses problem)
-const API = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || process.env.REACT_APP_API_URL,
+const API_URL = import.meta.env.VITE_API_URL; // must end with /api
+const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY || "token";
+
+// Create Axios instance
+const api = fetch.create({
+    baseURL: API_URL,
+    headers: {
+        "Content-Type": "application/json",
+    },
 });
 
-// Add token to all requests
-API.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+// Attach token to all requests
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
 });
 
-// ==========================
-//  COURSE API FUNCTIONS
-// ==========================
+// --- Helpers to avoid JSON errors ---
+const safeResponse = (res) => ({
+    ok: res?.data?.ok ?? false,
+    data: res?.data ?? {},
+    message: res?.data?.message ?? "No message",
+});
 
-// GET all courses
-export const getAllCourses = () => API.get("/courses");
+// --------------------
+//   API FUNCTIONS
+// --------------------
 
-// CREATE a new course
-export const createCourse = (data) => API.post("/courses/create", data);
+// 1. Get all courses
+export const getAllCourses = async () => {
+    try {
+        const res = await api.get("/courses");
+        return safeResponse(res);
+    } catch (err) {
+        return {
+            ok: false,
+            data: {},
+            message: err.response?.data?.message || "Failed to load courses",
+        };
+    }
+};
 
-// DELETE a course
-export const deleteCourse = (id) => API.delete(`/courses/${id}`);
+// 2. Create course
+export const createCourse = async (courseData) => {
+    try {
+        const res = await api.post("/courses", courseData);
+        return safeResponse(res);
+    } catch (err) {
+        return {
+            ok: false,
+            data: {},
+            message: err.response?.data?.message || "Failed to create course",
+        };
+    }
+};
+
+// 3. Delete course
+export const deleteCourse = async (id) => {
+    try {
+        const res = await api.delete(`/courses/${id}`);
+        return safeResponse(res);
+    } catch (err) {
+        return {
+            ok: false,
+            data: {},
+            message: err.response?.data?.message || "Failed to delete course",
+        };
+    }
+};

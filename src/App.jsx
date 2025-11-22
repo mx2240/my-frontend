@@ -21,7 +21,7 @@ import AdminSettings from './pages/Admin/AdminSettings';
 import Students from './pages/Students';
 import Ad from './components/AdminDasbord/Ad';
 import AdminStudents from './pages/Admin/AdminStudents';
-import AdminCourses from './components/Admin/AdminCourses';
+import AdminCourses from './pages/Admin/AdminCourses';
 import AdminEnrollments from './pages/Admin/AdminEnrollments';
 import Fees from './components/Admin/Fees';
 import Notifications from './components/Admin/Notification';

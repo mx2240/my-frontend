@@ -1,4 +1,6 @@
+// src/pages/Admin/StudentsList.jsx
 import React, { useEffect, useState } from "react";
+import AdminLayout from "../../layouts/AdminLayout";
 import fetch from "../../fetch";
 import toast from "react-hot-toast";
 
@@ -12,7 +14,7 @@ export default function StudentsList() {
 
     const token = localStorage.getItem("token");
 
-    // Fetch students
+    // Fetch students with pagination
     const fetchStudents = async () => {
         try {
             setLoading(true);
@@ -21,7 +23,7 @@ export default function StudentsList() {
             });
 
             if (res.ok) {
-                setStudents(res.body.students);
+                setStudents(res.body.students || []);
                 setTotalPages(res.body.totalPages || 1);
             } else {
                 toast.error(res.message || "Failed to load students");
@@ -60,9 +62,10 @@ export default function StudentsList() {
         }
     };
 
-    // Handle CSV upload
+    // Handle CSV file selection
     const handleFileChange = (e) => setFile(e.target.files[0]);
 
+    // Bulk CSV upload
     const handleBulkUpload = async () => {
         if (!file) return toast.error("Choose a CSV file first");
 
@@ -91,84 +94,85 @@ export default function StudentsList() {
     };
 
     return (
-        <div className="p-6 max-w-5xl mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Students List</h2>
+        <AdminLayout>
+            <div className="p-6 max-w-6xl mx-auto">
+                <h2 className="text-2xl font-bold mb-6">Students List</h2>
 
-            {/* Bulk Upload */}
-            <div className="flex items-center gap-3 mb-6">
-                <input
-                    type="file"
-                    accept=".csv"
-                    onChange={handleFileChange}
-                    className="border px-3 py-2 rounded"
-                />
-                <button
-                    onClick={handleBulkUpload}
-                    disabled={uploading}
-                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition"
-                >
-                    {uploading ? "Uploading..." : "Upload CSV"}
-                </button>
-            </div>
-
-            {/* Students Table */}
-            {loading ? (
-                <p>Loading...</p>
-            ) : students.length === 0 ? (
-                <p>No students found.</p>
-            ) : (
-                <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white shadow rounded-lg">
-                        <thead className="bg-gray-100">
-                            <tr>
-                                <th className="text-left px-4 py-2">Name</th>
-                                <th className="text-left px-4 py-2">Email</th>
-                                <th className="text-left px-4 py-2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {students.map((s) => (
-                                <tr key={s._id} className="border-t">
-                                    <td className="px-4 py-2">{s.name}</td>
-                                    <td className="px-4 py-2">{s.email}</td>
-                                    <td className="px-4 py-2">
-                                        <button
-                                            onClick={() => handleDelete(s._id)}
-                                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                                        >
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                {/* Bulk Upload */}
+                <div className="flex flex-wrap items-center gap-3 mb-6">
+                    <input
+                        type="file"
+                        accept=".csv"
+                        onChange={handleFileChange}
+                        className="border px-3 py-2 rounded w-60"
+                    />
+                    <button
+                        onClick={handleBulkUpload}
+                        disabled={uploading}
+                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition"
+                    >
+                        {uploading ? "Uploading..." : "Upload CSV"}
+                    </button>
                 </div>
-            )}
 
-            {/* Pagination */}
-            <div className="flex justify-between mt-4">
-                <button
-                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                    disabled={page === 1}
-                    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                >
-                    Previous
-                </button>
-                <span className="px-4 py-2">
-                    Page {page} of {totalPages}
-                </span>
-                <button
-                    onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                    disabled={page === totalPages}
-                    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                >
-                    Next
-                </button>
+                {/* Students Table */}
+                {loading ? (
+                    <p>Loading...</p>
+                ) : students.length === 0 ? (
+                    <p>No students found.</p>
+                ) : (
+                    <div className="overflow-x-auto rounded-lg shadow">
+                        <table className="min-w-full bg-white">
+                            <thead className="bg-gray-100">
+                                <tr>
+                                    <th className="text-left px-6 py-3">Name</th>
+                                    <th className="text-left px-6 py-3">Email</th>
+                                    <th className="text-left px-6 py-3">Role</th>
+                                    <th className="text-left px-6 py-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {students.map((s) => (
+                                    <tr key={s._id} className="border-t hover:bg-gray-50">
+                                        <td className="px-6 py-3">{s.name}</td>
+                                        <td className="px-6 py-3">{s.email}</td>
+                                        <td className="px-6 py-3 capitalize">{s.role}</td>
+                                        <td className="px-6 py-3">
+                                            <button
+                                                onClick={() => handleDelete(s._id)}
+                                                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+
+                {/* Pagination */}
+                <div className="flex justify-between mt-4 items-center">
+                    <button
+                        onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                        disabled={page === 1}
+                        className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                    >
+                        Previous
+                    </button>
+                    <span className="px-4 py-2">
+                        Page {page} of {totalPages}
+                    </span>
+                    <button
+                        onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                        disabled={page === totalPages}
+                        className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
-        </div>
+        </AdminLayout>
     );
 }
-
-
-
