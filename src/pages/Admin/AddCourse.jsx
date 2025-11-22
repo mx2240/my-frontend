@@ -1,79 +1,103 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import toast from "react-hot-toast";
-import fetch from "../../fetch";
+import { getAllCourses, createCourse, deleteCourse } from "../../myapi/couses";
 
-export default function AddCourse() {
-    const [course, setCourse] = useState({ title: "", description: "", duration: "" });
-    const [loading, setLoading] = useState(false);
+export default function AdminCoursesPage() {
+    const [courses, setCourses] = useState([]);
+    const [newCourse, setNewCourse] = useState({ title: "", description: "", duration: "" });
 
-    const submit = async (e) => {
-        e.preventDefault();
+    useEffect(() => { loadCourses(); }, []);
 
-        // Debug: check token before sending
-        const token = localStorage.getItem("token");
-        console.log("Token in submit:", token);
-        if (!token) {
-            return toast.error("No token found. Please login first.");
-        }
-
-        if (!course.title || !course.description || !course.duration) {
-            return toast.error("All fields are required");
-        }
-
-        setLoading(true);
-
+    const loadCourses = async () => {
         try {
-            const res = await fetch.post("/courses/", course); // backend route
-            console.log("Server response:", res.data); // debug
-            toast.success("Course created successfully!");
-            setCourse({ title: "", description: "", duration: "" });
+            const res = await getAllCourses();
+            if (res.data?.ok) setCourses(res.data.body);
         } catch (err) {
-            console.error("Error response:", err.response?.data);
-            toast.error(err.response?.data?.message || "Server error");
-        } finally {
-            setLoading(false);
+            console.error(err);
+            toast.error("Failed to load courses");
+        }
+    };
+
+    const addCourse = async () => {
+        if (!newCourse.title || !newCourse.description) return toast.error("Fill all fields");
+        try {
+            const res = await createCourse(newCourse);
+            if (res.data?.ok) {
+                toast.success("Course created");
+                setNewCourse({ title: "", description: "", duration: "" });
+                loadCourses();
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error(err.response?.data?.message || "Failed to create course");
+        }
+    };
+
+    const removeCourse = async (id) => {
+        try {
+            const res = await deleteCourse(id);
+            if (res.data?.ok) {
+                toast.success("Course deleted");
+                loadCourses();
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to delete course");
         }
     };
 
     return (
         <AdminLayout>
-            <div className="p-6 max-w-3xl mx-auto">
-                <h2 className="text-2xl font-bold mb-4">Add Course</h2>
-                <form
-                    onSubmit={submit}
-                    className="bg-white p-6 rounded shadow space-y-4"
-                >
+            <div className="p-6 max-w-5xl mx-auto">
+                <h2 className="text-2xl font-bold mb-4">Courses Management</h2>
+
+                {/* Add Course Form */}
+                <div className="bg-white p-6 rounded shadow mb-6 space-y-4">
+                    <h3 className="font-semibold text-lg">Add New Course</h3>
                     <input
-                        required
+                        type="text"
                         className="border p-3 rounded w-full"
                         placeholder="Title"
-                        value={course.title}
-                        onChange={(e) => setCourse({ ...course, title: e.target.value })}
+                        value={newCourse.title}
+                        onChange={e => setNewCourse({ ...newCourse, title: e.target.value })}
                     />
                     <textarea
-                        required
                         className="border p-3 rounded w-full"
                         placeholder="Description"
-                        value={course.description}
-                        onChange={(e) => setCourse({ ...course, description: e.target.value })}
+                        value={newCourse.description}
+                        onChange={e => setNewCourse({ ...newCourse, description: e.target.value })}
                     />
                     <input
-                        required
+                        type="text"
                         className="border p-3 rounded w-full"
-                        placeholder="Duration"
-                        value={course.duration}
-                        onChange={(e) => setCourse({ ...course, duration: e.target.value })}
+                        placeholder="Duration (optional)"
+                        value={newCourse.duration}
+                        onChange={e => setNewCourse({ ...newCourse, duration: e.target.value })}
                     />
-                    <button
-                        type="submit"
-                        className={`bg-blue-600 text-white px-4 py-2 rounded ${loading ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
-                        disabled={loading}
-                    >
-                        {loading ? "Creating..." : "Create Course"}
+                    <button onClick={addCourse} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                        Add Course
                     </button>
-                </form>
+                </div>
+
+                {/* Courses List */}
+                <div className="space-y-4">
+                    {courses.map(c => (
+                        <div key={c._id} className="p-4 bg-white rounded shadow flex justify-between items-center">
+                            <div>
+                                <h4 className="font-bold">{c.title}</h4>
+                                <p>{c.description}</p>
+                                {c.duration && <p className="text-sm text-gray-500">Duration: {c.duration}</p>}
+                            </div>
+                            <button
+                                onClick={() => removeCourse(c._id)}
+                                className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    ))}
+                </div>
             </div>
         </AdminLayout>
     );

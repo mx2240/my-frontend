@@ -15,6 +15,9 @@ export default function AdminDashboard() {
 
     const loadData = async () => {
         try {
+
+            console.log("Admin profile response:", p);
+
             const p = await getAdminProfile();
             if (p?.data?.ok) setProfile(p.data.body);
 
