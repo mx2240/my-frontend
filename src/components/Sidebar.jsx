@@ -76,12 +76,12 @@ const AdminSidebar = () => {
                     </Link>
                 </li>
 
-
+                {/* 
                 <li>
                     <a href="/admin/add-course" className="block px-4 py-2 hover:bg-blue-100">
                         ➕ Add Course
                     </a>
-                </li>
+                </li> */}
 
                 <li>
                     <Link

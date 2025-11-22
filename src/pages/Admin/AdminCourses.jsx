@@ -1,94 +1,96 @@
-import React, { useState, useEffect } from "react";
-import AdminLayout from "../../layouts/AdminLayout";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { getAllCourses, createCourse, deleteCourse } from "../../myapi/courses";
+import { createCourse } from "../../myapi/couses";
+import AdiminLayout from "../../layouts/AdminLayout";
 
-export default function AdminCoursesPage() {
-    const [courses, setCourses] = useState([]);
-    const [newCourse, setNewCourse] = useState({ title: "", description: "", duration: "" });
+export default function AddCourseForm({ onSuccess }) {
+    const [course, setCourse] = useState({
+        title: "",
+        description: "",
+        duration: "",
+    });
+    const [loading, setLoading] = useState(false);
 
-    useEffect(() => { loadCourses(); }, []);
-
-    const loadCourses = async () => {
-        const res = await getAllCourses();
-        if (res.ok) setCourses(res.body || []);
-        else toast.error(res.message || "Failed to load courses");
+    const handleChange = (e) => {
+        setCourse({ ...course, [e.target.name]: e.target.value });
     };
 
-    const addCourse = async () => {
-        if (!newCourse.title) return toast.error("Title is required");
-        const res = await createCourse(newCourse);
-        if (res.ok) {
-            toast.success("Course created!");
-            setNewCourse({ title: "", description: "", duration: "" });
-            loadCourses();
-        } else {
-            toast.error(res.message || "Failed to create course");
-        }
-    };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!course.title) return toast.error("Title is required");
 
-    const removeCourse = async (id) => {
-        const res = await deleteCourse(id);
-        if (res.ok) {
-            toast.success("Deleted!");
-            loadCourses();
-        } else {
-            toast.error(res.message || "Failed to delete");
+        try {
+            setLoading(true);
+            const res = await createCourse(course);
+            setLoading(false);
+
+            if (res.ok) {
+                toast.success("Course added successfully!");
+                setCourse({ title: "", description: "", duration: "" });
+                if (onSuccess) onSuccess(); // reload course list
+            } else {
+                toast.error(res.message || "Failed to add course");
+            }
+        } catch (err) {
+            setLoading(false);
+            console.error(err);
+            toast.error("Server error");
         }
     };
 
     return (
-        <AdminLayout>
-            <div className="p-6 max-w-5xl mx-auto">
-                <h2 className="text-2xl font-bold mb-4">Courses Management</h2>
+        <AdiminLayout>
+            <form
+                onSubmit={handleSubmit}
+                className="bg-white shadow rounded-lg p-6 max-w-lg mx-auto mb-6 space-y-4"
+            >
+                <h3 className="text-xl font-semibold text-gray-700">Add New Course</h3>
 
-                {/* Add Course Form */}
-                <div className="bg-white p-6 rounded shadow mb-6 space-y-4">
-                    <h3 className="font-semibold text-lg">Add New Course</h3>
+                <div className="space-y-2">
+                    <label className="block text-gray-600">Title <span className="text-red-500">*</span></label>
                     <input
                         type="text"
-                        className="border p-3 rounded w-full"
-                        placeholder="Title"
-                        value={newCourse.title}
-                        onChange={e => setNewCourse({ ...newCourse, title: e.target.value })}
+                        name="title"
+                        value={course.title}
+                        onChange={handleChange}
+                        placeholder="Course Title"
+                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
                     />
+                </div>
+
+                <div className="space-y-2">
+                    <label className="block text-gray-600">Description</label>
                     <textarea
-                        className="border p-3 rounded w-full"
-                        placeholder="Description"
-                        value={newCourse.description}
-                        onChange={e => setNewCourse({ ...newCourse, description: e.target.value })}
+                        name="description"
+                        value={course.description}
+                        onChange={handleChange}
+                        placeholder="Brief description of the course"
+                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        rows={3}
                     />
-                    <input
-                        type="text"
-                        className="border p-3 rounded w-full"
-                        placeholder="Duration (optional)"
-                        value={newCourse.duration}
-                        onChange={e => setNewCourse({ ...newCourse, duration: e.target.value })}
-                    />
-                    <button onClick={addCourse} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                        Add Course
-                    </button>
                 </div>
 
-                {/* Courses List */}
-                <div className="space-y-4">
-                    {courses.map(c => (
-                        <div key={c._id} className="p-4 bg-white rounded shadow flex justify-between items-center">
-                            <div>
-                                <h4 className="font-bold">{c.title}</h4>
-                                <p>{c.description}</p>
-                                {c.duration && <p className="text-sm text-gray-500">Duration: {c.duration}</p>}
-                            </div>
-                            <button
-                                onClick={() => removeCourse(c._id)}
-                                className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    ))}
+                <div className="space-y-2">
+                    <label className="block text-gray-600">Duration</label>
+                    <input
+                        type="text"
+                        name="duration"
+                        value={course.duration}
+                        onChange={handleChange}
+                        placeholder="e.g., 8 weeks, 40 hours"
+                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
                 </div>
-            </div>
-        </AdminLayout>
+
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded transition"
+                >
+                    {loading ? "Adding..." : "Add Course"}
+                </button>
+            </form>
+        </AdiminLayout>
     );
 }
