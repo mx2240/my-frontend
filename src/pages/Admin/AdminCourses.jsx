@@ -20,32 +20,21 @@ export default function AdminCoursesPage() {
     };
 
     const addCourse = async () => {
-        if (!newCourse.title || !newCourse.description) return toast.error("Fill all fields");
-        try {
-            const res = await createCourse(newCourse);
-            if (res.data?.ok) {
-                toast.success("Course created");
-                setNewCourse({ title: "", description: "", duration: "" });
-                loadCourses();
-            }
-        } catch (err) {
-            console.error(err);
-            toast.error(err.response?.data?.message || "Failed to create course");
+        const res = await api("/courses", "POST", {
+            title,
+            description,
+            duration
+        });
+
+        console.log("Create course response:", res);
+
+        if (res.ok) {
+            toast.success("Created!");
+        } else {
+            toast.error(res.message || "Failed");
         }
     };
 
-    const removeCourse = async (id) => {
-        try {
-            const res = await deleteCourse(id);
-            if (res.data?.ok) {
-                toast.success("Course deleted");
-                loadCourses();
-            }
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to delete course");
-        }
-    };
 
     return (
         <AdminLayout>
