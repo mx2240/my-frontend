@@ -131,7 +131,7 @@ export default function AddStudent() {
     const submit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch.post("/admin/students", "POST", student);
+            const res = await fetch.post("/admin/students/", "POST", student);
             if (res.ok) { toast.success("Student added"); setStudent({ name: "", email: "", phone: "", course: "" }); }
             else toast.error(res.body.message || "Failed");
         } catch (err) { toast.error("Server error"); }
