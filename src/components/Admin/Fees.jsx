@@ -33,7 +33,13 @@ export default function AdminFeesPage() {
             const fRes = await fetch.get("/fees");
             setFees(Array.isArray(fRes.data) ? fRes.data : []);
 
-            const sRes = await fetch.get("/admin/students/");
+            const token = localStorage.getItem("token");
+
+            const sRes = await axios.get("/admin/students/", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             setStudents(Array.isArray(sRes.data) ? sRes.data : []);
 
             const aRes = await fetch.get("/fees/assigned");
