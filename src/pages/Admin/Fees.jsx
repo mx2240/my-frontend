@@ -318,12 +318,8 @@ export default function AdminFeesPage() {
 
 function AdminFeesPage() {
     return (
-        <AdminLayout>
-            <div className="p-6 max-w-5xl mx-auto">
-                <h2 className="text-3xl font-bold mb-6 text-gray-800">Fees Management</h2>
-                <Fees />
-            </div>
-        </AdminLayout>
+
+        <></>
     );
 }
 
