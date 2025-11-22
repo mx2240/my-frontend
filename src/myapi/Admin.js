@@ -1,5 +1,4 @@
-
-import fetch from "../fetch";
+import fetch from '../fetch';
 
 // Get admin profile
 export const getAdminProfile = async () => {
@@ -14,4 +13,9 @@ export const getAllStudents = async () => {
 // Get all admins
 export const getAllAdmins = async () => {
     return fetch.get("/admin/admins");
+};
+
+// Get all courses
+export const getAllCourses = async () => {
+    return fetch.get("/admin/courses");
 };
