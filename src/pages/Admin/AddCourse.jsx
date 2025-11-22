@@ -12,13 +12,17 @@ export default function AdminCoursesPage() {
     const loadCourses = async () => {
         try {
             const res = await getAllCourses();
-            if (res.data?.ok) setCourses(res.data.body);
+
+            // SAFE: Always ensure it's an array
+            const list = Array.isArray(res.data?.body) ? res.data.body : [];
+
+            setCourses(list);
         } catch (err) {
             console.error(err);
             toast.error("Failed to load courses");
+            setCourses([]); // prevent map errors
         }
     };
-
     const addCourse = async () => {
         if (!newCourse.title || !newCourse.description) return toast.error("Fill all fields");
         try {
