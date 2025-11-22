@@ -1,6 +1,8 @@
+// src/pages/Admin/AddStudent.jsx
 import { useState } from "react";
+import AdminLayout from "../../layouts/AdminLayout";
 import toast from "react-hot-toast";
-import api from "../api";
+import api from "../../api";
 
 export default function AddStudent() {
     const [form, setForm] = useState({
@@ -14,6 +16,9 @@ export default function AddStudent() {
 
     const handleAddStudent = async (e) => {
         e.preventDefault();
+        if (!form.name || !form.email || !form.password) {
+            return toast.error("Please fill all fields");
+        }
 
         const res = await api("/auth/register", "POST", form);
 
@@ -26,41 +31,52 @@ export default function AddStudent() {
     };
 
     return (
-        <form onSubmit={handleAddStudent} className="p-6 bg-white rounded shadow max-w-md mx-auto mt-6">
-            <h2 className="text-2xl font-bold mb-4">Add Student</h2>
+        <AdminLayout>
+            <div className="p-6 max-w-md mx-auto mt-6 bg-white rounded shadow">
+                <h2 className="text-2xl font-bold mb-4 text-center">Add Student</h2>
+                <form onSubmit={handleAddStudent} className="space-y-4">
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Full Name"
+                        value={form.name}
+                        onChange={handleChange}
+                        className="border p-3 rounded w-full"
+                    />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        value={form.email}
+                        onChange={handleChange}
+                        className="border p-3 rounded w-full"
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        value={form.password}
+                        onChange={handleChange}
+                        className="border p-3 rounded w-full"
+                    />
+                    <select
+                        name="role"
+                        value={form.role}
+                        onChange={handleChange}
+                        className="border p-3 rounded w-full"
+                    >
+                        <option value="student">Student</option>
+                        <option value="admin">Admin</option>
+                    </select>
 
-            <input
-                name="name"
-                placeholder="Full Name"
-                value={form.name}
-                onChange={handleChange}
-                className="border p-3 rounded w-full mb-3"
-            />
-            <input
-                name="email"
-                type="email"
-                placeholder="Email"
-                value={form.email}
-                onChange={handleChange}
-                className="border p-3 rounded w-full mb-3"
-            />
-            <input
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={form.password}
-                onChange={handleChange}
-                className="border p-3 rounded w-full mb-3"
-            />
-
-            <select name="role" value={form.role} onChange={handleChange} className="border p-3 rounded w-full mb-4">
-                <option value="student">Student</option>
-                <option value="admin">Admin</option>
-            </select>
-
-            <button type="submit" className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">
-                Add Student
-            </button>
-        </form>
+                    <button
+                        type="submit"
+                        className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700"
+                    >
+                        Add Student
+                    </button>
+                </form>
+            </div>
+        </AdminLayout>
     );
 }
