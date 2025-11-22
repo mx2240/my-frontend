@@ -41,7 +41,7 @@ export default function Login() {
             if (user.role === "admin") {
                 navigate("/admin");
             } else if (user.role === "student") {
-                navigate("/student");
+                navigate("/student/dashboard");
             } else {
                 navigate("/"); // fallback
             }
