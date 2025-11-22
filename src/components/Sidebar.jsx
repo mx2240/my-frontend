@@ -46,23 +46,23 @@ const AdminSidebar = () => {
 
 
 
-                    <Link
+                    {/* <Link
                         to="/admin/enrollment"
                         className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
                     >
                         <FaUsers />Enrrollment
-                    </Link>
+                    </Link> */}
 
 
 
-                    <Link
+                    {/* <Link
                         to="/admin/enrollment/form"
                         className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
                     >
                         <FaUsers />Enrrollment Form
-                    </Link>
+                    </Link> */}
 
                 </li>
 
