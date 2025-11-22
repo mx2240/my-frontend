@@ -8,7 +8,7 @@ export const api = async (endpoint, method = "GET", data = null) => {
 
         const headers = {
             "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...(token ? { Authorization: `Token ${token}` } : {}),
         };
 
         const options = { method, headers };
@@ -32,12 +32,17 @@ export const api = async (endpoint, method = "GET", data = null) => {
         if (!res.ok) {
             console.error("❌ Server responded with error:", json);
             throw new Error(json.message || `HTTP error ${res.status}`);
+        } else {
+            console.log("Sending request:", `${API_URL}${endpoint}`, options);
+
         }
 
         return json;
     } catch (err) {
         console.error("❌ API call failed:", err);
         throw err;
+
+
     }
 };
 
