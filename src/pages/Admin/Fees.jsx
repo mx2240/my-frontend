@@ -14,19 +14,23 @@ export default function AdminFeesPage() {
     }, []);
 
     // Load fees and students
+    // load function
     const load = async () => {
-        try {
-            const fRes = await fetch.get("/fees");
-            setFees(fRes.data);
+        const f = await api("/fees");
+        if (f.ok) {
+            // f.body should be the array
+            setFees(Array.isArray(f.body) ? f.body : []);
+        } else {
+            setFees([]);
+        }
 
-            const sRes = await fetch.get("/admin/students");
-            setStudents(sRes.data);
-        } catch (err) {
-            console.error("Error loading fees/students:", err.response?.data || err.message);
-            toast.error("Failed to load data");
+        const s = await api("admin/students");
+        if (s.ok) {
+            setStudents(Array.isArray(s.body) ? s.body : []);
+        } else {
+            setStudents([]);
         }
     };
-
     // Add new fee
     const addFee = async () => {
         if (!newFee.title || newFee.amount === "") return toast.error("Fill all fields");
