@@ -19,7 +19,7 @@ export default function AdminFeesPage() {
             const fRes = await fetch.get("/fees");
             setFees(fRes.data);
 
-            const sRes = await fetch.get("/students/all");
+            const sRes = await fetch.get("/admin/students");
             setStudents(sRes.data);
         } catch (err) {
             console.error("Error loading fees/students:", err.response?.data || err.message);
