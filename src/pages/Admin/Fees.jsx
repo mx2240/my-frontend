@@ -19,7 +19,7 @@ export default function AdminFeesPage() {
             if (f.ok && Array.isArray(f.body)) setFees(f.body);
             else setFees([]);
 
-            const s = await api("admin/students");
+            const s = await api("/admin/students");
             if (s.ok && Array.isArray(s.body)) setStudents(s.body);
             else setStudents([]);
         } catch (err) {
