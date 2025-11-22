@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import toast from "react-hot-toast";
-import fetch from "../../fetch"; // axios instance with token
+import fetch from "../../fetch"; // Axios instance with token
 
 export default function AdminFeesPage() {
     const [fees, setFees] = useState([]);
@@ -18,155 +18,181 @@ export default function AdminFeesPage() {
     }, []);
 
     const loadAll = async () => {
-        setLoading(true);
         try {
-            // Load fees
+            setLoading(true);
+
+            // Fetch all fees
             const fRes = await fetch.get("/fees");
             setFees(Array.isArray(fRes.data) ? fRes.data : []);
 
-            // Load students
+            // Fetch all students
             const sRes = await fetch.get("/admin/students");
             setStudents(Array.isArray(sRes.data) ? sRes.data : []);
 
-            // Load assignments
+            // Fetch fee assignments
             const aRes = await fetch.get("/fees/assigned");
             setAssignments(Array.isArray(aRes.data) ? aRes.data : []);
         } catch (err) {
             console.error(err);
             toast.error("Failed to load data");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
+    // Add new fee
     const addFee = async () => {
-        if (!newFee.title || !newFee.amount) return toast.error("Fill all required fields");
+        if (!newFee.title || !newFee.amount)
+            return toast.error("Please fill all required fields");
+
         try {
             await fetch.post("/fees", newFee);
-            toast.success("Fee added");
+            toast.success("Fee added successfully");
             setNewFee({ title: "", amount: "", description: "" });
             loadAll();
         } catch (err) {
+            console.error(err);
             toast.error(err.response?.data?.message || "Failed to add fee");
         }
     };
 
+    // Assign fee to student
     const assignFee = async () => {
-        if (!assign.studentId || !assign.feeId) return toast.error("Select student & fee");
+        if (!assign.studentId || !assign.feeId)
+            return toast.error("Select student & fee");
+
         try {
             await fetch.post("/fees/assign", assign);
-            toast.success("Fee assigned");
+            toast.success("Fee assigned successfully");
             setAssign({ studentId: "", feeId: "" });
             loadAll();
         } catch (err) {
+            console.error(err);
             toast.error(err.response?.data?.message || "Failed to assign fee");
         }
     };
 
+    // Mark fee as paid
     const markPaid = async (id) => {
         try {
             await fetch.post(`/fees/pay/${id}`);
             toast.success("Marked as paid");
             loadAll();
         } catch (err) {
+            console.error(err);
             toast.error("Failed to update payment");
         }
     };
 
-    const del = async (id) => {
+    // Delete fee
+    const delFee = async (id) => {
         try {
             await fetch.delete(`/fees/${id}`);
-            toast.success("Deleted");
+            toast.success("Fee deleted");
             loadAll();
         } catch (err) {
-            toast.error("Failed to delete");
+            console.error(err);
+            toast.error("Failed to delete fee");
         }
     };
 
     return (
         <AdminLayout>
             <div className="p-6 max-w-6xl mx-auto">
-                <h2 className="text-4xl font-bold text-gray-800 mb-6">Fees & Tracking Dashboard</h2>
+                <h2 className="text-4xl font-bold text-gray-800 mb-6">
+                    Fees & Tracking Dashboard
+                </h2>
 
                 {loading ? (
                     <p className="text-gray-600">Loading...</p>
                 ) : (
                     <>
-                        {/* Add Fee */}
+                        {/* --- Add Fee --- */}
                         <div className="bg-white p-6 rounded-xl shadow mb-8">
-                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">Create Fee Type</h3>
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">
+                                Create Fee Type
+                            </h3>
                             <div className="grid md:grid-cols-3 gap-4">
                                 <input
                                     type="text"
-                                    placeholder="Fee Title"
                                     className="border p-3 rounded"
+                                    placeholder="Fee Title"
                                     value={newFee.title}
                                     onChange={(e) => setNewFee({ ...newFee, title: e.target.value })}
                                 />
                                 <input
                                     type="number"
-                                    placeholder="Amount"
                                     className="border p-3 rounded"
+                                    placeholder="Amount"
                                     value={newFee.amount}
                                     onChange={(e) => setNewFee({ ...newFee, amount: e.target.value })}
                                 />
                                 <input
                                     type="text"
-                                    placeholder="Description"
                                     className="border p-3 rounded"
+                                    placeholder="Description (optional)"
                                     value={newFee.description}
                                     onChange={(e) => setNewFee({ ...newFee, description: e.target.value })}
                                 />
                             </div>
                             <button
                                 onClick={addFee}
-                                className="mt-4 bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700 transition"
+                                className="mt-4 bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700"
                             >
                                 Add Fee
                             </button>
                         </div>
 
-                        {/* Assign Fee */}
+                        {/* --- Assign Fee --- */}
                         <div className="bg-white p-6 rounded-xl shadow mb-8">
-                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">Assign Fee to Student</h3>
-                            <div className="grid md:grid-cols-3 gap-4">
-                                <select
-                                    value={assign.studentId}
-                                    onChange={(e) => setAssign({ ...assign, studentId: e.target.value })}
-                                    className="border p-3 rounded"
-                                >
-                                    <option value="">Select Student</option>
-                                    {students.map((s) => (
-                                        <option key={s._id} value={s._id}>
-                                            {s.name}
-                                        </option>
-                                    ))}
-                                </select>
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">
+                                Assign Fee to Student
+                            </h3>
+                            {students.length === 0 || fees.length === 0 ? (
+                                <p className="text-gray-500">No students or fees available to assign.</p>
+                            ) : (
+                                <div className="grid md:grid-cols-3 gap-4">
+                                    <select
+                                        className="border p-3 rounded"
+                                        value={assign.studentId}
+                                        onChange={(e) => setAssign({ ...assign, studentId: e.target.value })}
+                                    >
+                                        <option value="">Select Student</option>
+                                        {students.map((s) => (
+                                            <option key={s._id} value={s._id}>
+                                                {s.name} ({s.email})
+                                            </option>
+                                        ))}
+                                    </select>
 
-                                <select
-                                    value={assign.feeId}
-                                    onChange={(e) => setAssign({ ...assign, feeId: e.target.value })}
-                                    className="border p-3 rounded"
-                                >
-                                    <option value="">Select Fee</option>
-                                    {fees.map((f) => (
-                                        <option key={f._id} value={f._id}>
-                                            {f.title} – GH₵{f.amount}
-                                        </option>
-                                    ))}
-                                </select>
+                                    <select
+                                        className="border p-3 rounded"
+                                        value={assign.feeId}
+                                        onChange={(e) => setAssign({ ...assign, feeId: e.target.value })}
+                                    >
+                                        <option value="">Select Fee</option>
+                                        {fees.map((f) => (
+                                            <option key={f._id} value={f._id}>
+                                                {f.title} – GH₵{f.amount}
+                                            </option>
+                                        ))}
+                                    </select>
 
-                                <button
-                                    onClick={assignFee}
-                                    className="bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700"
-                                >
-                                    Assign
-                                </button>
-                            </div>
+                                    <button
+                                        onClick={assignFee}
+                                        className="bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700"
+                                    >
+                                        Assign
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
-                        {/* Student Fee Tracking */}
+                        {/* --- Student Fee Tracking --- */}
                         <div className="bg-white p-6 rounded-xl shadow mb-8">
-                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">Student Fee Tracking</h3>
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">
+                                Student Fee Tracking
+                            </h3>
                             {assignments.length === 0 ? (
                                 <p className="text-gray-500">No fees assigned yet.</p>
                             ) : (
@@ -180,11 +206,8 @@ export default function AdminFeesPage() {
                                             <p className="text-gray-600">
                                                 Fee: {a.fee?.title} – GH₵{a.fee?.amount}
                                             </p>
-                                            <p
-                                                className={`font-semibold mt-1 ${a.status === "paid" ? "text-green-600" : "text-red-500"
-                                                    }`}
-                                            >
-                                                Status: {a.status?.toUpperCase() || "UNPAID"}
+                                            <p className={`mt-1 font-semibold ${a.status === "paid" ? "text-green-600" : "text-red-500"}`}>
+                                                Status: {a.status?.toUpperCase() || "PENDING"}
                                             </p>
                                         </div>
                                         {a.status !== "paid" && (
@@ -200,9 +223,11 @@ export default function AdminFeesPage() {
                             )}
                         </div>
 
-                        {/* All Fees */}
+                        {/* --- All Fee Types --- */}
                         <div className="bg-white p-6 rounded-xl shadow">
-                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">All Fee Types</h3>
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">
+                                All Fee Types
+                            </h3>
                             {fees.length === 0 ? (
                                 <p className="text-gray-500">No fees created yet.</p>
                             ) : (
@@ -217,7 +242,7 @@ export default function AdminFeesPage() {
                                             {f.description && <p className="text-sm text-gray-500">{f.description}</p>}
                                         </div>
                                         <button
-                                            onClick={() => del(f._id)}
+                                            onClick={() => delFee(f._id)}
                                             className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
                                         >
                                             Delete
