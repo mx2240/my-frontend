@@ -1,26 +1,32 @@
 import React, { useState } from "react";
-import Sidebar from "./Sidebar";
-import "./../admin.css";
+import AdminSidebar from '../components/Sidebar'
+import AdminTopbar from '../components/Topbar'
 
-export default function AdminLayout({ children }) {
-    const [open, setOpen] = useState(true);
+const AdminLayout = ({ children }) => {
+    const [darkMode, setDarkMode] = useState(false);
 
     return (
-        <div className="admin-container">
-            <Sidebar open={open} setOpen={setOpen} />
+        <div className={darkMode ? "dark" : ""}>
+            <div className="flex bg-gray-100 dark:bg-gray-900 min-h-screen transition-all">
 
-            <div className={`admin-content ${open ? "content-shift" : ""}`}>
-                <header className="admin-header">
-                    <button className="toggle-btn" onClick={() => setOpen(!open)}>
-                        ☰
-                    </button>
-                    <h2>Admin Panel</h2>
-                </header>
+                {/* Sidebar */}
+                <AdminSidebar />
 
-                <main className="admin-main">
-                    {children}
-                </main>
+                {/* Main Content */}
+                <div className="flex-1 ml-64 p-6 transition-all">
+
+                    {/* Topbar */}
+                    <AdminTopbar darkMode={darkMode} setDarkMode={setDarkMode} />
+
+                    {/* PAGE CONTENT */}
+                    <div className="mt-6">
+                        {children}
+                    </div>
+
+                </div>
             </div>
         </div>
     );
-}
+};
+
+export default AdminLayout;

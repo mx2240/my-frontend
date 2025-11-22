@@ -1,15 +1,150 @@
 import React from "react";
+import { FaTachometerAlt, FaUsers, FaBook, FaMoneyBill, FaCog } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-export default function Sidebar({ open, setOpen }) {
-    return (
-        <div className={`admin-sidebar ${open ? "show" : "hide"}`}>
-            <h3 className="logo">ADMIN</h3>
 
-            <nav>
-                <Link to="/admin">Dashboard</Link>
-                <Link to="/admin/users">Users</Link>
-            </nav>
+const AdminSidebar = () => {
+    return (
+
+
+
+        <div className="fixed left-0 top-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl p-6 transition-all">
+
+            <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-10">
+                Admin Panel
+            </h1>
+
+            <ul className="space-y-4">
+                <li>
+                    <Link
+                        to="/admin/dasbord"
+                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white 
+                      rounded-lg transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
+                    >
+                        <FaTachometerAlt /> Dashboard
+                    </Link>
+                </li>
+
+                <li>
+                    <Link
+                        to="/admin/students"
+                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                      transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
+                    >
+                        <FaUsers /> Students
+                    </Link>
+
+                    <Link
+                        to="/students"
+                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                       transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
+                    >
+                        <FaUsers />Mangement
+                    </Link>
+
+
+
+
+
+                    <Link
+                        to="/admin/enrollment"
+                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                       transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
+                    >
+                        <FaUsers />Enrrollment
+                    </Link>
+
+
+
+                    <Link
+                        to="/admin/enrollment/form"
+                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                       transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
+                    >
+                        <FaUsers />Enrrollment Form
+                    </Link>
+
+                </li>
+
+                <li>
+                    <Link
+                        to="/courses"
+                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                       transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
+                    >
+                        <FaBook /> Courses
+                    </Link>
+                </li>
+
+                {/* 
+                <li>
+                    <a href="/admin/add-course" className="block px-4 py-2 hover:bg-blue-100">
+                        ➕ Add Course
+                    </a>
+                </li> */}
+
+                <li>
+                    <Link
+                        to="/fees"
+                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                       transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
+                    >
+                        <FaMoneyBill /> Fees & Payments
+                    </Link>
+
+                    {/* <Link
+                        to="/fees-page"
+                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                       transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
+                    >
+                        <FaMoneyBill /> Assign fees
+                    </Link> */}
+
+                    <Link
+                        to="/fees-tracking"
+                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                       transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
+                    >
+                        <FaMoneyBill /> Fees Tracking
+                    </Link>
+                    {/* <Link
+                        to="/fee"
+                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                       transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
+                    >
+                        <FaMoneyBill /> Fees Management
+                    </Link> */}
+                </li>
+
+                <li>
+
+                    <Link
+                        to="/notifications"
+                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                       transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
+                    >
+                        <FaCog /> Notifiction
+                    </Link>
+
+
+
+
+
+
+                    <Link
+                        to="/admin/settings"
+                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                       transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
+                    >
+                        <FaCog /> Settings
+                    </Link>
+
+
+                </li>
+            </ul>
         </div>
+
     );
-}
+};
+
+export default AdminSidebar;
