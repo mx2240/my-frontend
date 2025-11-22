@@ -1,92 +1,93 @@
-// src/pages/Admin/AddStudent.jsx
-import React, { useState } from "react";
-import AdminLayout from "../../layouts/AdminLayout";
+import { useState } from "react";
 import toast from "react-hot-toast";
-import { api } from "../../api"; // your api helper
+import api from "../../api"; // your API wrapper
 
-export default function AddStudent() {
-    const [student, setStudent] = useState({ name: "", email: "", password: "" });
-    const [loading, setLoading] = useState(false);
+const AdminAddStudent = () => {
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        password: "",
+        role: "student",
+    });
 
-    const handleChange = (e) =>
-        setStudent({ ...student, [e.target.name]: e.target.value });
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
-    const handleSubmit = async (e) => {
+    const handleAddStudent = async (e) => {
         e.preventDefault();
-        if (!student.name || !student.email || !student.password) {
-            return toast.error("Please fill all fields");
+
+        if (!form.name || !form.email || !form.password) {
+            toast.error("Fill all required fields");
+            return;
         }
 
-        setLoading(true);
         try {
-            // 1️⃣ Register student
-            const res = await api("/auth/register", "POST", {
-                ...student,
-                role: "student", // ensures role is student
-            });
+            const res = await api("/auth/register", "POST", form);
 
-            if (!res.ok) throw new Error(res.message || "Registration failed");
-            toast.success("Student registered successfully");
+            if (!res.ok) {
+                toast.error(res.message || "Failed to add student");
+                return;
+            }
 
-            // 2️⃣ Auto login student to get token
-            const loginRes = await api("/auth/login", "POST", {
-                email: student.email,
-                password: student.password,
-            });
-
-            if (!loginRes.token) throw new Error("Login failed after registration");
-
-            // 3️⃣ Store token
-            localStorage.setItem(import.meta.env.VITE_TOKEN_KEY, loginRes.token);
-
-            // 4️⃣ Redirect to student dashboard
-            window.location.href = "/student/dashboard";
+            toast.success(`Student ${res.user.name} added successfully`);
+            setForm({ name: "", email: "", password: "", role: "student" });
         } catch (err) {
             console.error(err);
-            toast.error(err.message || "Something went wrong");
-        } finally {
-            setLoading(false);
+            toast.error("Something went wrong");
         }
     };
 
     return (
-        <AdminLayout>
-            <div className="p-6 max-w-md mx-auto bg-white rounded shadow">
-                <h2 className="text-2xl font-bold mb-4">Add New Student</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Full Name"
-                        value={student.name}
-                        onChange={handleChange}
-                        className="border p-3 rounded w-full"
-                    />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        value={student.email}
-                        onChange={handleChange}
-                        className="border p-3 rounded w-full"
-                    />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        value={student.password}
-                        onChange={handleChange}
-                        className="border p-3 rounded w-full"
-                    />
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="bg-blue-600 text-white px-4 py-2 rounded w-full hover:bg-blue-700 transition"
-                    >
-                        {loading ? "Registering..." : "Add Student"}
-                    </button>
-                </form>
-            </div>
-        </AdminLayout>
+        <div className="p-6 max-w-md mx-auto bg-white rounded-xl shadow">
+            <h2 className="text-2xl font-bold mb-4">Add Student</h2>
+            <form onSubmit={handleAddStudent} className="space-y-4">
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Full Name"
+                    value={form.name}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded"
+                    required
+                />
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    value={form.email}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded"
+                    required
+                />
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    value={form.password}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded"
+                    required
+                />
+                <select
+                    name="role"
+                    value={form.role}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded"
+                >
+                    <option value="student">Student</option>
+                    <option value="admin">Admin</option>
+                </select>
+
+                <button
+                    type="submit"
+                    className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700"
+                >
+                    Add Student
+                </button>
+            </form>
+        </div>
     );
-}
+};
+
+export default AdminAddStudent;
