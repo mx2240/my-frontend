@@ -1,98 +1,59 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from '../../components/Sidebar';
-import Topbar from '../../components/Topbar';
-import { Line } from "react-chartjs-2";
-import "chart.js/auto";
 import AdminLayout from "../../layouts/AdminLayout";
+import toast from "react-hot-toast";
+import { getAdminProfile, getAllStudents, getAllAdmins } from '../../myapi/Admin';
+import fetch from "../../fetch";
 
-const AdminDashboard = () => {
-    const [stats, setStats] = useState({
-        totalStudents: 0,
-        totalCourses: 0,
-        totalEnrollments: 0,
-        feesCollected: 0,
-    });
-
-    const [chartData, setChartData] = useState({
-        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-        datasets: [
-            {
-                label: "Enrollments",
-                data: [12, 19, 15, 20, 25, 30],
-                borderColor: "#3b82f6",
-                backgroundColor: "rgba(59, 130, 246, 0.2)",
-                tension: 0.4,
-            },
-        ],
-    });
+export default function AdminDashboard() {
+    const [profile, setProfile] = useState({});
+    const [students, setStudents] = useState([]);
+    const [admins, setAdmins] = useState([]);
 
     useEffect(() => {
-        // Fetch stats from backend if available
-        // Example: fetch("/api/admin/stats").then(res => res.json()).then(setStats)
+        loadData();
     }, []);
 
+    const loadData = async () => {
+        try {
+            const p = await getAdminProfile();
+            if (p.data.ok) setProfile(p.data.body);
+
+            const s = await getAllStudents();
+            if (s.data.ok) setStudents(s.data.body);
+
+            const a = await getAllAdmins();
+            if (a.data.ok) setAdmins(a.data.body);
+        } catch (err) {
+            console.error(err.response?.data || err.message);
+            toast.error("Failed to load admin data");
+        }
+    };
+
     return (
-
-
-
         <AdminLayout>
+            <div className="p-6 max-w-5xl mx-auto">
+                <h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
 
-            <div className="flex h-screen bg-gray-100">
-                {/* <Sidebar /> */}
+                <section className="mb-6">
+                    <h3 className="font-bold">Profile</h3>
+                    <p>Name: {profile.name}</p>
+                    <p>Email: {profile.email}</p>
+                </section>
 
-                <div className="flex-1 flex flex-col">
-                    {/* <Topbar /> */}
+                <section className="mb-6">
+                    <h3 className="font-bold">Students</h3>
+                    <ul className="list-disc pl-6">
+                        {students.map(s => <li key={s._id}>{s.name} ({s.email})</li>)}
+                    </ul>
+                </section>
 
-                    <main className="p-6">
-                        <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                            <div className="bg-white p-4 rounded shadow">
-                                <h2 className="font-semibold text-gray-700">Students</h2>
-                                <p className="text-2xl font-bold">{stats.totalStudents}</p>
-                            </div>
-                            <div className="bg-white p-4 rounded shadow">
-                                <h2 className="font-semibold text-gray-700">Courses</h2>
-                                <p className="text-2xl font-bold">{stats.totalCourses}</p>
-                            </div>
-                            <div className="bg-white p-4 rounded shadow">
-                                <h2 className="font-semibold text-gray-700">Enrollments</h2>
-                                <p className="text-2xl font-bold">{stats.totalEnrollments}</p>
-                            </div>
-                            <div className="bg-white p-4 rounded shadow">
-                                <h2 className="font-semibold text-gray-700">Fees Collected</h2>
-                                <p className="text-2xl font-bold">GH₵ {stats.feesCollected}</p>
-                            </div>
-                        </div>
-
-                        <div className="bg-white p-4 rounded shadow mb-6">
-                            <h2 className="font-semibold text-gray-700 mb-4">Enrollment Trends</h2>
-                            <Line data={chartData} />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-white p-4 rounded shadow">
-                                <h2 className="font-semibold text-gray-700 mb-2">Recent Activity</h2>
-                                <ul className="text-gray-600">
-                                    <li>New student enrolled in Math 101</li>
-                                    <li>Course Physics 201 updated</li>
-                                    <li>Fee GH₵200 collected from John Doe</li>
-                                </ul>
-                            </div>
-                            <div className="bg-white p-4 rounded shadow">
-                                <h2 className="font-semibold text-gray-700 mb-2">Notifications</h2>
-                                <ul className="text-gray-600">
-                                    <li>Exam schedule published</li>
-                                    <li>System maintenance on Friday</li>
-                                    <li>New announcement from Principal</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </main>
-                </div>
+                <section>
+                    <h3 className="font-bold">Admins</h3>
+                    <ul className="list-disc pl-6">
+                        {admins.map(a => <li key={a._id}>{a.name} ({a.email})</li>)}
+                    </ul>
+                </section>
             </div>
         </AdminLayout>
     );
-};
-
-export default AdminDashboard;
+}
