@@ -16,13 +16,13 @@ export default function AdminDashboard() {
     const loadData = async () => {
         try {
             const p = await getAdminProfile();
-            if (p.data.ok) setProfile(p.data.body);
+            if (p?.data?.ok) setProfile(p.data.body);
 
             const s = await getAllStudents();
-            if (s.data.ok) setStudents(s.data.body);
+            if (s?.data?.ok) setStudents(s.data.body);
 
             const a = await getAllAdmins();
-            if (a.data.ok) setAdmins(a.data.body);
+            if (a?.data?.ok) setAdmins(a.data.body);
         } catch (err) {
             console.error(err.response?.data || err.message);
             toast.error("Failed to load admin data");
