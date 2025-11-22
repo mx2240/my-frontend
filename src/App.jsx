@@ -37,6 +37,7 @@ import CoursesList from './pages/Admin/Courses/CoursesList';
 import EditCourse from './pages/Admin/Courses/EditCourse';
 import DeleteCourseModal from './pages/Admin/Courses/DeleteCourseModal';
 import StudentForm from './components/Admin/StudentForm';
+import StudentList from './components/Admin/StudentsList';
 
 
 
@@ -154,6 +155,7 @@ function App() {
         <Route path="/delete-course" element={<DeleteCourseModal />} />
         <Route path="/student-form" element={<StudentForm />} />
         <Route path="/admin/dasbord" element={<Ad />} />
+        <Route path="/student-list" element={<StudentList />} />
 
 
 
@@ -180,6 +182,7 @@ function App() {
         <Route path="/student/grades" element={<StudentGrades />} />
         <Route path="/student/notifications" element={<StudentNotifications />} />
         <Route path="/student/assignments" element={<StudentAssignments />} />
+
 
 
 

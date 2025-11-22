@@ -40,7 +40,7 @@ export default function StudentForm({ student, onClose, onSave }) {
         try {
             const url = student ? `/admin/students/${student._id}` : "/admin/students";
             const method = student ? "put" : "post";
-            const res = await axios({
+            const res = await fetch({
                 method,
                 url,
                 data: form,
