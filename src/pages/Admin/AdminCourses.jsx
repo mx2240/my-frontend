@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import toast from "react-hot-toast";
-import { getAllCourses, createCourse, deleteCourse } from "../../api/courses";
+import { getAllCourses, createCourse, deleteCourse } from "../../myapi/couses";
 
 export default function AdminCoursesPage() {
     const [courses, setCourses] = useState([]);
