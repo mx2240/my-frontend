@@ -24,7 +24,7 @@ export default function AddCourse() {
         setLoading(true);
 
         try {
-            const res = await fetch.post("/courses", course); // backend route
+            const res = await fetch.post("/courses/", course); // backend route
             console.log("Server response:", res.data); // debug
             toast.success("Course created successfully!");
             setCourse({ title: "", description: "", duration: "" });
