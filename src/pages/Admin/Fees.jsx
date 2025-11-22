@@ -45,7 +45,7 @@ export default function AdminFeesPage() {
     const assignFee = async () => {
         if (!assign.studentId || !assign.feeId) return toast.error("Select student and fee");
         try {
-            const res = await fetch.post("/fees/assign", assign);
+            const res = await fetch.get("/fees/assign", assign);
             toast.success("Fee assigned");
             setAssign({ studentId: "", feeId: "" });
         } catch (err) {
