@@ -56,6 +56,7 @@ export const createCourse = async (courseData) => {
             ok: false,
             data: {},
             message: err.response?.data?.message || "Failed to create course",
+
         };
     }
 };
