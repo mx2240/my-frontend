@@ -23,7 +23,7 @@ export default function AdminCoursesPage() {
     const loadCourses = async () => {
         try {
             setLoading(true);
-            const res = await fetch.get("/courses"); // make sure backend has GET /courses
+            const res = await fetch.get("admin/courses"); // make sure backend has GET /courses
             setCourses(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error("Load courses error:", err.response?.data || err.message);
