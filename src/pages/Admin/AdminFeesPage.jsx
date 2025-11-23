@@ -1,8 +1,8 @@
-// src/pages/Admin/AdminFeesPage.jsx
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import toast from "react-hot-toast";
 import fetch from "../../fetch";
+import { jsPDF } from "jspdf";
 
 export default function AdminFeesPage() {
     const [fees, setFees] = useState([]);
@@ -11,8 +11,17 @@ export default function AdminFeesPage() {
     const [loading, setLoading] = useState(true);
 
     const [newFee, setNewFee] = useState({ title: "", amount: "", description: "" });
-    const [assign, setAssign] = useState({ studentId: "", feeId: "" });
+    const [assignData, setAssignData] = useState({ studentId: "", feeId: "" });
+    const [studentSearch, setStudentSearch] = useState("");
+    const [studentClassFilter, setStudentClassFilter] = useState("");
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
+    const [isFeeModalOpen, setIsFeeModalOpen] = useState(false);
+    const [editingFee, setEditingFee] = useState(null);
+
+    // Load all on mount
     useEffect(() => {
         loadAll();
     }, []);
@@ -20,18 +29,13 @@ export default function AdminFeesPage() {
     const loadAll = async () => {
         try {
             setLoading(true);
-
-            // Fetch fees
             const fRes = await fetch.get("/fees");
-            setFees(Array.isArray(fRes.data.body) ? fRes.data.body : []);
+            setFees(Array.isArray(fRes.data) ? fRes.data : []);
 
-            // Fetch students
             const sRes = await fetch.get("/admin/students/all");
             setStudents(Array.isArray(sRes.data) ? sRes.data : []);
 
-            // Fetch assigned fees
-            const aRes = await fetch.get("/fees/assigned");
-            setAssignments(Array.isArray(aRes.data.body) ? aRes.data.body : []);
+            loadAssignments(currentPage);
         } catch (err) {
             console.error("Load all error:", err);
             toast.error(err.response?.data?.message || "Failed to load data");
@@ -40,45 +44,75 @@ export default function AdminFeesPage() {
         }
     };
 
-    // Add new fee
-    const addFee = async () => {
-        if (!newFee.title || !newFee.amount) return toast.error("Fill all required fields");
+    const loadAssignments = async (page = 1) => {
         try {
-            await fetch.post("/fees", newFee);
-            toast.success("Fee added");
-            setNewFee({ title: "", amount: "", description: "" });
-            loadAll();
+            const aRes = await fetch.get(`/fees/assigned?page=${page}&limit=5`);
+            setAssignments(Array.isArray(aRes.data.assignments) ? aRes.data.assignments : []);
+            setTotalPages(aRes.data.totalPages || 1);
+            setCurrentPage(aRes.data.page || 1);
         } catch (err) {
-            toast.error(err.response?.data?.message || "Failed to add fee");
+            toast.error("Failed to load assigned fees");
         }
     };
 
-    // Assign fee to student
-    const assignFee = async () => {
-        if (!assign.studentId || !assign.feeId) return toast.error("Select student & fee");
+    const openFeeModal = (fee = null) => {
+        if (fee) {
+            setEditingFee(fee);
+            setNewFee({ title: fee.title, amount: fee.amount, description: fee.description });
+        } else {
+            setEditingFee(null);
+            setNewFee({ title: "", amount: "", description: "" });
+        }
+        setIsFeeModalOpen(true);
+    };
+
+    const closeFeeModal = () => {
+        setIsFeeModalOpen(false);
+        setEditingFee(null);
+        setNewFee({ title: "", amount: "", description: "" });
+    };
+
+    const saveFee = async () => {
+        if (!newFee.title || !newFee.amount) return toast.error("Fill all required fields");
         try {
-            await fetch.post("/fees/assign", assign);
-            toast.success("Fee assigned");
-            setAssign({ studentId: "", feeId: "" });
+            if (editingFee) {
+                await fetch.put(`/fees/${editingFee._id}`, newFee);
+                toast.success("Fee updated");
+            } else {
+                await fetch.post("/fees", newFee);
+                toast.success("Fee added");
+            }
+            closeFeeModal();
             loadAll();
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to save fee");
+        }
+    };
+
+    const assignFee = async () => {
+        if (!assignData.studentId || !assignData.feeId) return toast.error("Select student & fee");
+        try {
+            await fetch.post("/fees/assign", assignData);
+            toast.success("Fee assigned");
+            setAssignData({ studentId: "", feeId: "" });
+            loadAssignments(currentPage);
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to assign fee");
         }
     };
 
-    // Mark as paid
     const markPaid = async (id) => {
         try {
             await fetch.post(`/fees/pay/${id}`);
             toast.success("Marked as paid");
-            loadAll();
+            loadAssignments(currentPage);
         } catch (err) {
             toast.error("Failed to update payment");
         }
     };
 
-    // Delete fee
     const delFee = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this fee?")) return;
         try {
             await fetch.delete(`/fees/${id}`);
             toast.success("Deleted fee");
@@ -88,115 +122,106 @@ export default function AdminFeesPage() {
         }
     };
 
-    if (loading)
-        return (
-            <AdminLayout>
-                <p className="p-6 text-gray-600">Loading...</p>
-            </AdminLayout>
+    const generateReceipt = (assignment) => {
+        const doc = new jsPDF();
+        doc.text("School Fee Receipt", 20, 20);
+        doc.text(`Student: ${assignment.student?.name}`, 20, 40);
+        doc.text(`Email: ${assignment.student?.email}`, 20, 50);
+        doc.text(`Fee: ${assignment.fee?.title}`, 20, 60);
+        doc.text(`Amount: GH₵${assignment.fee?.amount}`, 20, 70);
+        doc.text(`Status: ${assignment.status.toUpperCase()}`, 20, 80);
+        doc.save(`Receipt_${assignment.student?.name}.pdf`);
+    };
+
+    const filteredStudents = students
+        .filter(s =>
+            (!studentClassFilter || s.studentClass === studentClassFilter) &&
+            (!studentSearch || s.name.toLowerCase().includes(studentSearch.toLowerCase()))
         );
+
+    if (loading) return <AdminLayout><p className="p-6 text-gray-600">Loading...</p></AdminLayout>;
 
     return (
         <AdminLayout>
             <div className="p-6 max-w-6xl mx-auto">
                 <h2 className="text-4xl font-bold text-gray-800 mb-6">Fees & Tracking Dashboard</h2>
 
-                {/* --- Add Fee --- */}
-                <div className="bg-white p-6 rounded-xl shadow mb-8">
-                    <h3 className="text-2xl font-semibold mb-4 text-gray-700">Create Fee Type</h3>
-                    <div className="grid md:grid-cols-3 gap-4">
-                        <input
-                            type="text"
-                            placeholder="Fee Title"
-                            className="border p-3 rounded"
-                            value={newFee.title}
-                            onChange={(e) => setNewFee({ ...newFee, title: e.target.value })}
-                        />
-                        <input
-                            type="number"
-                            placeholder="Amount"
-                            className="border p-3 rounded"
-                            value={newFee.amount}
-                            onChange={(e) => setNewFee({ ...newFee, amount: e.target.value })}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Description (optional)"
-                            className="border p-3 rounded"
-                            value={newFee.description}
-                            onChange={(e) => setNewFee({ ...newFee, description: e.target.value })}
-                        />
-                    </div>
-                    <button onClick={addFee} className="mt-4 bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700">
-                        Add Fee
-                    </button>
-                </div>
+                {/* --- Add/Edit Fee Button --- */}
+                <button onClick={() => openFeeModal()} className="mb-6 bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700">Add New Fee</button>
 
-                {/* --- Assign Fee --- */}
+                {/* --- Fee Modal --- */}
+                {isFeeModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-xl w-full max-w-md relative">
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-700">{editingFee ? "Edit Fee" : "Add Fee"}</h3>
+                            <input type="text" placeholder="Fee Title" className="border p-3 rounded mb-3 w-full" value={newFee.title} onChange={e => setNewFee({ ...newFee, title: e.target.value })} />
+                            <input type="number" placeholder="Amount" className="border p-3 rounded mb-3 w-full" value={newFee.amount} onChange={e => setNewFee({ ...newFee, amount: e.target.value })} />
+                            <input type="text" placeholder="Description" className="border p-3 rounded mb-3 w-full" value={newFee.description} onChange={e => setNewFee({ ...newFee, description: e.target.value })} />
+                            <div className="flex justify-end gap-2 mt-4">
+                                <button onClick={closeFeeModal} className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Cancel</button>
+                                <button onClick={saveFee} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">{editingFee ? "Update" : "Add"}</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* --- Assign Fee Section --- */}
                 <div className="bg-white p-6 rounded-xl shadow mb-8">
                     <h3 className="text-2xl font-semibold mb-4 text-gray-700">Assign Fee to Student</h3>
-                    <div className="grid md:grid-cols-3 gap-4">
-                        <select
-                            value={assign.studentId}
-                            onChange={(e) => setAssign({ ...assign, studentId: e.target.value })}
-                            className="border p-3 rounded"
-                        >
-                            <option value="">Select Student</option>
-                            {students.map((s) => (
-                                <option key={s._id} value={s._id}>
-                                    {s.name} ({s.email})
-                                </option>
-                            ))}
-                        </select>
+                    <input type="text" placeholder="Search student..." className="border p-2 rounded mb-2 w-full" value={studentSearch} onChange={e => setStudentSearch(e.target.value)} />
+                    <select className="border p-2 rounded mb-2 w-full" value={studentClassFilter} onChange={e => setStudentClassFilter(e.target.value)}>
+                        <option value="">Filter by class</option>
+                        <option value="Class 1">Class 1</option>
+                        <option value="Class 2">Class 2</option>
+                        <option value="Class 3">Class 3</option>
+                    </select>
 
-                        <select
-                            value={assign.feeId}
-                            onChange={(e) => setAssign({ ...assign, feeId: e.target.value })}
-                            className="border p-3 rounded"
-                        >
-                            <option value="">Select Fee</option>
-                            {fees.map((f) => (
-                                <option key={f._id} value={f._id}>
-                                    {f.title} – GH₵{f.amount}
-                                </option>
-                            ))}
-                        </select>
+                    <select className="w-full border p-3 rounded mb-3" value={assignData.studentId} onChange={e => setAssignData({ ...assignData, studentId: e.target.value })}>
+                        <option value="">Select Student</option>
+                        {filteredStudents.map(s => (
+                            <option key={s._id} value={s._id}>{s.name} ({s.email})</option>
+                        ))}
+                    </select>
 
-                        <button onClick={assignFee} className="bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700">
-                            Assign
-                        </button>
-                    </div>
+                    <select className="w-full border p-3 rounded mb-3" value={assignData.feeId} onChange={e => setAssignData({ ...assignData, feeId: e.target.value })}>
+                        <option value="">Select Fee</option>
+                        {fees.map(f => (
+                            <option key={f._id} value={f._id}>{f.title} – GH₵{f.amount}</option>
+                        ))}
+                    </select>
+
+                    <button onClick={assignFee} className="bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700">Assign Fee</button>
                 </div>
 
-                {/* --- Student Fee Tracking --- */}
+                {/* --- Assigned Fees --- */}
                 <div className="bg-white p-6 rounded-xl shadow mb-8">
                     <h3 className="text-2xl font-semibold mb-4 text-gray-700">Student Fee Tracking</h3>
                     {assignments.length === 0 ? (
                         <p className="text-gray-500">No fees assigned yet.</p>
                     ) : (
-                        assignments.map((a) => (
-                            <div
-                                key={a._id}
-                                className="p-4 border rounded-lg flex justify-between items-center mb-3 hover:shadow-lg transition"
-                            >
+                        assignments.map(a => (
+                            <div key={a._id} className="p-4 border rounded-lg flex justify-between items-center mb-3">
                                 <div>
                                     <p className="font-bold">{a.student?.name}</p>
-                                    <p className="text-gray-600">
-                                        Fee: {a.fee?.title} – GH₵{a.fee?.amount}
-                                    </p>
-                                    <p className={`font-semibold mt-1 ${a.status === "paid" ? "text-green-600" : "text-red-500"}`}>
-                                        Status: {a.status?.toUpperCase() || "UNPAID"}
-                                    </p>
+                                    <p className="text-gray-600">Fee: {a.fee?.title} – GH₵{a.fee?.amount}</p>
+                                    <p className={`font-semibold mt-1 ${a.status === "paid" ? "text-green-600" : "text-red-500"}`}>Status: {a.status?.toUpperCase() || "UNPAID"}</p>
                                 </div>
-                                {a.status !== "paid" && (
-                                    <button
-                                        onClick={() => markPaid(a._id)}
-                                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                                    >
-                                        Mark Paid
-                                    </button>
-                                )}
+                                <div className="flex gap-2">
+                                    {a.status !== "paid" && <button onClick={() => markPaid(a._id)} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Mark Paid</button>}
+                                    <button onClick={() => generateReceipt(a)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Receipt</button>
+                                    <button onClick={() => toast("Redirect to payment gateway")} className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Pay Online</button>
+                                </div>
                             </div>
                         ))
+                    )}
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex justify-center gap-2 mt-4">
+                            <button disabled={currentPage <= 1} onClick={() => loadAssignments(currentPage - 1)} className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50">Prev</button>
+                            <span className="px-3 py-1">{currentPage} / {totalPages}</span>
+                            <button disabled={currentPage >= totalPages} onClick={() => loadAssignments(currentPage + 1)} className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50">Next</button>
+                        </div>
                     )}
                 </div>
             </div>
