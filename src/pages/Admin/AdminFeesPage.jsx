@@ -1,3 +1,4 @@
+// src/pages/Admin/AdminFeesPage.jsx
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import toast from "react-hot-toast";
@@ -12,7 +13,6 @@ export default function AdminFeesPage() {
     const [newFee, setNewFee] = useState({ title: "", amount: "", description: "" });
     const [assign, setAssign] = useState({ studentId: "", feeId: "" });
 
-    // Load all data on mount
     useEffect(() => {
         loadAll();
     }, []);
@@ -23,16 +23,15 @@ export default function AdminFeesPage() {
 
             // Fetch fees
             const fRes = await fetch.get("/fees");
-            setFees(Array.isArray(fRes.data) ? fRes.data : []);
+            setFees(Array.isArray(fRes.data.body) ? fRes.data.body : []);
 
-            // Fetch students (flat array)
+            // Fetch students
             const sRes = await fetch.get("/admin/students/all");
-            setStudents(Array.isArray(sRes.data) ? sRes.data : []);
+            setStudents(Array.isArray(sRes.data.body) ? sRes.data.body : []);
 
             // Fetch assigned fees
             const aRes = await fetch.get("/fees/assigned");
-            // Make sure assignments array exists
-            setAssignments(Array.isArray(aRes.data) ? aRes.data : []);
+            setAssignments(Array.isArray(aRes.data.body) ? aRes.data.body : []);
         } catch (err) {
             console.error("Load all error:", err);
             toast.error(err.response?.data?.message || "Failed to load data");
@@ -67,7 +66,7 @@ export default function AdminFeesPage() {
         }
     };
 
-    // Mark fee as paid
+    // Mark as paid
     const markPaid = async (id) => {
         try {
             await fetch.post(`/fees/pay/${id}`);
@@ -127,10 +126,7 @@ export default function AdminFeesPage() {
                             onChange={(e) => setNewFee({ ...newFee, description: e.target.value })}
                         />
                     </div>
-                    <button
-                        onClick={addFee}
-                        className="mt-4 bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700"
-                    >
+                    <button onClick={addFee} className="mt-4 bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700">
                         Add Fee
                     </button>
                 </div>
@@ -165,10 +161,7 @@ export default function AdminFeesPage() {
                             ))}
                         </select>
 
-                        <button
-                            onClick={assignFee}
-                            className="bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700"
-                        >
+                        <button onClick={assignFee} className="bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700">
                             Assign
                         </button>
                     </div>
@@ -183,17 +176,14 @@ export default function AdminFeesPage() {
                         assignments.map((a) => (
                             <div
                                 key={a._id}
-                                className="p-4 border rounded-lg flex justify-between items-center mb-3"
+                                className="p-4 border rounded-lg flex justify-between items-center mb-3 hover:shadow-lg transition"
                             >
                                 <div>
-                                    <p className="font-bold">{a.student?.name || "N/A"}</p>
+                                    <p className="font-bold">{a.student?.name}</p>
                                     <p className="text-gray-600">
-                                        Fee: {a.fee?.title || "N/A"} – GH₵{a.fee?.amount || "0"}
+                                        Fee: {a.fee?.title} – GH₵{a.fee?.amount}
                                     </p>
-                                    <p
-                                        className={`font-semibold mt-1 ${a.status === "paid" ? "text-green-600" : "text-red-500"
-                                            }`}
-                                    >
+                                    <p className={`font-semibold mt-1 ${a.status === "paid" ? "text-green-600" : "text-red-500"}`}>
                                         Status: {a.status?.toUpperCase() || "UNPAID"}
                                     </p>
                                 </div>
@@ -205,33 +195,6 @@ export default function AdminFeesPage() {
                                         Mark Paid
                                     </button>
                                 )}
-                            </div>
-                        ))
-                    )}
-                </div>
-
-                {/* --- All Fees --- */}
-                <div className="bg-white p-6 rounded-xl shadow">
-                    <h3 className="text-2xl font-semibold mb-4 text-gray-700">All Fee Types</h3>
-                    {fees.length === 0 ? (
-                        <p className="text-gray-500">No fees created yet.</p>
-                    ) : (
-                        fees.map((f) => (
-                            <div
-                                key={f._id}
-                                className="p-4 border rounded-lg flex justify-between items-center mb-3"
-                            >
-                                <div>
-                                    <p className="font-bold">{f.title}</p>
-                                    <p className="text-gray-600">GH₵{f.amount}</p>
-                                    {f.description && <p className="text-sm text-gray-500">{f.description}</p>}
-                                </div>
-                                <button
-                                    onClick={() => delFee(f._id)}
-                                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                                >
-                                    Delete
-                                </button>
                             </div>
                         ))
                     )}
