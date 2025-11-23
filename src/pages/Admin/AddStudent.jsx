@@ -20,7 +20,7 @@ export default function AddStudent() {
             return toast.error("Please fill all fields");
         }
 
-        const res = await api("/auth/register", "POST", form);
+        const res = await api("admin/students/", "POST", form);
 
         if (res.ok) {
             toast.success("Student added successfully");
