@@ -31,7 +31,8 @@ export default function AdminFeesPage() {
             setFees(Array.isArray(fRes.data) ? fRes.data : []);
 
             const sRes = await fetch.get("/admin/students/all");
-            setStudents(Array.isArray(sRes.data.students) ? sRes.data.students : []);
+            setStudents(Array.isArray(sRes.data) ? sRes.data : []);
+
 
             const aRes = await fetch.get("/fees/assigned");
             setAssignments(Array.isArray(aRes.data) ? aRes.data : []);
@@ -237,8 +238,8 @@ export default function AdminFeesPage() {
                                     </p>
                                     <p
                                         className={`font-semibold mt-1 ${a.status === "paid"
-                                                ? "text-green-600"
-                                                : "text-red-500"
+                                            ? "text-green-600"
+                                            : "text-red-500"
                                             }`}
                                     >
                                         Status: {a.status?.toUpperCase()}
