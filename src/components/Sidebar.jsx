@@ -93,7 +93,7 @@ const AdminSidebar = () => {
 
                 <li>
                     <Link
-                        to="/fees"
+                        to="/fees-page"
                         className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
                     >

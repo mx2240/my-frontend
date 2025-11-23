@@ -1,120 +1,129 @@
-// src/pages/Admin/AdminAssignFees.jsx
+// src/pages/Admin/AdminFeesPage.jsx
 import React, { useEffect, useState } from "react";
-import fetch from '../../fetch'
-import toast from "react-hot-toast";
 import AdminLayout from "../../layouts/AdminLayout";
+import toast from "react-hot-toast";
+import fetch from "../../fetch";
 
-const AdminAssignFees = () => {
-    const [students, setStudents] = useState([]); // always an array
-    const [amount, setAmount] = useState("");
-    const token = localStorage.getItem("token");
+export default function AdminFeesPage() {
+    const [fees, setFees] = useState([]);
+    const [students, setStudents] = useState([]);
+    const [assignments, setAssignments] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Fetch all students
-    useEffect(() => {
-        const fetchStudents = async () => {
-            try {
-                const res = await fetch.get("/admin/student/`", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                // Ensure we always have an array
-                setStudents(Array.isArray(res.data) ? res.data : []);
-            } catch (err) {
-                console.error("Error fetching students:", err);
-                toast.error("Failed to load students");
-            }
-        };
-        fetchStudents();
-    }, [token]);
+    const [newFee, setNewFee] = useState({ title: "", amount: "", description: "" });
+    const [assign, setAssign] = useState({ studentId: "", feeId: "" });
 
-    // Assign fee to a student
-    const assignFees = async (studentId) => {
-        if (!amount || isNaN(amount) || amount <= 0) {
-            toast.error("Please enter a valid amount");
-            return;
-        }
+    useEffect(() => { loadAll(); }, []);
 
+    const loadAll = async () => {
         try {
-            const res = await fetch.post(
-                "/fees/assign",
-                { student: studentId, amount: Number(amount) },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            toast.success("Fee assigned successfully");
+            setLoading(true);
+            const [fRes, sRes, aRes] = await Promise.allSettled([
+                fetch.get("/fees"),
+                fetch.get("/admin/students/all"),
+                fetch.get("/fees/assigned"),
+            ]);
+
+            // fees
+            if (fRes.status === "fulfilled") setFees(Array.isArray(fRes.value.data) ? fRes.value.data : []);
+            else { console.error("fees load failed:", fRes.reason); setFees([]); }
+
+            // students (flat array)
+            if (sRes.status === "fulfilled") setStudents(Array.isArray(sRes.value.data) ? sRes.value.data : []);
+            else { console.error("students load failed:", sRes.reason); setStudents([]); }
+
+            // assignments
+            if (aRes.status === "fulfilled") setAssignments(Array.isArray(aRes.value.data) ? aRes.value.data : []);
+            else { console.error("assignments load failed:", aRes.reason); setAssignments([]); }
+
         } catch (err) {
-            console.error("Error assigning fee:", err);
-            toast.error("Failed to assign fee");
+            console.error("Load all error:", err);
+            toast.error("Failed to load data");
+        } finally {
+            setLoading(false);
         }
     };
 
+    const addFee = async () => {
+        if (!newFee.title || newFee.amount === "") return toast.error("Fill required fields");
+        try { await fetch.post("/fees", newFee); toast.success("Fee added"); setNewFee({ title: "", amount: "", description: "" }); loadAll(); }
+        catch (err) { toast.error(err.message || err?.message || "Failed to add fee"); }
+    };
 
+    const assignFee = async () => {
+        if (!assign.studentId || !assign.feeId) return toast.error("Select student & fee");
+        try { await fetch.post("/fees/assign", assign); toast.success("Assigned"); setAssign({ studentId: "", feeId: "" }); loadAll(); }
+        catch (err) { toast.error(err.message || "Failed to assign fee"); }
+    };
 
+    const markPaid = async (id) => {
+        try { await fetch.post(`/fees/pay/${id}`); toast.success("Marked paid"); loadAll(); }
+        catch (err) { toast.error("Failed to mark paid"); }
+    };
 
+    const delFee = async (id) => {
+        try { await fetch.delete(`/fees/${id}`); toast.success("Deleted"); loadAll(); }
+        catch (err) { toast.error("Failed to delete"); }
+    };
 
-
+    if (loading) return <AdminLayout><p className="p-6 text-gray-600">Loading...</p></AdminLayout>;
 
     return (
         <AdminLayout>
-            <div className="p-6 bg-gray-100 min-h-screen">
-                <h1 className="text-2xl font-bold mb-4">Assign Fees to Students</h1>
+            <div className="p-6 max-w-6xl mx-auto space-y-8">
+                <h2 className="text-4xl font-bold">Fees & Tracking Dashboard</h2>
 
-                <div className="mb-4">
-                    <label className="block mb-1 font-medium">Fee Amount (GH₵)</label>
-                    <input
-                        type="number"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        className="border rounded px-3 py-2 w-48"
-                        placeholder="Enter amount"
-                    />
+                <div className="bg-white p-6 rounded-xl shadow">
+                    <h3 className="text-2xl font-semibold mb-4">Create Fee Type</h3>
+                    <div className="grid md:grid-cols-3 gap-4">
+                        <input type="text" placeholder="Title" value={newFee.title} onChange={e => setNewFee({ ...newFee, title: e.target.value })} className="border p-3 rounded" />
+                        <input type="number" placeholder="Amount" value={newFee.amount} onChange={e => setNewFee({ ...newFee, amount: e.target.value })} className="border p-3 rounded" />
+                        <input type="text" placeholder="Description" value={newFee.description} onChange={e => setNewFee({ ...newFee, description: e.target.value })} className="border p-3 rounded" />
+                    </div>
+                    <button onClick={addFee} className="mt-4 bg-blue-600 text-white py-2 px-6 rounded">Add Fee</button>
                 </div>
 
-                <div className="overflow-x-auto bg-white shadow rounded-lg">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    #
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Email
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Action
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {(Array.isArray(students) ? students : []).map((student, idx) => (
-                                <tr key={student._id}>
-                                    <td className="px-6 py-4">{idx + 1}</td>
-                                    <td className="px-6 py-4">{student.name}</td>
-                                    <td className="px-6 py-4">{student.email}</td>
-                                    <td className="px-6 py-4">
-                                        <button
-                                            onClick={() => assignFees(student._id)}
-                                            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                                        >
-                                            Assign Fee
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                            {(!Array.isArray(students) || students.length === 0) && (
-                                <tr>
-                                    <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
-                                        No students found
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                <div className="bg-white p-6 rounded-xl shadow">
+                    <h3 className="text-2xl font-semibold mb-4">Assign Fee to Student</h3>
+                    <div className="grid md:grid-cols-3 gap-4">
+                        <select className="border p-3 rounded" value={assign.studentId} onChange={e => setAssign({ ...assign, studentId: e.target.value })}>
+                            <option value="">Select Student</option>
+                            {students.map(s => <option key={s._id} value={s._id}>{s.name} ({s.email})</option>)}
+                        </select>
+
+                        <select className="border p-3 rounded" value={assign.feeId} onChange={e => setAssign({ ...assign, feeId: e.target.value })}>
+                            <option value="">Select Fee</option>
+                            {fees.map(f => <option key={f._id} value={f._1d}>{f.title} – GH₵{f.amount}</option>)}
+                        </select>
+
+                        <button onClick={assignFee} className="bg-green-600 text-white py-2 px-6 rounded">Assign</button>
+                    </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-xl shadow">
+                    <h3 className="text-2xl font-semibold mb-4">Student Fee Tracking</h3>
+                    {assignments.length === 0 ? <p className="text-gray-500">No fees assigned yet.</p> : assignments.map(a => (
+                        <div key={a._id} className="p-4 border rounded-lg flex justify-between items-center mb-3">
+                            <div>
+                                <p className="font-bold">{a.student?.name}</p>
+                                <p className="text-gray-600">Fee: {a.fee?.title} – GH₵{a.fee?.amount}</p>
+                                <p className={`font-semibold ${a.status === "paid" ? "text-green-600" : "text-red-500"}`}>Status: {a.status?.toUpperCase()}</p>
+                            </div>
+                            {a.status !== "paid" && <button onClick={() => markPaid(a._id)} className="bg-green-600 text-white px-4 py-2 rounded">Mark Paid</button>}
+                        </div>
+                    ))}
+                </div>
+
+                <div className="bg-white p-6 rounded-xl shadow">
+                    <h3 className="text-2xl font-semibold mb-4">All Fee Types</h3>
+                    {fees.length === 0 ? <p className="text-gray-500">No fees created yet.</p> : fees.map(f => (
+                        <div key={f._id} className="p-4 border rounded-lg flex justify-between items-center mb-3">
+                            <div><p className="font-bold">{f.title}</p><p className="text-gray-600">GH₵{f.amount}</p></div>
+                            <button onClick={() => delFee(f._id)} className="bg-red-600 text-white px-4 py-2 rounded">Delete</button>
+                        </div>
+                    ))}
                 </div>
             </div>
         </AdminLayout>
     );
-};
-
-export default AdminAssignFees;
+}
