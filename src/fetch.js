@@ -1,4 +1,3 @@
-// fetch.js
 import axios from "axios";
 
 const fetch = axios.create({
@@ -7,15 +6,13 @@ const fetch = axios.create({
     headers: { "Content-Type": "application/json" },
 });
 
-// Attach token to all requests
+// Attach token automatically to all requests
 fetch.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem("token");
-
+        const token = localStorage.getItem("token"); // read correct key
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-
         return config;
     },
     (error) => Promise.reject(error)
