@@ -18,8 +18,8 @@ export default function StudentsList() {
     const fetchStudents = async () => {
         try {
             setLoading(true);
-            const res = await fetch.get(`/students?page=${page}`, {
-                headers: { Authorization: `Bearer ${token}` },
+            const res = await fetch.get(`/admin/students/all?page=${page}`, {
+                // headers: { Authorization: `Bearer ${token}` },
             });
 
             if (res.ok) {
