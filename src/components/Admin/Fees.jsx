@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import toast from "react-hot-toast";
 import fetch from "../../fetch";
+import js from "@eslint/js";
 
 export default function AdminFeesPage() {
     const [fees, setFees] = useState([]);
@@ -27,7 +28,7 @@ export default function AdminFeesPage() {
 
             // --- Fetch students (flat array route) ---
             const sRes = await fetch.get("/admin/students/all");
-            setStudents(Array.isArray(sRes.data) ? sRes.data : []);
+            setStudents(JSON.parse(sRes.data) ? sRes.data : []);
 
             // --- Fetch assignments ---
             const aRes = await fetch.get("/fees/assigned");
