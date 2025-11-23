@@ -7,15 +7,15 @@ const fetch = axios.create({
     headers: { "Content-Type": "application/json" },
 });
 
-// Attach token automatically to all requests
+// Automatically attach token to every request
 fetch.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem("token"); // ensure you saved JWT in localStorage
+        const token = localStorage.getItem("token");
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
-            localStorage.setItem("token", loginResponse.data.token);
-
         }
+
         return config;
     },
     (error) => Promise.reject(error)
