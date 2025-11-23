@@ -24,7 +24,7 @@ export default function AdminCoursesPage() {
         try {
             setLoading(true);
             const res = await fetch.get("/courses"); // make sure backend has GET /courses
-            setCourses(Array.isArray(res.data) ? res.data : []);
+            setCourses(Array.isArray(res.data.body) ? res.data : []);
         } catch (err) {
             console.error("Load courses error:", err.response?.data || err.message);
             toast.error("Failed to load courses");
