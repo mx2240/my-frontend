@@ -1,12 +1,13 @@
-// src/pages/Admin/AdminAddStudent.jsx
-import { useState, useEffect } from "react";
+// src/pages/Admin/AdminStudentsPage.jsx
+import { useEffect, useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import fetch from "../../fetch";
 import toast from "react-hot-toast";
 
-export default function AdminAddStudent() {
+export default function AdminStudentsPage() {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
+
     const [newStudent, setNewStudent] = useState({
         name: "",
         email: "",
@@ -14,7 +15,6 @@ export default function AdminAddStudent() {
         role: "student",
     });
 
-    // Load all students on mount
     useEffect(() => {
         loadStudents();
     }, []);
@@ -23,7 +23,7 @@ export default function AdminAddStudent() {
         try {
             setLoading(true);
             const res = await fetch.get("/admin/students/all");
-            setStudents(Array.isArray(res.data.body) ? res.data.body : []);
+            if (res.data?.body) setStudents(res.data.body);
         } catch (err) {
             console.error("Load students error:", err);
             toast.error(err.response?.data?.message || "Failed to load students");
@@ -32,18 +32,13 @@ export default function AdminAddStudent() {
         }
     };
 
-    const handleChange = (e) => {
-        setNewStudent({ ...newStudent, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const addStudent = async () => {
         if (!newStudent.name || !newStudent.email || !newStudent.password)
             return toast.error("All fields are required");
 
         try {
-            await fetch.post("/admin/students", newStudent);
-            toast.success("Student added successfully!");
+            const res = await fetch.post("/admin/students", newStudent);
+            toast.success("Student added successfully");
             setNewStudent({ name: "", email: "", password: "", role: "student" });
             loadStudents(); // refresh list
         } catch (err) {
@@ -54,54 +49,52 @@ export default function AdminAddStudent() {
 
     return (
         <AdminLayout>
-            <div className="p-6 max-w-4xl mx-auto">
-                <h2 className="text-3xl font-bold mb-6">Add New Student</h2>
+            <div className="p-6 max-w-5xl mx-auto">
+                <h2 className="text-4xl font-bold mb-6">Manage Students</h2>
 
                 {/* Add Student Form */}
-                <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow mb-8 grid gap-4">
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Student Name"
-                        value={newStudent.name}
-                        onChange={handleChange}
-                        className="border p-3 rounded"
-                    />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Student Email"
-                        value={newStudent.email}
-                        onChange={handleChange}
-                        className="border p-3 rounded"
-                    />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        value={newStudent.password}
-                        onChange={handleChange}
-                        className="border p-3 rounded"
-                    />
-                    <select
-                        name="role"
-                        value={newStudent.role}
-                        onChange={handleChange}
-                        className="border p-3 rounded"
-                    >
-                        <option value="student">Student</option>
-                        <option value="admin">Admin</option>
-                    </select>
-
+                <div className="bg-white p-6 rounded-xl shadow mb-8">
+                    <h3 className="text-2xl font-semibold mb-4">Add New Student</h3>
+                    <div className="grid md:grid-cols-4 gap-4">
+                        <input
+                            type="text"
+                            placeholder="Full Name"
+                            className="border p-3 rounded"
+                            value={newStudent.name}
+                            onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })}
+                        />
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            className="border p-3 rounded"
+                            value={newStudent.email}
+                            onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
+                        />
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            className="border p-3 rounded"
+                            value={newStudent.password}
+                            onChange={(e) => setNewStudent({ ...newStudent, password: e.target.value })}
+                        />
+                        <select
+                            className="border p-3 rounded"
+                            value={newStudent.role}
+                            onChange={(e) => setNewStudent({ ...newStudent, role: e.target.value })}
+                        >
+                            <option value="student">Student</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
                     <button
-                        type="submit"
-                        className="bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700"
+                        onClick={addStudent}
+                        className="mt-4 bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700"
                     >
                         Add Student
                     </button>
-                </form>
+                </div>
 
-                {/* Student List */}
+                {/* All Students List */}
                 <div className="bg-white p-6 rounded-xl shadow">
                     <h3 className="text-2xl font-semibold mb-4">All Students</h3>
                     {loading ? (
@@ -109,14 +102,17 @@ export default function AdminAddStudent() {
                     ) : students.length === 0 ? (
                         <p className="text-gray-500">No students found.</p>
                     ) : (
-                        <ul>
+                        <div className="grid md:grid-cols-2 gap-4">
                             {students.map((s) => (
-                                <li key={s._id} className="p-2 border-b flex justify-between">
-                                    <span>{s.name} ({s.email})</span>
-                                    <span className="text-gray-500">{s.role}</span>
-                                </li>
+                                <div key={s._id} className="border p-4 rounded-lg flex justify-between items-center">
+                                    <div>
+                                        <p className="font-bold">{s.name}</p>
+                                        <p className="text-gray-600">{s.email}</p>
+                                        <p className="text-sm text-gray-500">Role: {s.role}</p>
+                                    </div>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     )}
                 </div>
             </div>
