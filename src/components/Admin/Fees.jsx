@@ -1,8 +1,7 @@
-// src/pages/Admin/AdminFeesPage.jsx
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import toast from "react-hot-toast";
-import fetch from "../../fetch"; // axios instance with token
+import fetch from "../../fetch";
 
 export default function AdminFeesPage() {
     const [fees, setFees] = useState([]);
@@ -13,31 +12,36 @@ export default function AdminFeesPage() {
     const [newFee, setNewFee] = useState({ title: "", amount: "", description: "" });
     const [assign, setAssign] = useState({ studentId: "", feeId: "" });
 
-    // Load all data
     useEffect(() => {
         loadAll();
     }, []);
 
+    // Load all data: fees, students, assignments
     const loadAll = async () => {
         try {
             setLoading(true);
+
+            // --- Fetch fees ---
             const fRes = await fetch.get("/fees");
             setFees(Array.isArray(fRes.data) ? fRes.data : []);
 
-            const sRes = await fetch.get("/admin/students/");
+            // --- Fetch students (flat array route) ---
+            const sRes = await fetch.get("/admin/students/all");
             setStudents(Array.isArray(sRes.data) ? sRes.data : []);
 
+            // --- Fetch assignments ---
             const aRes = await fetch.get("/fees/assigned");
             setAssignments(Array.isArray(aRes.data) ? aRes.data : []);
+
         } catch (err) {
-            console.error(err);
+            console.error("Load all error:", err);
             toast.error("Failed to load data");
         } finally {
             setLoading(false);
         }
     };
 
-    // Add Fee
+    // Add new fee
     const addFee = async () => {
         if (!newFee.title || !newFee.amount) return toast.error("Fill all required fields");
         try {
@@ -50,7 +54,7 @@ export default function AdminFeesPage() {
         }
     };
 
-    // Assign Fee
+    // Assign fee to student
     const assignFee = async () => {
         if (!assign.studentId || !assign.feeId) return toast.error("Select student & fee");
         try {
@@ -63,7 +67,7 @@ export default function AdminFeesPage() {
         }
     };
 
-    // Mark Paid
+    // Mark assignment as paid
     const markPaid = async (id) => {
         try {
             await fetch.post(`/fees/pay/${id}`);
@@ -74,14 +78,14 @@ export default function AdminFeesPage() {
         }
     };
 
-    // Delete Fee
+    // Delete fee
     const delFee = async (id) => {
         try {
             await fetch.delete(`/fees/${id}`);
-            toast.success("Fee deleted");
+            toast.success("Deleted fee");
             loadAll();
         } catch (err) {
-            toast.error("Failed to delete fee");
+            toast.error("Failed to delete");
         }
     };
 
@@ -89,14 +93,12 @@ export default function AdminFeesPage() {
 
     return (
         <AdminLayout>
-            <div className="p-6 max-w-6xl mx-auto space-y-8">
+            <div className="p-6 max-w-6xl mx-auto">
+                <h2 className="text-4xl font-bold text-gray-800 mb-6">Fees & Tracking Dashboard</h2>
 
-                {/* Page Title */}
-                <h2 className="text-4xl font-bold text-gray-800">Fees & Tracking Dashboard</h2>
-
-                {/* Add Fee */}
-                <div className="bg-white p-6 rounded-xl shadow space-y-4">
-                    <h3 className="text-2xl font-semibold text-gray-700">Create Fee Type</h3>
+                {/* --- Add Fee --- */}
+                <div className="bg-white p-6 rounded-xl shadow mb-8">
+                    <h3 className="text-2xl font-semibold mb-4 text-gray-700">Create Fee Type</h3>
                     <div className="grid md:grid-cols-3 gap-4">
                         <input
                             type="text"
@@ -114,7 +116,7 @@ export default function AdminFeesPage() {
                         />
                         <input
                             type="text"
-                            placeholder="Description"
+                            placeholder="Description (optional)"
                             className="border p-3 rounded"
                             value={newFee.description}
                             onChange={(e) => setNewFee({ ...newFee, description: e.target.value })}
@@ -122,37 +124,35 @@ export default function AdminFeesPage() {
                     </div>
                     <button
                         onClick={addFee}
-                        className="bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700"
+                        className="mt-4 bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700"
                     >
                         Add Fee
                     </button>
                 </div>
 
-                {/* Assign Fee */}
-                <div className="bg-white p-6 rounded-xl shadow space-y-4">
-                    <h3 className="text-2xl font-semibold text-gray-700">Assign Fee to Student</h3>
+                {/* --- Assign Fee --- */}
+                <div className="bg-white p-6 rounded-xl shadow mb-8">
+                    <h3 className="text-2xl font-semibold mb-4 text-gray-700">Assign Fee to Student</h3>
                     <div className="grid md:grid-cols-3 gap-4">
                         <select
-                            className="border p-3 rounded"
                             value={assign.studentId}
                             onChange={(e) => setAssign({ ...assign, studentId: e.target.value })}
+                            className="border p-3 rounded"
                         >
                             <option value="">Select Student</option>
-                            {students.map((s) => (
-                                <option key={s._id} value={s._id}>{s.name}</option>
+                            {students.map(s => (
+                                <option key={s._id} value={s._id}>{s.name} ({s.email})</option>
                             ))}
                         </select>
 
                         <select
-                            className="border p-3 rounded"
                             value={assign.feeId}
                             onChange={(e) => setAssign({ ...assign, feeId: e.target.value })}
+                            className="border p-3 rounded"
                         >
                             <option value="">Select Fee</option>
-                            {fees.map((f) => (
-                                <option key={f._id} value={f._id}>
-                                    {f.title} – GH₵{f.amount}
-                                </option>
+                            {fees.map(f => (
+                                <option key={f._id} value={f._id}>{f.title} – GH₵{f.amount}</option>
                             ))}
                         </select>
 
@@ -165,19 +165,22 @@ export default function AdminFeesPage() {
                     </div>
                 </div>
 
-                {/* Student Fee Tracking */}
-                <div className="bg-white p-6 rounded-xl shadow space-y-4">
-                    <h3 className="text-2xl font-semibold text-gray-700">Student Fee Tracking</h3>
+                {/* --- Student Fee Tracking --- */}
+                <div className="bg-white p-6 rounded-xl shadow mb-8">
+                    <h3 className="text-2xl font-semibold mb-4 text-gray-700">Student Fee Tracking</h3>
                     {assignments.length === 0 ? (
                         <p className="text-gray-500">No fees assigned yet.</p>
                     ) : (
-                        assignments.map((a) => (
-                            <div key={a._id} className="p-4 border rounded-lg flex justify-between items-center">
+                        assignments.map(a => (
+                            <div
+                                key={a._id}
+                                className="p-4 border rounded-lg flex justify-between items-center mb-3 hover:shadow-lg transition"
+                            >
                                 <div>
                                     <p className="font-bold text-gray-800">{a.student?.name}</p>
                                     <p className="text-gray-600">Fee: {a.fee?.title} – GH₵{a.fee?.amount}</p>
                                     <p className={`font-semibold mt-1 ${a.status === "paid" ? "text-green-600" : "text-red-500"}`}>
-                                        Status: {a.status?.toUpperCase()}
+                                        Status: {a.status?.toUpperCase() || "UNPAID"}
                                     </p>
                                 </div>
                                 {a.status !== "paid" && (
@@ -193,14 +196,17 @@ export default function AdminFeesPage() {
                     )}
                 </div>
 
-                {/* All Fees */}
-                <div className="bg-white p-6 rounded-xl shadow space-y-4">
-                    <h3 className="text-2xl font-semibold text-gray-700">All Fee Types</h3>
+                {/* --- All Fees --- */}
+                <div className="bg-white p-6 rounded-xl shadow">
+                    <h3 className="text-2xl font-semibold mb-4 text-gray-700">All Fee Types</h3>
                     {fees.length === 0 ? (
                         <p className="text-gray-500">No fees created yet.</p>
                     ) : (
-                        fees.map((f) => (
-                            <div key={f._id} className="p-4 border rounded-lg flex justify-between items-center">
+                        fees.map(f => (
+                            <div
+                                key={f._id}
+                                className="p-4 border rounded-lg flex justify-between items-center mb-3 hover:shadow-lg transition"
+                            >
                                 <div>
                                     <p className="font-bold">{f.title}</p>
                                     <p className="text-gray-600">GH₵{f.amount}</p>
@@ -216,7 +222,6 @@ export default function AdminFeesPage() {
                         ))
                     )}
                 </div>
-
             </div>
         </AdminLayout>
     );
