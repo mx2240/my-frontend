@@ -49,7 +49,7 @@ export const getAllCourses = async () => {
 // 2. Create course
 export const createCourse = async (courseData) => {
     try {
-        const res = await api.post("/courses", courseData);
+        const res = await api.post("/courses/create", courseData);
         return safeResponse(res);
     } catch (err) {
         return {

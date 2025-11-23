@@ -28,7 +28,7 @@ export default function AdminFeesPage() {
 
             // --- Fetch students (flat array route) ---
             const sRes = await fetch.get("/admin/students/all");
-            setStudents(JSON.parse(sRes.data) ? sRes.data : []);
+            setStudents(Array.isArray(sRes.data) ? sRes.data : []);
 
             // --- Fetch assignments ---
             const aRes = await fetch.get("/fees/assigned");
