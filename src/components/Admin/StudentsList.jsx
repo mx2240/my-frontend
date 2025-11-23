@@ -19,7 +19,7 @@ export default function StudentsList() {
         try {
             setLoading(true);
             const res = await fetch.get(`/admin/students/all?page=${page}`, {
-                // headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${token}` },
             });
 
             if (res.ok) {
