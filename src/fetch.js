@@ -13,6 +13,8 @@ fetch.interceptors.request.use(
         const token = localStorage.getItem("token"); // ensure you saved JWT in localStorage
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+            localStorage.setItem("token", loginResponse.data.token);
+
         }
         return config;
     },
