@@ -31,7 +31,7 @@ import FeesTracking from './pages/Admin/FeesTracking';
 import AdminFeesPage from './pages/Admin/AdminFeesPage';
 import AddStudent from './pages/Admin/AddStudent';
 import AdminInquiries from './pages/Admin/AdminInquiries';
-import AddCourse from './pages/Admin/AddCourse';
+
 import CourseEnrollment from './pages/Admin/Courses/CourseEnrollment';
 import CoursesList from './pages/Admin/Courses/CoursesList';
 import EditCourse from './pages/Admin/Courses/EditCourse';
@@ -139,7 +139,8 @@ function App() {
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/enrollment" element={<AdminEnrollments />} />
         <Route path="/admin/enrollment/form" element={<AdminEnrollmentForm />} />
-        <Route path="/admin/add-course" element={<AddCourse />} />
+
+
         <Route path="/students" element={<AdminStudents />} />
         <Route path="/courses" element={<AdminCourses />} />
         <Route path="/fees" element={<Fees />} />
