@@ -26,7 +26,7 @@ export default function Register() {
             toast.success("Registration successful!");
 
             // Role-based redirect
-            if (user.role === "admin") navigate("/admin/dashboard");
+            if (user.role === "admin") navigate("/admin/");
             else if (user.role === "student") navigate("/student/dashboard");
             else navigate("/");
         } catch (error) {
