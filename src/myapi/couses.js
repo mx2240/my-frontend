@@ -35,7 +35,7 @@ const safeResponse = (res) => ({
 // 1. Get all courses
 export const getAllCourses = async () => {
     try {
-        const res = await api.get("/courses");
+        const res = await fetch.get("/courses");
         return safeResponse(res);
     } catch (err) {
         return {
@@ -49,7 +49,7 @@ export const getAllCourses = async () => {
 // 2. Create course
 export const createCourse = async (courseData) => {
     try {
-        const res = await api.post("/courses/create", courseData);
+        const res = await fetch.post("/courses/create", courseData);
         return safeResponse(res);
     } catch (err) {
         return {
