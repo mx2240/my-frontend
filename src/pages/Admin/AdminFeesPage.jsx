@@ -35,6 +35,9 @@ export default function AdminFeesPage() {
             const sRes = await fetch.get("/admin/students/all");
             setStudents(Array.isArray(sRes.data) ? sRes.data : []);
 
+
+
+
             loadAssignments(currentPage);
         } catch (err) {
             console.error("Load all error:", err);
