@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import fetch from "../fetch";
+import fetch from "../../fetch"
 import toast from "react-hot-toast";
 
 export default function AdminEnroll() {
