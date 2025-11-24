@@ -29,6 +29,7 @@ export default function AdminFeesPage() {
             const sRes = await fetch.get("/admin/students/all");
             setStudents(Array.isArray(sRes.data) ? sRes.data : []);
 
+
             // Fetch assigned fees
             const aRes = await fetch.get("/fees/assigned");
             // Make sure assignments array exists
