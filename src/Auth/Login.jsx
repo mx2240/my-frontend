@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-const API_URL = "https://my-backend-amber.vercel.app/api/auth/login";
+const API_URL = "/auth/login";
 
 export default function Login() {
     const navigate = useNavigate();

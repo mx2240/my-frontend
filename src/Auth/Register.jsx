@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const API_URL = "https://my-backend-amber.vercel.app/api/auth/register";
+const API_URL = "/auth/register";
 
 export default function Register() {
     const [name, setName] = useState("");
