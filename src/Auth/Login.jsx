@@ -16,9 +16,11 @@ export default function Login() {
 
         try {
             setLoading(true);
-            const res = await fetch.post("/auth/login", formData);
-            const { token, user } = res.data;
-
+            const res = await fetch("/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
             // Save session
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));

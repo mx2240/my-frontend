@@ -25,9 +25,11 @@ export default function Register() {
 
         try {
             setLoading(true);
-            const res = await fetch.post("/auth/register", formData);
-
-            const { token, user } = res.data;
+            const res = await fetch("/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, password })
+            });;
 
             // Save in localStorage
             localStorage.setItem("token", token);
