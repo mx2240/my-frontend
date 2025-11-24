@@ -1,16 +1,17 @@
-// src/pages/Admin/AdminEnrollmentsPage.jsx
+// src/pages/Admin/AdminEnrollment.jsx
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import fetch from "../../fetch";
 import toast from "react-hot-toast";
 
-export default function AdminEnrollmentsPage() {
+export default function AdminEnrollmentPage() {
     const [students, setStudents] = useState([]);
     const [courses, setCourses] = useState([]);
     const [enrollments, setEnrollments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [form, setForm] = useState({ studentId: "", courseId: "" });
+    const [assign, setAssign] = useState({ studentId: "", courseId: "" });
 
+    // Load students, courses, and enrollments
     useEffect(() => {
         loadAll();
     }, []);
@@ -19,35 +20,34 @@ export default function AdminEnrollmentsPage() {
         try {
             setLoading(true);
 
-            const [sRes, cRes, eRes] = await Promise.all([
-                fetch.get("/admin/students/all"),
-                fetch.get("/courses"),
-                fetch.get("/enrollments/admin")
-            ]);
+            const sRes = await fetch.get("/admin/students/all");
+            setStudents(sRes.data.students || []);
 
-            setStudents(Array.isArray(sRes.data.students) ? sRes.data.students : []);
-            setCourses(Array.isArray(cRes.data.body) ? cRes.data.body : []);
-            setEnrollments(Array.isArray(eRes.data.body) ? eRes.data.body : []);
+            const cRes = await fetch.get("/courses");
+            setCourses(cRes.data.body || []);
 
+            const eRes = await fetch.get("/enrollments/admin/enroll");
+            setEnrollments(eRes.data.body || []);
         } catch (err) {
-            console.error("Load error:", err);
-            toast.error(err.response?.data?.message || "Failed to load data");
+            console.error(err);
+            toast.error("Failed to load data");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleEnroll = async () => {
-        if (!form.studentId || !form.courseId) return toast.error("Select student & course");
+    const handleAssign = async () => {
+        if (!assign.studentId || !assign.courseId)
+            return toast.error("Select student and course");
 
         try {
-            await fetch.post("/enrollments/admin/enroll", form);
-            toast.success("Student enrolled!");
-            setForm({ studentId: "", courseId: "" });
+            await fetch.post("/enrollments/admin/enroll", assign);
+            toast.success("Student enrolled successfully");
+            setAssign({ studentId: "", courseId: "" });
             loadAll();
         } catch (err) {
             console.error(err);
-            toast.error(err.response?.data?.message || "Enrollment failed");
+            toast.error(err.response?.data?.message || "Failed to enroll student");
         }
     };
 
@@ -55,68 +55,60 @@ export default function AdminEnrollmentsPage() {
 
     return (
         <AdminLayout>
-            <div className="p-6 max-w-6xl mx-auto">
-                <h2 className="text-4xl font-bold text-gray-800 mb-6">Admin Enrollment</h2>
+            <div className="p-6 max-w-5xl mx-auto">
+                <h2 className="text-3xl font-bold mb-6">Admin Enrollment</h2>
 
-                {/* --- Enroll Student --- */}
-                <div className="bg-white p-6 rounded-xl shadow mb-8">
-                    <h3 className="text-2xl font-semibold mb-4">Enroll Student to Course</h3>
-                    <div className="grid md:grid-cols-3 gap-4">
+                {/* Enrollment Form */}
+                <div className="bg-white p-6 rounded shadow mb-8">
+                    <h3 className="text-2xl font-semibold mb-4">Enroll Student</h3>
+                    <div className="grid md:grid-cols-3 gap-4 mb-4">
                         <select
-                            value={form.studentId}
-                            onChange={(e) => setForm({ ...form, studentId: e.target.value })}
+                            value={assign.studentId}
+                            onChange={(e) => setAssign({ ...assign, studentId: e.target.value })}
                             className="border p-3 rounded"
                         >
                             <option value="">Select Student</option>
                             {students.map((s) => (
-                                <option key={s._id} value={s._id}>{s.name} ({s.email})</option>
+                                <option key={s._id} value={s._id}>{s.user?.name || s.name} ({s.user?.email || s.email})</option>
                             ))}
                         </select>
 
                         <select
-                            value={form.courseId}
-                            onChange={(e) => setForm({ ...form, courseId: e.target.value })}
+                            value={assign.courseId}
+                            onChange={(e) => setAssign({ ...assign, courseId: e.target.value })}
                             className="border p-3 rounded"
                         >
                             <option value="">Select Course</option>
                             {courses.map((c) => (
-                                <option key={c._id} value={c._id}>{c.title}</option>
+                                <option key={c._id} value={c._id}>{c.title} ({c.code})</option>
                             ))}
                         </select>
 
                         <button
-                            onClick={handleEnroll}
-                            className="bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700"
+                            onClick={handleAssign}
+                            className="bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700"
                         >
                             Enroll
                         </button>
                     </div>
                 </div>
 
-                {/* --- Enrollment List --- */}
-                <div className="bg-white p-6 rounded-xl shadow">
-                    <h3 className="text-2xl font-semibold mb-4">Current Enrollments</h3>
+                {/* All Enrollments */}
+                <div className="bg-white p-6 rounded shadow">
+                    <h3 className="text-2xl font-semibold mb-4">All Enrollments</h3>
                     {enrollments.length === 0 ? (
-                        <p className="text-gray-500">No enrollments yet.</p>
+                        <p>No enrollments yet.</p>
                     ) : (
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr>
-                                    <th className="border p-2">Student</th>
-                                    <th className="border p-2">Course</th>
-                                    <th className="border p-2">Enrolled At</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {enrollments.map((e) => (
-                                    <tr key={e._id}>
-                                        <td className="border p-2">{e.student?.name} ({e.student?.email})</td>
-                                        <td className="border p-2">{e.course?.title}</td>
-                                        <td className="border p-2">{new Date(e.createdAt).toLocaleString()}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        <ul className="space-y-2">
+                            {enrollments.map((e) => (
+                                <li key={e._id} className="p-3 border rounded flex justify-between items-center">
+                                    <div>
+                                        <p className="font-bold">{e.student?.user?.name || e.student?.name}</p>
+                                        <p className="text-gray-600">Course: {e.course?.title} ({e.course?.code})</p>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
                     )}
                 </div>
             </div>
