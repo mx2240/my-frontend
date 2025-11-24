@@ -1,117 +1,199 @@
-// src/pages/Admin/AdminEnrollment.jsx
-import React, { useEffect, useState } from "react";
-import AdminLayout from "../../layouts/AdminLayout";
-import fetch from "../../fetch";
+import { useEffect, useState } from "react";
+import fetch from "../fetch";
 import toast from "react-hot-toast";
 
-export default function AdminEnrollmentPage() {
+export default function AdminEnroll() {
     const [students, setStudents] = useState([]);
     const [courses, setCourses] = useState([]);
     const [enrollments, setEnrollments] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [assign, setAssign] = useState({ studentId: "", courseId: "" });
 
-    // Load students, courses, and enrollments
+    const [selectedStudent, setSelectedStudent] = useState("");
+    const [selectedCourse, setSelectedCourse] = useState("");
+
+    const [loading, setLoading] = useState(false);
+
+    // Load students, courses, enrollments
     useEffect(() => {
-        loadAll();
+        loadStudents();
+        loadCourses();
+        loadEnrollments();
     }, []);
 
-    const loadAll = async () => {
+    const loadStudents = async () => {
+        try {
+            const res = await fetch.get("/admin/students/all");
+            setStudents(res.data);
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to load students");
+        }
+    };
+
+    const loadCourses = async () => {
+        try {
+            const res = await fetch.get("/courses/all");
+            setCourses(res.data);
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to load courses");
+        }
+    };
+
+    const loadEnrollments = async () => {
+        try {
+            const res = await fetch.get("/enrollments");
+            setEnrollments(res.data);
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to load enrollments");
+        }
+    };
+
+    const handleEnroll = async () => {
+        if (!selectedStudent || !selectedCourse)
+            return toast.error("Select student & course");
+
         try {
             setLoading(true);
 
-            const sRes = await fetch.get("/admin/students/all");
-            setStudents(sRes.data.students || []);
+            const res = await fetch.post("/enrollments/admin/enroll", {
+                studentId: selectedStudent,
+                courseId: selectedCourse,
+            });
 
-            const cRes = await fetch.get("/courses");
-            setCourses(cRes.data.body || []);
+            toast.success("Enrollment successful!");
 
-            const eRes = await fetch.get("/enrollments/admin/enroll");
-            setEnrollments(eRes.data.body || []);
+            // refresh enrollment list
+            loadEnrollments();
+
+            // reset dropdown
+            setSelectedStudent("");
+            setSelectedCourse("");
         } catch (err) {
             console.error(err);
-            toast.error("Failed to load data");
+            toast.error(err.response?.data?.message || "Enrollment failed");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleAssign = async () => {
-        if (!assign.studentId || !assign.courseId)
-            return toast.error("Select student and course");
-
-        try {
-            await fetch.post("/enrollments/admin/enroll", assign);
-            toast.success("Student enrolled successfully");
-            setAssign({ studentId: "", courseId: "" });
-            loadAll();
-        } catch (err) {
-            console.error(err);
-            toast.error(err.response?.data?.message || "Failed to enroll student");
-        }
-    };
-
-    if (loading) return <AdminLayout><p className="p-6 text-gray-600">Loading...</p></AdminLayout>;
-
     return (
-        <AdminLayout>
-            <div className="p-6 max-w-5xl mx-auto">
-                <h2 className="text-3xl font-bold mb-6">Admin Enrollment</h2>
+        <div style={styles.container}>
+            <div style={styles.card}>
+                <h2 style={styles.title}>Admin Enrollment</h2>
 
-                {/* Enrollment Form */}
-                <div className="bg-white p-6 rounded shadow mb-8">
-                    <h3 className="text-2xl font-semibold mb-4">Enroll Student</h3>
-                    <div className="grid md:grid-cols-3 gap-4 mb-4">
-                        <select
-                            value={assign.studentId}
-                            onChange={(e) => setAssign({ ...assign, studentId: e.target.value })}
-                            className="border p-3 rounded"
-                        >
-                            <option value="">Select Student</option>
-                            {students.map((s) => (
-                                <option key={s._id} value={s._id}>{s.user?.name || s.name} ({s.user?.email || s.email})</option>
-                            ))}
-                        </select>
+                {/* Select Student */}
+                <select
+                    value={selectedStudent}
+                    onChange={(e) => setSelectedStudent(e.target.value)}
+                    style={styles.input}
+                >
+                    <option value="">Select Student</option>
+                    {students.map((s) => (
+                        <option key={s._id} value={s._id}>
+                            {s.name} ({s.email})
+                        </option>
+                    ))}
+                </select>
 
-                        <select
-                            value={assign.courseId}
-                            onChange={(e) => setAssign({ ...assign, courseId: e.target.value })}
-                            className="border p-3 rounded"
-                        >
-                            <option value="">Select Course</option>
-                            {courses.map((c) => (
-                                <option key={c._id} value={c._id}>{c.title} ({c.code})</option>
-                            ))}
-                        </select>
+                {/* Select Course */}
+                <select
+                    value={selectedCourse}
+                    onChange={(e) => setSelectedCourse(e.target.value)}
+                    style={styles.input}
+                >
+                    <option value="">Select Course</option>
+                    {courses.map((c) => (
+                        <option key={c._id} value={c._id}>
+                            {c.title}
+                        </option>
+                    ))}
+                </select>
 
-                        <button
-                            onClick={handleAssign}
-                            className="bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700"
-                        >
-                            Enroll
-                        </button>
-                    </div>
-                </div>
-
-                {/* All Enrollments */}
-                <div className="bg-white p-6 rounded shadow">
-                    <h3 className="text-2xl font-semibold mb-4">All Enrollments</h3>
-                    {enrollments.length === 0 ? (
-                        <p>No enrollments yet.</p>
-                    ) : (
-                        <ul className="space-y-2">
-                            {enrollments.map((e) => (
-                                <li key={e._id} className="p-3 border rounded flex justify-between items-center">
-                                    <div>
-                                        <p className="font-bold">{e.student?.user?.name || e.student?.name}</p>
-                                        <p className="text-gray-600">Course: {e.course?.title} ({e.course?.code})</p>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
+                <button
+                    style={styles.button}
+                    onClick={handleEnroll}
+                    disabled={loading}
+                >
+                    {loading ? "Enrolling..." : "Enroll Student"}
+                </button>
             </div>
-        </AdminLayout>
+
+            {/* ENROLLMENTS LIST */}
+            <div style={styles.tableCard}>
+                <h3>All Enrollments</h3>
+
+                {enrollments.length === 0 ? (
+                    <p>No enrollments yet.</p>
+                ) : (
+                    <table style={styles.table}>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Course</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {enrollments.map((en) => (
+                                <tr key={en._id}>
+                                    <td>{en.student?.name}</td>
+                                    <td>{en.course?.title}</td>
+                                    <td>{new Date(en.createdAt).toLocaleDateString()}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+        </div>
     );
 }
+
+const styles = {
+    container: {
+        display: "flex",
+        padding: "20px",
+        gap: "20px",
+    },
+    card: {
+        width: "350px",
+        padding: "20px",
+        background: "#fff",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "15px",
+    },
+    tableCard: {
+        flex: 1,
+        padding: "20px",
+        background: "#fff",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+    },
+    title: { textAlign: "center" },
+    input: {
+        padding: "12px",
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+    },
+    button: {
+        padding: "12px",
+        background: "#2563eb",
+        color: "#fff",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontSize: "16px",
+    },
+    table: {
+        width: "100%",
+        borderCollapse: "collapse",
+    },
+    thtd: {
+        border: "1px solid #ddd",
+        padding: "8px",
+    },
+};
