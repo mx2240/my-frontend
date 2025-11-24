@@ -1,47 +1,51 @@
-// src/pages/Admin/AdminAddStudent.jsx
-import React, { useEffect, useState } from "react";
-import AdminLayout from "../../layouts/AdminLayout";
+import { useState, useEffect } from "react";
+import fetch from "../fetch";
 import toast from "react-hot-toast";
-import fetch from "../../fetch";
 
-export default function AdminAddStudentPage() {
+export default function AdminAddStudent() {
     const [students, setStudents] = useState([]);
-    const [formData, setFormData] = useState({ name: "", email: "", password: "" });
     const [loading, setLoading] = useState(false);
-    const [loadingStudents, setLoadingStudents] = useState(true);
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        studentClass: "",
+        phone: "",
+    });
 
-    // Load all students
-    useEffect(() => {
-        loadStudents();
-    }, []);
-
+    // Fetch all students for table
     const loadStudents = async () => {
         try {
-            setLoadingStudents(true);
-            const res = await fetch.get("/admin/students/all");
-            setStudents(res.data.students || []);
+            const res = await fetch.get("/admin/students");
+            if (res.data.ok) setStudents(res.data.students);
         } catch (err) {
             console.error(err);
             toast.error("Failed to load students");
-        } finally {
-            setLoadingStudents(false);
         }
     };
+
+    useEffect(() => {
+        loadStudents();
+    }, []);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const addStudent = async () => {
-        if (!formData.name || !formData.email || !formData.password) {
-            return toast.error("All fields are required");
-        }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!formData.name || !formData.email)
+            return toast.error("Name and email are required");
+
         try {
             setLoading(true);
             const res = await fetch.post("/admin/students", formData);
-            toast.success("Student added successfully");
-            setFormData({ name: "", email: "", password: "" });
-            loadStudents();
+
+            if (res.data.ok) {
+                toast.success("Student added successfully");
+                setFormData({ name: "", email: "", password: "", studentClass: "", phone: "" });
+                loadStudents(); // refresh table
+            }
         } catch (err) {
             console.error(err);
             toast.error(err.response?.data?.message || "Failed to add student");
@@ -51,66 +55,93 @@ export default function AdminAddStudentPage() {
     };
 
     return (
-        <AdminLayout>
-            <div className="p-6 max-w-4xl mx-auto">
-                <h2 className="text-3xl font-bold mb-6">Add Student</h2>
+        <div style={{ padding: "20px" }}>
+            <h2>Admin: Add Student</h2>
 
-                {/* Add Student Form */}
-                <div className="bg-white p-6 rounded shadow mb-8">
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Full Name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="border p-3 rounded w-full mb-4"
-                    />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="border p-3 rounded w-full mb-4"
-                    />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="border p-3 rounded w-full mb-4"
-                    />
-                    <button
-                        onClick={addStudent}
-                        className="bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700"
-                        disabled={loading}
-                    >
-                        {loading ? "Adding..." : "Add Student"}
-                    </button>
-                </div>
+            <form onSubmit={handleSubmit} style={styles.form}>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Full Name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Password (optional)"
+                    value={formData.password}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
+                <input
+                    type="text"
+                    name="studentClass"
+                    placeholder="Class"
+                    value={formData.studentClass}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
+                <input
+                    type="text"
+                    name="phone"
+                    placeholder="Phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
+                <button type="submit" style={styles.button} disabled={loading}>
+                    {loading ? "Adding..." : "Add Student"}
+                </button>
+            </form>
 
-                {/* All Students */}
-                <div className="bg-white p-6 rounded shadow">
-                    <h3 className="text-2xl font-semibold mb-4">All Students</h3>
-                    {loadingStudents ? (
-                        <p>Loading students...</p>
-                    ) : students.length === 0 ? (
-                        <p>No students found.</p>
+            <h3 style={{ marginTop: "30px" }}>All Students</h3>
+            <table style={styles.table}>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Class</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {students.length === 0 ? (
+                        <tr>
+                            <td colSpan={4} style={{ textAlign: "center" }}>
+                                No students found
+                            </td>
+                        </tr>
                     ) : (
-                        <ul className="space-y-2">
-                            {students.map((s) => (
-                                <li key={s._id} className="p-3 border rounded flex justify-between items-center">
-                                    <div>
-                                        <p className="font-bold">{s.user?.name || s.name}</p>
-                                        <p className="text-gray-600">{s.user?.email || s.email}</p>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
+                        students.map((s) => (
+                            <tr key={s._id}>
+                                <td>{s.name || s.user?.name}</td>
+                                <td>{s.email || s.user?.email}</td>
+                                <td>{s.studentClass || "-"}</td>
+                                <td>{s.phone || "-"}</td>
+                            </tr>
+                        ))
                     )}
-                </div>
-            </div>
-        </AdminLayout>
+                </tbody>
+            </table>
+        </div>
     );
 }
+
+const styles = {
+    form: { display: "flex", flexDirection: "column", gap: "10px", maxWidth: "400px" },
+    input: { padding: "10px", borderRadius: "6px", border: "1px solid #ccc", fontSize: "16px" },
+    button: { padding: "10px", background: "#2563eb", color: "#fff", borderRadius: "6px", cursor: "pointer", border: "none", fontSize: "16px" },
+    table: { width: "100%", borderCollapse: "collapse", marginTop: "15px" },
+    th: { borderBottom: "1px solid #ccc", padding: "8px", textAlign: "left" },
+    td: { borderBottom: "1px solid #eee", padding: "8px" },
+};
