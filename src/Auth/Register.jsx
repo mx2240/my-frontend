@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import fetch from "../fetch";
 import toast from "react-hot-toast";
 
 const API_URL = "/auth/register";
@@ -14,7 +14,7 @@ export default function Register() {
         e.preventDefault();
 
         try {
-            const res = await axios.post(API_URL, {
+            const res = await fetch.post(API_URL, {
                 name,
                 email,
                 password,

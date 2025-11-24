@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import fetch from "../fetch";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -15,7 +15,7 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const res = await axios.post(API_URL, { email, password });
+            const res = await fetch.post(API_URL, { email, password });
 
             toast.success("Login successful");
 
