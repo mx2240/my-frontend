@@ -19,7 +19,7 @@ export default function AdminAddStudentPage() {
         try {
             setLoadingStudents(true);
             const res = await fetch.get("/admin/students/all");
-            setStudents(Array.isArray(sRes.data) ? res.data : []);
+            setStudents(res.data.students || []);
         } catch (err) {
             console.error(err);
             toast.error("Failed to load students");
