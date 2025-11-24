@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { API_BASE } from "../config/api";
+import { API_BASE } from "../api"
 
 export default function Login() {
     const navigate = useNavigate();
