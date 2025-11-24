@@ -1,63 +1,75 @@
 import { useState } from "react";
-import fetch from "../fetch";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 export default function Login() {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({ email: "", password: "" });
-    const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+    const [form, setForm] = useState({
+        email: "",
+        password: "",
+    });
+
+    const handleChange = (e) =>
+        setForm({ ...form, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.email || !formData.password) return toast.error("Email and password are required");
 
         try {
-            setLoading(true);
-            const res = await fetch("/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
-            // Save session
+            const res = await axios.post(
+                "/auth/login",
+                form
+            );
+
+            const { user, token } = res.data;
+
+            // Save token + user
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
 
-            toast.success("Login successful!");
+            toast.success(`Welcome back, ${user.name}!`);
 
-            // Role-based redirect
-            if (user.role === "admin") navigate("/admin/");
-            else if (user.role === "student") navigate("/student/dashboard");
-            else navigate("/"); // fallback
-        } catch (error) {
-            console.error(error);
-            toast.error(error.response?.data?.message || "Login failed");
-        } finally {
-            setLoading(false);
+            // ROLE REDIRECT
+            if (user.role === "admin") {
+                return navigate("/admin/dashboard");
+            } else if (user.role === "teacher") {
+                return navigate("/teacher/dashboard");
+            } else {
+                return navigate("/student/dashboard");
+            }
+
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Login failed");
         }
     };
 
     return (
-        <div style={styles.container}>
-            <form style={styles.card} onSubmit={handleSubmit}>
-                <h2 style={styles.title}>Login</h2>
-                <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} style={styles.input} />
-                <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} style={styles.input} />
-                <button type="submit" style={styles.button} disabled={loading}>
-                    {loading ? "Logging in..." : "Login"}
-                </button>
+        <div className="auth-container">
+            <h2>Login</h2>
+
+            <form onSubmit={handleSubmit}>
+                <input
+                    name="email"
+                    placeholder="Email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    required
+                />
+
+                <input
+                    name="password"
+                    placeholder="Password"
+                    type="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    required
+                />
+
+                <button type="submit">Login</button>
             </form>
         </div>
     );
 }
-
-// Inline styles (reuse from your example)
-const styles = {
-    container: { height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", background: "#f1f5f9" },
-    card: { width: "350px", padding: "25px", borderRadius: "12px", background: "#fff", boxShadow: "0 5px 15px rgba(0,0,0,0.1)", display: "flex", flexDirection: "column", gap: "15px" },
-    title: { textAlign: "center", marginBottom: "10px" },
-    input: { padding: "12px", border: "1px solid #ccc", borderRadius: "8px", fontSize: "16px" },
-    button: { padding: "12px", background: "#2563eb", color: "#fff", fontSize: "17px", borderRadius: "8px", cursor: "pointer", border: "none" },
-};
