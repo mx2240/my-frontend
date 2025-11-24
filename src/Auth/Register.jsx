@@ -1,20 +1,19 @@
 import { useState } from "react";
-import fetch from "../fetch";
+import axios from "axios";
 import toast from "react-hot-toast";
-
-const API_URL = "/auth/register";
+import { API_BASE } from "../config/api";
 
 export default function Register() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
-    const [role, setRole] = useState("student"); // default
+    const [role, setRole] = useState("student");
     const [password, setPassword] = useState("");
 
     const onSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const res = await fetch.post(API_URL, {
+            const res = await axios.post(`${API_BASE}/auth/register`, {
                 name,
                 email,
                 password,

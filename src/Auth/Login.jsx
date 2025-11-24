@@ -1,9 +1,8 @@
 import { useState } from "react";
-import fetch from "../fetch";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
-const API_URL = "/auth/login";
+import { API_BASE } from "../config/api";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -15,7 +14,10 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const res = await fetch.post(API_URL, { email, password });
+            const res = await axios.post(`${API_BASE}/auth/login`, {
+                email,
+                password,
+            });
 
             toast.success("Login successful");
 
@@ -24,7 +26,6 @@ export default function Login() {
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
 
-            // === ROLE-BASED REDIRECT ===
             if (user.role === "admin") {
                 navigate("/admin/dashboard");
             } else if (user.role === "student") {
