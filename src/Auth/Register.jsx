@@ -1,79 +1,63 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-export default function Registration() {
-    const navigate = useNavigate();
+const API_URL = "https://my-backend-amber.vercel.app/api/auth/register";
 
-    const [form, setForm] = useState({
-        name: "",
-        email: "",
-        password: "",
-        role: "student",
-    });
+export default function Register() {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [role, setRole] = useState("student"); // default
+    const [password, setPassword] = useState("");
 
-    const handleChange = (e) =>
-        setForm({ ...form, [e.target.name]: e.target.value });
-
-    const handleSubmit = async (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const res = await axios.post(
-                "/auth/register",
-                form
-            );
+            const res = await axios.post(API_URL, {
+                name,
+                email,
+                password,
+                role,
+            });
 
-            toast.success("Registration successful!");
-            navigate("/login");
+            toast.success("Registration successful! You can now login.");
         } catch (err) {
-            toast.error(
-                err.response?.data?.message || "Registration failed, try again"
-            );
+            toast.error(err.response?.data?.message || "Registration failed");
         }
     };
 
     return (
-        <div className="auth-container">
-            <h2>Register</h2>
+        <form onSubmit={onSubmit}>
+            <h2>Create Account</h2>
 
-            <form onSubmit={handleSubmit}>
-                <input
-                    name="name"
-                    placeholder="Full Name"
-                    value={form.name}
-                    onChange={handleChange}
-                    required
-                />
+            <input
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+            />
 
-                <input
-                    name="email"
-                    placeholder="Email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    required
-                />
+            <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+            />
 
-                <input
-                    name="password"
-                    placeholder="Password"
-                    type="password"
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                />
+            <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+            />
 
-                {/* ROLE SELECT */}
-                <select name="role" value={form.role} onChange={handleChange}>
-                    <option value="student">Student</option>
-                    <option value="admin">Admin</option>
-                    <option value="teacher">Teacher</option>
-                </select>
+            <select value={role} onChange={(e) => setRole(e.target.value)}>
+                <option value="student">Student</option>
+                <option value="admin">Admin</option>
+            </select>
 
-                <button type="submit">Register</button>
-            </form>
-        </div>
+            <button type="submit">Register</button>
+        </form>
     );
 }

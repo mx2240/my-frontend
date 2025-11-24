@@ -3,73 +3,59 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
+const API_URL = "https://my-backend-amber.vercel.app/api/auth/login";
+
 export default function Login() {
     const navigate = useNavigate();
 
-    const [form, setForm] = useState({
-        email: "",
-        password: "",
-    });
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const handleChange = (e) =>
-        setForm({ ...form, [e.target.name]: e.target.value });
-
-    const handleSubmit = async (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const res = await axios.post(
-                "/auth/login",
-                form
-            );
+            const res = await axios.post(API_URL, { email, password });
 
-            const { user, token } = res.data;
+            toast.success("Login successful");
 
-            // Save token + user
+            const { token, user } = res.data;
+
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
 
-            toast.success(`Welcome back, ${user.name}!`);
-
-            // ROLE REDIRECT
+            // === ROLE-BASED REDIRECT ===
             if (user.role === "admin") {
-                return navigate("/admin/dashboard");
-            } else if (user.role === "teacher") {
-                return navigate("/teacher/dashboard");
+                navigate("/admin/dashboard");
+            } else if (user.role === "student") {
+                navigate("/student/dashboard");
             } else {
-                return navigate("/student/dashboard");
+                navigate("/");
             }
-
         } catch (err) {
             toast.error(err.response?.data?.message || "Login failed");
         }
     };
 
     return (
-        <div className="auth-container">
+        <form onSubmit={onSubmit}>
             <h2>Login</h2>
 
-            <form onSubmit={handleSubmit}>
-                <input
-                    name="email"
-                    placeholder="Email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    required
-                />
+            <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+            />
 
-                <input
-                    name="password"
-                    placeholder="Password"
-                    type="password"
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                />
+            <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+            />
 
-                <button type="submit">Login</button>
-            </form>
-        </div>
+            <button type="submit">Login</button>
+        </form>
     );
 }
