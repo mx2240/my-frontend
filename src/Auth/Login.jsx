@@ -1,12 +1,11 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { API_BASE } from "../api"
+
+const BACKEND_URL = "https://my-backend-amber.vercel.app/api";
 
 export default function Login() {
     const navigate = useNavigate();
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -14,27 +13,35 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const res = await axios.post(`${API_BASE}/auth/login`, {
-                email,
-                password,
+            const res = await fetch(`${BACKEND_URL}/auth/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
             });
 
-            toast.success("Login successful");
+            const data = await res.json();
 
-            const { token, user } = res.data;
+            if (!res.ok) {
+                toast.error(data.message || "Login failed");
+                return;
+            }
 
-            localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(user));
+            toast.success("Login successful!");
 
-            if (user.role === "admin") {
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+
+            if (data.user.role === "admin") {
                 navigate("/admin/dashboard");
-            } else if (user.role === "student") {
+            } else if (data.user.role === "student") {
                 navigate("/student/dashboard");
             } else {
                 navigate("/");
             }
         } catch (err) {
-            toast.error(err.response?.data?.message || "Login failed");
+            toast.error("Network error");
         }
     };
 

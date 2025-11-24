@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
-import { API_BASE } from "../api"
+
+const BACKEND_URL = "https://my-backend-amber.vercel.app/api";
 
 export default function Register() {
     const [name, setName] = useState("");
@@ -13,16 +13,24 @@ export default function Register() {
         e.preventDefault();
 
         try {
-            const res = await axios.post(`${API_BASE}/auth/register`, {
-                name,
-                email,
-                password,
-                role,
+            const res = await fetch(`${BACKEND_URL}/auth/register`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name, email, password, role }),
             });
 
-            toast.success("Registration successful! You can now login.");
+            const data = await res.json();
+
+            if (!res.ok) {
+                toast.error(data.message || "Registration failed");
+                return;
+            }
+
+            toast.success("Account created successfully! You can now login.");
         } catch (err) {
-            toast.error(err.response?.data?.message || "Registration failed");
+            toast.error("Network error");
         }
     };
 
