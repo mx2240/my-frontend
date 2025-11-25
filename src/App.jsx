@@ -5,7 +5,8 @@ import './css/LandingPage.css';
 import './css/Login.css';
 import './css/Auth.css';
 import './css/Register.css';
-// import './css/StudentDashboard.css';
+import './css/Fees.css';
+
 
 
 
@@ -22,22 +23,19 @@ import Students from './pages/Students';
 import Ad from './components/AdminDasbord/Ad';
 import AdminStudents from './pages/Admin/AdminStudents';
 import AdminCourses from './pages/Admin/AdminCourses';
-import AdminEnrollments from './pages/Admin/AdminEnrollments';
-
+import AdminEnrollments from './pages/Admin/AdminEnrollments'
 import Notifications from './components/Admin/Notification';
-
-import FeesTracking from './pages/Admin/FeeTracking';
-import AdminFeesPage from './pages/Admin/AdminFeesPage';
-import AssignFee from './pages/Admin/AssignFee';
 import AddStudent from './pages/Admin/AddStudent';
 import AdminInquiries from './pages/Admin/AdminInquiries';
+import AdminfeesPage from "./pages/Admin/AdminFeesPage"
+import FeeTracking from './pages/Admin/FeeTracking';
+import AssignFees from './pages/Admin/AssignFees';
 
 import CourseEnrollment from './pages/Admin/Courses/CourseEnrollment';
 import CoursesList from './pages/Admin/Courses/CoursesList';
 import EditCourse from './pages/Admin/Courses/EditCourse';
 import DeleteCourseModal from './pages/Admin/Courses/DeleteCourseModal';
-import StudentForm from './components/Admin/StudentForm';
-import StudentList from './components/Admin/StudentsList';
+
 
 
 
@@ -50,7 +48,7 @@ import { AuthProvider } from "./context/AuthContext";
 
 import LandingPage from './pages/LandingPage';
 
-import Env from './components/Env';
+
 
 
 
@@ -138,8 +136,13 @@ function App() {
         <Route path="/admin/students" element={<Students />} />
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/enrollment" element={<AdminEnrollments />} />
-        <Route path="/Fees-Tracking" element={<FeesTracking />} />
-        <Route path="/Asignfees" element={<AssignFee />} />
+        <Route path="/admin/fees" element={<AdminfeesPage />} />
+        <Route path="/admin/feetracking" element={<FeeTracking />} />
+        <Route path="/admin/assignfees" element={<AssignFees />} />
+
+
+
+
 
 
 
@@ -149,11 +152,7 @@ function App() {
 
         <Route path="/students" element={<AdminStudents />} />
         <Route path="/courses" element={<AdminCourses />} />
-        <Route path="/fees" element={<Fees />} />
         <Route path="/notifications" element={<Notifications />} />
-        <Route path="/fees-tracking" element={<FeesTracking />} />
-        <Route path="/fees-page" element={<AdminFeesPage />} />
-        <Route path="/fee" element={<AdminFees />} />
         <Route path="/add-student" element={<AddStudent />} />
         <Route path="/inquiries" element={<AdminInquiries />} />
         <Route path="/course-enrollment" element={<CourseEnrollment />} />

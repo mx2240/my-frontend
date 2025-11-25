@@ -93,28 +93,29 @@ const AdminSidebar = () => {
 
                 <li>
                     <Link
-                        to="/fees-page"
+                        to="/admin/fees"
                         className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
                     >
                         <FaMoneyBill /> Fees & Payments
                     </Link>
 
-                    {/* <Link
-                        to="/fees-page"
+                    <Link
+                        to="/admin/assignfees"
                         className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
                     >
                         <FaMoneyBill /> Assign fees
-                    </Link> */}
+                    </Link>
 
-                    {/* <Link
-                        to="/fees-tracking"
+                    <Link
+                        to="/admin/feetracking"
                         className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
                     >
                         <FaMoneyBill /> Fees Tracking
-                    </Link> */}
+                    </Link>
+
                     {/* <Link
                         to="/fee"
                         className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
