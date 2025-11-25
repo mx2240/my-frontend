@@ -1,101 +1,159 @@
-import { useState } from "react";
-import fetch from "../../fetch"
+import { useState, useEffect } from "react";
+import api from "../../lib/api"
 import toast from "react-hot-toast";
 
-export default function AddStudent() {
-    const [student, setStudent] = useState({
+export default function AdminAddStudent() {
+    const [students, setStudents] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
         name: "",
         email: "",
+        password: "",
+        studentClass: "",
         phone: "",
-        program: "",
     });
 
+    // Fetch all students
+    const loadStudents = async () => {
+        try {
+            const res = await api.get("/admin/students"); // ✅ FIXED
+            if (res.data.ok) {
+                setStudents(res.data.body); // backend returns body
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to load students");
+        }
+    };
+
+    useEffect(() => {
+        loadStudents();
+    }, []);
+
     const handleChange = (e) => {
-        setStudent({
-            ...student,
-            [e.target.name]: e.target.value,
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        try {
-            const res = await fetch.post(
-                "https://my-backend-amber.vercel.app/api/students/",
-                student,
-                { withCredentials: true }
-            );
+        if (!formData.name || !formData.email)
+            return toast.error("Name and email are required");
 
-            toast.success("Student added successfully!");
-            setStudent({
+        try {
+            setLoading(true);
+
+            const res = await api.post("/students", formData); // ✅ FIXED
+
+            toast.success("Student added successfully");
+            setFormData({
                 name: "",
                 email: "",
+                password: "",
+                studentClass: "",
                 phone: "",
-                program: "",
             });
+
+            loadStudents();
         } catch (err) {
+            console.error(err);
             toast.error(err.response?.data?.message || "Failed to add student");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
-            <div className="w-full max-w-lg bg-white shadow-lg rounded-2xl p-8">
-                <h2 className="text-2xl font-bold text-center mb-6">
-                    Add New Student
-                </h2>
+        <div style={{ padding: "20px" }}>
+            <h2>Admin: Add Student</h2>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} style={styles.form}>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Full Name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
 
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Full Name"
-                        value={student.name}
-                        onChange={handleChange}
-                        className="w-full p-3 border rounded-lg"
-                        required
-                    />
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
 
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email Address"
-                        value={student.email}
-                        onChange={handleChange}
-                        className="w-full p-3 border rounded-lg"
-                        required
-                    />
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
 
-                    <input
-                        type="text"
-                        name="phone"
-                        placeholder="Phone Number"
-                        value={student.phone}
-                        onChange={handleChange}
-                        className="w-full p-3 border rounded-lg"
-                        required
-                    />
+                <input
+                    type="text"
+                    name="studentClass"
+                    placeholder="Class"
+                    value={formData.studentClass}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
 
-                    <input
-                        type="text"
-                        name="program"
-                        placeholder="Program / Course"
-                        value={student.program}
-                        onChange={handleChange}
-                        className="w-full p-3 border rounded-lg"
-                        required
-                    />
+                <input
+                    type="text"
+                    name="phone"
+                    placeholder="Phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
 
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
-                    >
-                        Add Student
-                    </button>
-                </form>
-            </div>
+                <button type="submit" style={styles.button} disabled={loading}>
+                    {loading ? "Adding..." : "Add Student"}
+                </button>
+            </form>
+
+            <h3 style={{ marginTop: "30px" }}>All Students</h3>
+
+            <table style={styles.table}>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Class</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {students.length === 0 ? (
+                        <tr>
+                            <td colSpan={4}>No students found</td>
+                        </tr>
+                    ) : (
+                        students.map((s) => (
+                            <tr key={s._id}>
+                                <td>{s.name}</td>
+                                <td>{s.email}</td>
+                                <td>{s.studentClass}</td>
+                                <td>{s.phone}</td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+            </table>
         </div>
     );
 }
+
+const styles = {
+    form: { display: "flex", flexDirection: "column", gap: "10px" },
+    input: { padding: "10px", borderRadius: "6px", border: "1px solid #ccc" },
+    button: { padding: "10px", background: "#2563eb", color: "#fff", borderRadius: "6px" },
+    table: { width: "100%", borderCollapse: "collapse", marginTop: "20px" },
+};
