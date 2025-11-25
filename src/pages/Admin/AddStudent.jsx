@@ -16,7 +16,7 @@ function StudentPage() {
     }, []);
 
     const loadStudents = async () => {
-        const res = await axios.get("/api/students");
+        const res = await fetch.get("/api/students");
         setStudents(res.data.students || []);
     };
 
