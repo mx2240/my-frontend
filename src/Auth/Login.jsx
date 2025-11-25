@@ -1,5 +1,5 @@
 import { useState } from "react";
-import fetch from "../../fetch";
+import fetch from '../fetch'
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
