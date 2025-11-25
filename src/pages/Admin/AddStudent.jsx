@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import fetch from "../../fetch"
 import toast from "react-hot-toast";
 
 export default function AddStudent() {
@@ -21,7 +21,7 @@ export default function AddStudent() {
         e.preventDefault();
 
         try {
-            const res = await axios.post(
+            const res = await fetch.post(
                 "https://my-backend-amber.vercel.app/api/students",
                 student,
                 { withCredentials: true }
