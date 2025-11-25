@@ -38,7 +38,7 @@ export default function AdminEnroll() {
     // ----------------------
     const loadCourses = async () => {
         try {
-            const res = await api.get("/courses/all");
+            const res = await api.get("/courses");
 
             setCourses(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
