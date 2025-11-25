@@ -23,7 +23,7 @@ export default function AdminAddStudent() {
         if (!form.name || !form.email) return toast.error("Name & email required");
         try {
             setLoading(true);
-            const res = await fetch.post("/admin/students", form);
+            const res = await fetch.post("/students", form);
             if (res.data?.ok) {
                 toast.success("Student created");
                 setForm({ name: "", email: "", password: "", studentClass: "", phone: "" });
