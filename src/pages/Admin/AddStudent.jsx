@@ -16,7 +16,7 @@ function StudentPage() {
     }, []);
 
     const loadStudents = async () => {
-        const res = await fetch.get("/api/students");
+        const res = await fetch.get("/student");
         setStudents(res.data.students || []);
     };
 
