@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import api from '../../lib/api'
+import api from '../../fetch'
 import toast from "react-hot-toast";
 
 export default function AdminAddStudent() {
@@ -157,3 +157,4 @@ const styles = {
     button: { padding: "10px", background: "#2563eb", color: "#fff", borderRadius: "6px" },
     table: { width: "100%", borderCollapse: "collapse", marginTop: "20px" },
 };
+
