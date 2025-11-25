@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import fetch from "../../fetch"
+import api from "../../fetch";   // <-- ensure this is your axios instance
 import toast from "react-hot-toast";
 
 export default function AdminEnroll() {
@@ -12,43 +12,60 @@ export default function AdminEnroll() {
 
     const [loading, setLoading] = useState(false);
 
-    // Load students, courses, enrollments
     useEffect(() => {
         loadStudents();
         loadCourses();
         loadEnrollments();
     }, []);
 
+    // ----------------------
+    // LOAD STUDENTS (SAFE)
+    // ----------------------
     const loadStudents = async () => {
         try {
-            const res = await fetch.get("/admin/students/all");
-            setStudents(res.data);
+            const res = await api.get("/admin/students/all");
+
+            setStudents(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error(err);
             toast.error("Failed to load students");
+            setStudents([]); // prevent undefined
         }
     };
 
+    // ----------------------
+    // LOAD COURSES (SAFE)
+    // ----------------------
     const loadCourses = async () => {
         try {
-            const res = await fetch.get("/courses/all");
-            setCourses(res.data);
+            const res = await api.get("/courses/all");
+
+            setCourses(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error(err);
             toast.error("Failed to load courses");
+            setCourses([]); // prevent undefined
         }
     };
 
+    // ----------------------
+    // LOAD ENROLLMENTS (SAFE)
+    // ----------------------
     const loadEnrollments = async () => {
         try {
-            const res = await fetch.get("/enrollments");
-            setEnrollments(res.data);
+            const res = await api.get("/enrollments");
+
+            setEnrollments(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error(err);
             toast.error("Failed to load enrollments");
+            setEnrollments([]);
         }
     };
 
+    // ----------------------
+    // HANDLE ENROLL
+    // ----------------------
     const handleEnroll = async () => {
         if (!selectedStudent || !selectedCourse)
             return toast.error("Select student & course");
@@ -56,17 +73,14 @@ export default function AdminEnroll() {
         try {
             setLoading(true);
 
-            const res = await fetch.post("/enrollments/admin/enroll", {
+            await api.post("/enrollments/admin/enroll", {
                 studentId: selectedStudent,
                 courseId: selectedCourse,
             });
 
             toast.success("Enrollment successful!");
 
-            // refresh enrollment list
             loadEnrollments();
-
-            // reset dropdown
             setSelectedStudent("");
             setSelectedCourse("");
         } catch (err) {
@@ -77,6 +91,9 @@ export default function AdminEnroll() {
         }
     };
 
+    // ----------------------
+    // UI
+    // ----------------------
     return (
         <div style={styles.container}>
             <div style={styles.card}>
@@ -89,7 +106,8 @@ export default function AdminEnroll() {
                     style={styles.input}
                 >
                     <option value="">Select Student</option>
-                    {students.map((s) => (
+
+                    {(students || []).map((s) => (
                         <option key={s._id} value={s._id}>
                             {s.name} ({s.email})
                         </option>
@@ -103,7 +121,8 @@ export default function AdminEnroll() {
                     style={styles.input}
                 >
                     <option value="">Select Course</option>
-                    {courses.map((c) => (
+
+                    {(courses || []).map((c) => (
                         <option key={c._id} value={c._id}>
                             {c.title}
                         </option>
@@ -119,11 +138,11 @@ export default function AdminEnroll() {
                 </button>
             </div>
 
-            {/* ENROLLMENTS LIST */}
+            {/* ENROLLMENTS TABLE */}
             <div style={styles.tableCard}>
                 <h3>All Enrollments</h3>
 
-                {enrollments.length === 0 ? (
+                {(enrollments || []).length === 0 ? (
                     <p>No enrollments yet.</p>
                 ) : (
                     <table style={styles.table}>
@@ -135,11 +154,15 @@ export default function AdminEnroll() {
                             </tr>
                         </thead>
                         <tbody>
-                            {enrollments.map((en) => (
+                            {(enrollments || []).map((en) => (
                                 <tr key={en._id}>
-                                    <td>{en.student?.name}</td>
-                                    <td>{en.course?.title}</td>
-                                    <td>{new Date(en.createdAt).toLocaleDateString()}</td>
+                                    <td>{en.student?.name || "N/A"}</td>
+                                    <td>{en.course?.title || "N/A"}</td>
+                                    <td>
+                                        {en.createdAt
+                                            ? new Date(en.createdAt).toLocaleDateString()
+                                            : "N/A"}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -150,6 +173,9 @@ export default function AdminEnroll() {
     );
 }
 
+// ----------------------
+// STYLES
+// ----------------------
 const styles = {
     container: {
         display: "flex",
@@ -191,9 +217,5 @@ const styles = {
     table: {
         width: "100%",
         borderCollapse: "collapse",
-    },
-    thtd: {
-        border: "1px solid #ddd",
-        padding: "8px",
     },
 };
