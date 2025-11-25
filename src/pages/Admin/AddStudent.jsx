@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import fetch from "../../fetch";
 import toast from "react-hot-toast";
 import AdminLayout from "../../layouts/AdminLayout";
 
@@ -19,7 +19,7 @@ export default function AdminAddStudent() {
     // -------------------------
     const loadStudents = async () => {
         try {
-            const res = await axios.get("/admin/students"); // ✅ matches admin route
+            const res = await fetch.get("/admin/students"); // ✅ matches admin route
             if (res.data.ok) setStudents(res.data.body);
         } catch (err) {
             console.error(err);
