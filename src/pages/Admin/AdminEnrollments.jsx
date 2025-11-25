@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import api from "../../fetch";   // <-- ensure this is your axios instance
+import api from "../../fetch"; // your axios instance
 import toast from "react-hot-toast";
+import AdminLayout from "../../layouts/AdminLayout";
 
 export default function AdminEnroll() {
     const [students, setStudents] = useState([]);
@@ -9,63 +10,45 @@ export default function AdminEnroll() {
 
     const [selectedStudent, setSelectedStudent] = useState("");
     const [selectedCourse, setSelectedCourse] = useState("");
-
     const [loading, setLoading] = useState(false);
 
+    // Load students, courses, enrollments
     useEffect(() => {
         loadStudents();
         loadCourses();
         loadEnrollments();
     }, []);
 
-    // ----------------------
-    // LOAD STUDENTS (SAFE)
-    // ----------------------
     const loadStudents = async () => {
         try {
-            const res = await api.get("/admin/students/all");
-
-            setStudents(Array.isArray(res.data) ? res.data : []);
+            const res = await api.get("/admin/students"); // ✅ correct route
+            if (res.data.ok) setStudents(res.data.body);
         } catch (err) {
             console.error(err);
             toast.error("Failed to load students");
-            setStudents([]); // prevent undefined
         }
     };
 
-    // ----------------------
-    // LOAD COURSES (SAFE)
-    // ----------------------
     const loadCourses = async () => {
         try {
-            const res = await api.get("/courses");
-
-            setCourses(Array.isArray(res.data.body) ? res.data.body : []);
+            const res = await api.get("/courses"); // ✅ ensure this matches your backend route
+            setCourses(res.data.body || []);
         } catch (err) {
             console.error(err);
             toast.error("Failed to load courses");
-            setCourses([]); // prevent undefined
         }
     };
 
-    // ----------------------
-    // LOAD ENROLLMENTS (SAFE)
-    // ----------------------
     const loadEnrollments = async () => {
         try {
-            const res = await api.get("/enrollments");
-
-            setEnrollments(Array.isArray(res.data) ? res.data : []);
+            const res = await api.get("/enrollments"); // ✅ ensure route exists
+            setEnrollments(res.data.body || []);
         } catch (err) {
             console.error(err);
             toast.error("Failed to load enrollments");
-            setEnrollments([]);
         }
     };
 
-    // ----------------------
-    // HANDLE ENROLL
-    // ----------------------
     const handleEnroll = async () => {
         if (!selectedStudent || !selectedCourse)
             return toast.error("Select student & course");
@@ -73,13 +56,12 @@ export default function AdminEnroll() {
         try {
             setLoading(true);
 
-            await api.post("/enrollments/admin/enroll", {
+            const res = await api.post("/enrollments/admin/enroll", { // ✅ ensure route exists
                 studentId: selectedStudent,
                 courseId: selectedCourse,
             });
 
             toast.success("Enrollment successful!");
-
             loadEnrollments();
             setSelectedStudent("");
             setSelectedCourse("");
@@ -91,96 +73,91 @@ export default function AdminEnroll() {
         }
     };
 
-    // ----------------------
-    // UI
-    // ----------------------
     return (
-        <div style={styles.container}>
-            <div style={styles.card}>
-                <h2 style={styles.title}>Admin Enrollment</h2>
 
-                {/* Select Student */}
-                <select
-                    value={selectedStudent}
-                    onChange={(e) => setSelectedStudent(e.target.value)}
-                    style={styles.input}
-                >
-                    <option value="">Select Student</option>
 
-                    {(students || []).map((s) => (
-                        <option key={s._id} value={s._id}>
-                            {s.name} ({s.email})
-                        </option>
-                    ))}
-                </select>
+        <AdminLayout>
 
-                {/* Select Course */}
-                <select
-                    value={selectedCourse}
-                    onChange={(e) => setSelectedCourse(e.target.value)}
-                    style={styles.input}
-                >
-                    <option value="">Select Course</option>
 
-                    {(courses || []).map((c) => (
-                        <option key={c._id} value={c._id}>
-                            {c.title}
-                        </option>
-                    ))}
-                </select>
+            <div style={styles.container}>
+                <div style={styles.card}>
+                    <h2 style={styles.title}>Admin Enrollment</h2>
 
-                <button
-                    style={styles.button}
-                    onClick={handleEnroll}
-                    disabled={loading}
-                >
-                    {loading ? "Enrolling..." : "Enroll Student"}
-                </button>
-            </div>
+                    {/* Select Student */}
+                    <select
+                        value={selectedStudent}
+                        onChange={(e) => setSelectedStudent(e.target.value)}
+                        style={styles.input}
+                    >
+                        <option value="">Select Student</option>
+                        {students.map((s) => (
+                            <option key={s._id} value={s._id}>
+                                {s.name} ({s.email})
+                            </option>
+                        ))}
+                    </select>
 
-            {/* ENROLLMENTS TABLE */}
-            <div style={styles.tableCard}>
-                <h3>All Enrollments</h3>
+                    {/* Select Course */}
+                    <select
+                        value={selectedCourse}
+                        onChange={(e) => setSelectedCourse(e.target.value)}
+                        style={styles.input}
+                    >
+                        <option value="">Select Course</option>
+                        {courses.map((c) => (
+                            <option key={c._id} value={c._id}>
+                                {c.title}
+                            </option>
+                        ))}
+                    </select>
 
-                {(enrollments || []).length === 0 ? (
-                    <p>No enrollments yet.</p>
-                ) : (
-                    <table style={styles.table}>
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Course</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {(enrollments || []).map((en) => (
-                                <tr key={en._id}>
-                                    <td>{en.student?.name || "N/A"}</td>
-                                    <td>{en.course?.title || "N/A"}</td>
-                                    <td>
-                                        {en.createdAt
-                                            ? new Date(en.createdAt).toLocaleDateString()
-                                            : "N/A"}
-                                    </td>
+                    <button
+                        style={styles.button}
+                        onClick={handleEnroll}
+                        disabled={loading}
+                    >
+                        {loading ? "Enrolling..." : "Enroll Student"}
+                    </button>
+                </div>
+
+                {/* ENROLLMENTS LIST */}
+                <div style={styles.tableCard}>
+                    <h3>All Enrollments</h3>
+
+                    {enrollments.length === 0 ? (
+                        <p>No enrollments yet.</p>
+                    ) : (
+                        <table style={styles.table}>
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Course</th>
+                                    <th>Date</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
+                            </thead>
+                            <tbody>
+                                {enrollments.map((en) => (
+                                    <tr key={en._id}>
+                                        <td>{en.student?.name || en.studentName}</td>
+                                        <td>{en.course?.title || en.courseTitle}</td>
+                                        <td>{new Date(en.createdAt).toLocaleDateString()}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
             </div>
-        </div>
+        </AdminLayout>
     );
 }
 
-// ----------------------
-// STYLES
-// ----------------------
 const styles = {
     container: {
         display: "flex",
         padding: "20px",
         gap: "20px",
+        flexWrap: "wrap",
     },
     card: {
         width: "350px",
@@ -194,6 +171,7 @@ const styles = {
     },
     tableCard: {
         flex: 1,
+        minWidth: "500px",
         padding: "20px",
         background: "#fff",
         borderRadius: "12px",
