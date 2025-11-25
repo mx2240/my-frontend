@@ -29,7 +29,7 @@ function StudentPage() {
         setMessage("");
 
         try {
-            const res = await fetch.post("/api/students", form);
+            const res = await fetch.post("/student", form);
             setMessage(res.data.message);
             setForm({ name: "", email: "", studentClass: "", phone: "" });
             loadStudents();
