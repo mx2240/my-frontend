@@ -1,104 +1,45 @@
 import { useState } from "react";
-import { apiPost } from "../lib/api"
+import fetch from "../../fetch";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-export default function Register() {
+export default function Login() {
     const navigate = useNavigate();
+    const [form, setForm] = useState({ email: "", password: "" });
+    const [loading, setLoading] = useState(false);
 
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [role, setRole] = useState("student");
-    const [password, setPassword] = useState("");
+    const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-    const onSubmit = async (e) => {
+    const submit = async (e) => {
         e.preventDefault();
-
         try {
-            const res = await apiPost("/auth/register", {
-                name,
-                email,
-                password,
-                role,
-            });
-
-            toast.success("Registration successful");
-
-            const { token, user } = res.data;
-
-            // Save login immediately
+            setLoading(true);
+            const res = await fetch.post("/auth/login", form);
+            if (!res.data?.ok && !res.data?.body) {
+                // old shape fallback
+                if (!res.ok) return toast.error(res.message || "Login failed");
+            }
+            const payload = res.data?.body || res.data; // handle different shapes
+            const token = payload.token;
+            const user = payload.user;
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
-
-            // Redirect automatically
-            if (user.role === "admin") {
-                navigate("/admin");
-            } else if (user.role === "student") {
-                navigate("/student/dashboard");
-            } else {
-                navigate("/");
-            }
+            toast.success("Login successful");
+            if (user.role === "admin") navigate("/admin");
+            else if (user.role === "student") navigate("/student/dashboard");
+            else navigate("/");
         } catch (err) {
-            toast.error(err.response?.data?.message || "Registration failed");
-        }
+            console.error(err);
+            toast.error(err.response?.data?.message || "Login failed");
+        } finally { setLoading(false); }
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex justify-center items-center">
-            <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
-                <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">
-                    Register
-                </h2>
-
-                <form onSubmit={onSubmit} className="space-y-4">
-                    <input
-                        type="text"
-                        placeholder="Full Name"
-                        className="w-full p-3 border rounded-lg focus:ring focus:ring-indigo-300"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        className="w-full p-3 border rounded-lg focus:ring focus:ring-indigo-300"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        className="w-full p-3 border rounded-lg focus:ring focus:ring-indigo-300"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-
-                    <select
-                        className="w-full p-3 border rounded-lg"
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
-                    >
-                        <option value="student">Student</option>
-                        <option value="admin">Admin</option>
-                    </select>
-
-                    <button
-                        type="submit"
-                        className="w-full bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition"
-                    >
-                        Register
-                    </button>
-                </form>
-
-                <p className="text-center text-sm mt-4">
-                    Already have an account?{" "}
-                    <a href="/login" className="text-indigo-600 hover:underline">
-                        Login
-                    </a>
-                </p>
-            </div>
-        </div>
+        <form onSubmit={submit} className="max-w-md mx-auto p-6 bg-white rounded shadow">
+            <h2 className="text-xl font-bold mb-4">Login</h2>
+            <input name="email" value={form.email} onChange={handle} placeholder="Email" className="block w-full p-3 border rounded mb-3" />
+            <input name="password" value={form.password} onChange={handle} type="password" placeholder="Password" className="block w-full p-3 border rounded mb-4" />
+            <button disabled={loading} className="w-full bg-blue-600 text-white p-3 rounded">{loading ? "Logging in..." : "Login"}</button>
+        </form>
     );
 }
