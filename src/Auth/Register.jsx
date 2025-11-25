@@ -32,7 +32,7 @@ export default function Register() {
 
             // Redirect automatically
             if (user.role === "admin") {
-                navigate("/admin/dashboard");
+                navigate("/admin");
             } else if (user.role === "student") {
                 navigate("/student/dashboard");
             } else {
