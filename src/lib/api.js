@@ -1,29 +1,23 @@
-// src/lib/api.js
 import axios from "axios";
 
-const API_BASE = "https://my-backend-amber.vercel.app/api";
-
-export const api = axios.create({
-    baseURL: API_BASE,
-    withCredentials: true,
+const api = axios.create({
+    baseURL: "https://my-backend-amber.vercel.app/api",
 });
 
-// POST request
-export async function apiPost(url, data = {}) {
-    return api.post(url, data);
-}
+export const apiPost = async (url, data) => {
+    try {
+        const res = await api.post(url, data);
+        return res.data;
+    } catch (error) {
+        return { error: true, message: error.response?.data?.message || "Failed" };
+    }
+};
 
-// GET request
-export async function apiGet(url) {
-    return api.get(url);
-}
-
-// PUT request
-export async function apiPut(url, data = {}) {
-    return api.put(url, data);
-}
-
-// DELETE request
-export async function apiDelete(url) {
-    return api.delete(url);
-}
+export const apiGet = async (url) => {
+    try {
+        const res = await api.get(url);
+        return res.data;
+    } catch (error) {
+        return { error: true };
+    }
+};
