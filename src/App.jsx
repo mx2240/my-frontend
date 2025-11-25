@@ -29,7 +29,7 @@ import AddStudent from './pages/Admin/AddStudent';
 import AdminInquiries from './pages/Admin/AdminInquiries';
 import AdminfeesPage from "./pages/Admin/AdminFeesPage"
 import FeeTracking from './pages/Admin/FeeTracking';
-import AssignFees from './pages/Admin/AssignFees';
+import AssignFee from './pages/Admin/AssignFee';
 
 import CourseEnrollment from './pages/Admin/Courses/CourseEnrollment';
 import CoursesList from './pages/Admin/Courses/CoursesList';
@@ -138,7 +138,7 @@ function App() {
         <Route path="/admin/enrollment" element={<AdminEnrollments />} />
         <Route path="/admin/fees" element={<AdminfeesPage />} />
         <Route path="/admin/feetracking" element={<FeeTracking />} />
-        <Route path="/admin/assignfees" element={<AssignFees />} />
+        <Route path="/admin/assignfee" element={<AssignFee />} />
 
 
 
