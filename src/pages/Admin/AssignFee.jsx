@@ -21,7 +21,7 @@ function AssignFee() {
         );
 
         const f = await fetch.get(
-            "/fees/all",
+            "/fees",
             { headers: { Authorization: `Bearer ${token}` } }
         );
 
