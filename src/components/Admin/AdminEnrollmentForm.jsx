@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../fetch"; // your axios instance
 import toast from "react-hot-toast";
+import AdminLayout from "../../layouts/AdminLayout";
 
 export default function AdminEnroll() {
     const [students, setStudents] = useState([]);
@@ -73,75 +74,79 @@ export default function AdminEnroll() {
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.card}>
-                <h2 style={styles.title}>Admin Enrollment</h2>
+        <AdminLayout>
 
-                {/* Select Student */}
-                <select
-                    value={selectedStudent}
-                    onChange={(e) => setSelectedStudent(e.target.value)}
-                    style={styles.input}
-                >
-                    <option value="">Select Student</option>
-                    {students.map((s) => (
-                        <option key={s._id} value={s._id}>
-                            {s.name} ({s.email})
-                        </option>
-                    ))}
-                </select>
 
-                {/* Select Course */}
-                <select
-                    value={selectedCourse}
-                    onChange={(e) => setSelectedCourse(e.target.value)}
-                    style={styles.input}
-                >
-                    <option value="">Select Course</option>
-                    {courses.map((c) => (
-                        <option key={c._id} value={c._id}>
-                            {c.title}
-                        </option>
-                    ))}
-                </select>
+            <div style={styles.container}>
+                <div style={styles.card}>
+                    <h2 style={styles.title}>Admin Enrollment</h2>
 
-                <button
-                    style={styles.button}
-                    onClick={handleEnroll}
-                    disabled={loading}
-                >
-                    {loading ? "Enrolling..." : "Enroll Student"}
-                </button>
-            </div>
+                    {/* Select Student */}
+                    <select
+                        value={selectedStudent}
+                        onChange={(e) => setSelectedStudent(e.target.value)}
+                        style={styles.input}
+                    >
+                        <option value="">Select Student</option>
+                        {students.map((s) => (
+                            <option key={s._id} value={s._id}>
+                                {s.name} ({s.email})
+                            </option>
+                        ))}
+                    </select>
 
-            {/* ENROLLMENTS LIST */}
-            <div style={styles.tableCard}>
-                <h3>All Enrollments</h3>
+                    {/* Select Course */}
+                    <select
+                        value={selectedCourse}
+                        onChange={(e) => setSelectedCourse(e.target.value)}
+                        style={styles.input}
+                    >
+                        <option value="">Select Course</option>
+                        {courses.map((c) => (
+                            <option key={c._id} value={c._id}>
+                                {c.title}
+                            </option>
+                        ))}
+                    </select>
 
-                {enrollments.length === 0 ? (
-                    <p>No enrollments yet.</p>
-                ) : (
-                    <table style={styles.table}>
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Course</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {enrollments.map((en) => (
-                                <tr key={en._id}>
-                                    <td>{en.student?.name || en.studentName}</td>
-                                    <td>{en.course?.title || en.courseTitle}</td>
-                                    <td>{new Date(en.createdAt).toLocaleDateString()}</td>
+                    <button
+                        style={styles.button}
+                        onClick={handleEnroll}
+                        disabled={loading}
+                    >
+                        {loading ? "Enrolling..." : "Enroll Student"}
+                    </button>
+                </div>
+
+                {/* ENROLLMENTS LIST */}
+                <div style={styles.tableCard}>
+                    <h3>All Enrollments</h3>
+
+                    {enrollments.length === 0 ? (
+                        <p>No enrollments yet.</p>
+                    ) : (
+                        <table style={styles.table}>
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Course</th>
+                                    <th>Date</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
+                            </thead>
+                            <tbody>
+                                {enrollments.map((en) => (
+                                    <tr key={en._id}>
+                                        <td>{en.student?.name || en.studentName}</td>
+                                        <td>{en.course?.title || en.courseTitle}</td>
+                                        <td>{new Date(en.createdAt).toLocaleDateString()}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
             </div>
-        </div>
+        </AdminLayout>
     );
 }
 
