@@ -33,7 +33,7 @@ export default function Login() {
 
             // ROLE BASE REDIRECT
             if (data.user.role === "admin") {
-                navigate("/admin/");
+                navigate("/admin");
             } else {
                 navigate("/student/dashboard");
             }
