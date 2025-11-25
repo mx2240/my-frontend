@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from '../../fetch'
 import toast from "react-hot-toast";
+import AdminLayout from "../../layouts/AdminLayout";
 
 export default function AdminAddStudent() {
     const [students, setStudents] = useState([]);
@@ -64,91 +65,94 @@ export default function AdminAddStudent() {
     };
 
     return (
-        <div style={{ padding: "20px" }}>
-            <h2>Admin: Add Student</h2>
+        <AdminLayout>
+            <div style={{ padding: "20px" }}>
+                <h2>Admin: Add Student</h2>
 
-            <form onSubmit={handleSubmit} style={styles.form}>
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Full Name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
+                <form onSubmit={handleSubmit} style={styles.form}>
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Full Name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        style={styles.input}
+                    />
 
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        style={styles.input}
+                    />
 
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        style={styles.input}
+                    />
 
-                <input
-                    type="text"
-                    name="studentClass"
-                    placeholder="Class"
-                    value={formData.studentClass}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
+                    <input
+                        type="text"
+                        name="studentClass"
+                        placeholder="Class"
+                        value={formData.studentClass}
+                        onChange={handleChange}
+                        style={styles.input}
+                    />
 
-                <input
-                    type="text"
-                    name="phone"
-                    placeholder="Phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
+                    <input
+                        type="text"
+                        name="phone"
+                        placeholder="Phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        style={styles.input}
+                    />
 
-                <button type="submit" style={styles.button} disabled={loading}>
-                    {loading ? "Adding..." : "Add Student"}
-                </button>
-            </form>
+                    <button type="submit" style={styles.button} disabled={loading}>
+                        {loading ? "Adding..." : "Add Student"}
+                    </button>
+                </form>
 
-            <h3 style={{ marginTop: "30px" }}>All Students</h3>
+                <h3 style={{ marginTop: "30px" }}>All Students</h3>
 
-            <table style={styles.table}>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Class</th>
-                        <th>Phone</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {students.length === 0 ? (
+                <table style={styles.table}>
+                    <thead>
                         <tr>
-                            <td colSpan={4}>No students found</td>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Class</th>
+                            <th>Phone</th>
                         </tr>
-                    ) : (
-                        students.map((s) => (
-                            <tr key={s._id}>
-                                <td>{s.name}</td>
-                                <td>{s.email}</td>
-                                <td>{s.studentClass}</td>
-                                <td>{s.phone}</td>
+                    </thead>
+
+                    <tbody>
+                        {students.length === 0 ? (
+                            <tr>
+                                <td colSpan={4}>No students found</td>
                             </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
-        </div>
+                        ) : (
+                            students.map((s) => (
+                                <tr key={s._id}>
+                                    <td>{s.name}</td>
+                                    <td>{s.email}</td>
+                                    <td>{s.studentClass}</td>
+                                    <td>{s.phone}</td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        </AdminLayout>
     );
+
 }
 
 const styles = {
