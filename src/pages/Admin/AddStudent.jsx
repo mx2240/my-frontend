@@ -22,7 +22,7 @@ export default function AddStudent() {
 
         try {
             const res = await fetch.post(
-                "https://my-backend-amber.vercel.app/api/students",
+                "https://my-backend-amber.vercel.app/api/students/",
                 student,
                 { withCredentials: true }
             );
