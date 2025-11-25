@@ -43,27 +43,28 @@ export default function AdminAddStudent() {
     // -------------------------
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         if (!formData.name || !formData.email)
-            return toast.error("Name and Email are required");
+            return toast.error("Name and email are required");
 
         try {
             setLoading(true);
-            const res = await axios.post("/api/student", formData); // ✅ matches POST route
 
-            toast.success("Student added successfully");
+            // ✅ Get token from localStorage
+            const token = localStorage.getItem("token");
+            if (!token) return toast.error("You must be logged in as admin to add students");
 
-            // Reset form
-            setFormData({
-                name: "",
-                email: "",
-                password: "",
-                studentClass: "",
-                phone: "",
+            // ✅ POST request with Authorization header
+            const res = await fetch.post("/student", formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
 
-            // Reload students list
-            loadStudents();
+            if (res.data.ok) {
+                toast.success("Student added successfully");
+                setFormData({ name: "", email: "", password: "", studentClass: "", phone: "" });
+                loadStudents(); // refresh table
+            }
         } catch (err) {
             console.error(err);
             toast.error(err.response?.data?.message || "Failed to add student");
@@ -71,6 +72,7 @@ export default function AdminAddStudent() {
             setLoading(false);
         }
     };
+
 
     return (
 
