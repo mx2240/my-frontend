@@ -1,147 +1,101 @@
-import { useState, useEffect } from "react";
-import fetch from "../../fetch";
+import { useState } from "react";
+import axios from "axios";
 import toast from "react-hot-toast";
 
-export default function AdminAddStudent() {
-    const [students, setStudents] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
+export default function AddStudent() {
+    const [student, setStudent] = useState({
         name: "",
         email: "",
-        password: "",
-        studentClass: "",
         phone: "",
+        program: "",
     });
 
-    // Fetch all students for table
-    const loadStudents = async () => {
-        try {
-            const res = await fetch.get("/admin/students");
-            if (res.data.ok) setStudents(res.data.students);
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to load students");
-        }
-    };
-
-    useEffect(() => {
-        loadStudents();
-    }, []);
-
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setStudent({
+            ...student,
+            [e.target.name]: e.target.value,
+        });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.name || !formData.email)
-            return toast.error("Name and email are required");
 
         try {
-            setLoading(true);
-            const res = await fetch.post("/admin/students", formData);
+            const res = await axios.post(
+                "https://my-backend-amber.vercel.app/api/students",
+                student,
+                { withCredentials: true }
+            );
 
-            if (res.data.ok) {
-                toast.success("Student added successfully");
-                setFormData({ name: "", email: "", password: "", studentClass: "", phone: "" });
-                loadStudents(); // refresh table
-            }
+            toast.success("Student added successfully!");
+            setStudent({
+                name: "",
+                email: "",
+                phone: "",
+                program: "",
+            });
         } catch (err) {
-            console.error(err);
             toast.error(err.response?.data?.message || "Failed to add student");
-        } finally {
-            setLoading(false);
         }
     };
 
     return (
-        <div style={{ padding: "20px" }}>
-            <h2>Admin: Add Student</h2>
+        <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+            <div className="w-full max-w-lg bg-white shadow-lg rounded-2xl p-8">
+                <h2 className="text-2xl font-bold text-center mb-6">
+                    Add New Student
+                </h2>
 
-            <form onSubmit={handleSubmit} style={styles.form}>
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Full Name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password (optional)"
-                    value={formData.password}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
-                <input
-                    type="text"
-                    name="studentClass"
-                    placeholder="Class"
-                    value={formData.studentClass}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
-                <input
-                    type="text"
-                    name="phone"
-                    placeholder="Phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
-                <button type="submit" style={styles.button} disabled={loading}>
-                    {loading ? "Adding..." : "Add Student"}
-                </button>
-            </form>
+                <form onSubmit={handleSubmit} className="space-y-4">
 
-            <h3 style={{ marginTop: "30px" }}>All Students</h3>
-            <table style={styles.table}>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Class</th>
-                        <th>Phone</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {students.length === 0 ? (
-                        <tr>
-                            <td colSpan={4} style={{ textAlign: "center" }}>
-                                No students found
-                            </td>
-                        </tr>
-                    ) : (
-                        students.map((s) => (
-                            <tr key={s._id}>
-                                <td>{s.name || s.user?.name}</td>
-                                <td>{s.email || s.user?.email}</td>
-                                <td>{s.studentClass || "-"}</td>
-                                <td>{s.phone || "-"}</td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Full Name"
+                        value={student.name}
+                        onChange={handleChange}
+                        className="w-full p-3 border rounded-lg"
+                        required
+                    />
+
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email Address"
+                        value={student.email}
+                        onChange={handleChange}
+                        className="w-full p-3 border rounded-lg"
+                        required
+                    />
+
+                    <input
+                        type="text"
+                        name="phone"
+                        placeholder="Phone Number"
+                        value={student.phone}
+                        onChange={handleChange}
+                        className="w-full p-3 border rounded-lg"
+                        required
+                    />
+
+                    <input
+                        type="text"
+                        name="program"
+                        placeholder="Program / Course"
+                        value={student.program}
+                        onChange={handleChange}
+                        className="w-full p-3 border rounded-lg"
+                        required
+                    />
+
+                    <button
+                        type="submit"
+                        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+                    >
+                        Add Student
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
-
-const styles = {
-    form: { display: "flex", flexDirection: "column", gap: "10px", maxWidth: "400px" },
-    input: { padding: "10px", borderRadius: "6px", border: "1px solid #ccc", fontSize: "16px" },
-    button: { padding: "10px", background: "#2563eb", color: "#fff", borderRadius: "6px", cursor: "pointer", border: "none", fontSize: "16px" },
-    table: { width: "100%", borderCollapse: "collapse", marginTop: "15px" },
-    th: { borderBottom: "1px solid #ccc", padding: "8px", textAlign: "left" },
-    td: { borderBottom: "1px solid #eee", padding: "8px" },
-};
