@@ -18,7 +18,7 @@ export default function AddStudent() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const res = await apiPost("/students", form);
+        const res = await apiPost("/student", form);
 
         if (res.error) {
             toast.error(res.message);
