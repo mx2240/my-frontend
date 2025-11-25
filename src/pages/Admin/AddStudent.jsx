@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { apiPost } from "../lib/api";
+import { apiPost } from './../../lib/api'
 import toast from "react-hot-toast";
 import AdminLayout from "../../layouts/AdminLayout";
 
