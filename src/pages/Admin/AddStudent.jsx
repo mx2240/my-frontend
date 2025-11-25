@@ -16,7 +16,7 @@ function StudentPage() {
     }, []);
 
     const loadStudents = async () => {
-        const res = await fetch.get("/student");
+        const res = await fetch.get("/students");
         setStudents(res.data.students || []);
     };
 
@@ -29,7 +29,7 @@ function StudentPage() {
         setMessage("");
 
         try {
-            const res = await fetch.post("/student", form);
+            const res = await fetch.post("/students", form);
             setMessage(res.data.message);
             setForm({ name: "", email: "", studentClass: "", phone: "" });
             loadStudents();
