@@ -40,7 +40,7 @@ export default function AdminEnroll() {
         try {
             const res = await api.get("/courses");
 
-            setCourses(Array.isArray(res.data) ? res.data : []);
+            setCourses(Array.isArray(res.data.body) ? res.data.body : []);
         } catch (err) {
             console.error(err);
             toast.error("Failed to load courses");
