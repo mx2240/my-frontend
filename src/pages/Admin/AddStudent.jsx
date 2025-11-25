@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import fetch from '../../fetch'
+import axios from "axios";
 
 function StudentPage() {
     const [form, setForm] = useState({
@@ -16,7 +16,7 @@ function StudentPage() {
     }, []);
 
     const loadStudents = async () => {
-        const res = await fetch.get("/students");
+        const res = await axios.get("/students");
         setStudents(res.data.students || []);
     };
 
@@ -29,7 +29,7 @@ function StudentPage() {
         setMessage("");
 
         try {
-            const res = await fetch.post("/students", form);
+            const res = await axios.post("/students", form);
             setMessage(res.data.message);
             setForm({ name: "", email: "", studentClass: "", phone: "" });
             loadStudents();
