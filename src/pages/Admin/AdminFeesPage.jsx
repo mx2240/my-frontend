@@ -26,7 +26,7 @@ export default function AdminFeesPage() {
             setFees(Array.isArray(fRes.data) ? fRes.data : []);
 
             // Fetch students (flat array)
-            const sRes = await fetch.get("/admin/students/all");
+            const sRes = await fetch.get("/admin/students");
             setStudents(Array.isArray(sRes.data) ? sRes.data : []);
 
 
