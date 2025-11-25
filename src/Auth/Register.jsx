@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { apiPost } from "../lib/api"
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-const BACKEND_URL = "https://my-backend-amber.vercel.app/api";
-
 export default function Register() {
+    const navigate = useNavigate();
+
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [role, setRole] = useState("student");
@@ -13,83 +15,89 @@ export default function Register() {
         e.preventDefault();
 
         try {
-            const res = await fetch(`${BACKEND_URL}/auth/register`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, password, role })
+            const res = await apiPost("/auth/register", {
+                name,
+                email,
+                password,
+                role,
             });
 
-            const data = await res.json();
+            toast.success("Registration successful");
 
-            if (!res.ok) {
-                toast.error(data.message || "Registration failed");
-                return;
+            const { token, user } = res.data;
+
+            // Save login immediately
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(user));
+
+            // Redirect automatically
+            if (user.role === "admin") {
+                navigate("/admin/dashboard");
+            } else if (user.role === "student") {
+                navigate("/student/dashboard");
+            } else {
+                navigate("/");
             }
-
-            toast.success("Account created successfully!");
-        } catch {
-            toast.error("Network error");
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Registration failed");
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-            <div className="w-full max-w-md bg-white rounded-lg shadow-xl p-6">
-                <h2 className="text-2xl font-semibold text-center mb-6">
+        <div className="min-h-screen bg-gray-100 flex justify-center items-center">
+            <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
+                <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">
                     Register
                 </h2>
 
                 <form onSubmit={onSubmit} className="space-y-4">
+                    <input
+                        type="text"
+                        placeholder="Full Name"
+                        className="w-full p-3 border rounded-lg focus:ring focus:ring-indigo-300"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
 
-                    <div>
-                        <label className="block mb-1 font-medium">Full Name</label>
-                        <input
-                            type="text"
-                            className="w-full px-3 py-2 border rounded-md"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                    </div>
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        className="w-full p-3 border rounded-lg focus:ring focus:ring-indigo-300"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
 
-                    <div>
-                        <label className="block mb-1 font-medium">Email</label>
-                        <input
-                            type="email"
-                            className="w-full px-3 py-2 border rounded-md"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        className="w-full p-3 border rounded-lg focus:ring focus:ring-indigo-300"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
 
-                    <div>
-                        <label className="block mb-1 font-medium">Password</label>
-                        <input
-                            type="password"
-                            className="w-full px-3 py-2 border rounded-md"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block mb-1 font-medium">Role</label>
-                        <select
-                            className="w-full px-3 py-2 border rounded-md"
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
-                        >
-                            <option value="student">Student</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
+                    <select
+                        className="w-full p-3 border rounded-lg"
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                    >
+                        <option value="student">Student</option>
+                        <option value="admin">Admin</option>
+                    </select>
 
                     <button
                         type="submit"
-                        className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700"
+                        className="w-full bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition"
                     >
-                        Create Account
+                        Register
                     </button>
                 </form>
+
+                <p className="text-center text-sm mt-4">
+                    Already have an account?{" "}
+                    <a href="/login" className="text-indigo-600 hover:underline">
+                        Login
+                    </a>
+                </p>
             </div>
         </div>
     );

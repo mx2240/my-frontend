@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiPost } from "../lib/api"
 import toast from "react-hot-toast";
-
-const BACKEND_URL = "https://my-backend-amber.vercel.app/api";
 
 export default function Login() {
     const navigate = useNavigate();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -13,69 +13,67 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const res = await fetch(`${BACKEND_URL}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
+            const res = await apiPost("/auth/login", { email, password });
 
-            const data = await res.json();
+            const { token, user } = res.data;
 
-            if (!res.ok) {
-                toast.error(data.message || "Login failed");
-                return;
-            }
+            // Save
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(user));
 
             toast.success("Login successful!");
 
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("user", JSON.stringify(data.user));
-
-            // ROLE BASE REDIRECT
-            if (data.user.role === "admin") {
-                navigate("/admin");
-            } else {
+            // Redirect based on role
+            if (user.role === "admin") {
+                navigate("/admin/dashboard");
+            } else if (user.role === "student") {
                 navigate("/student/dashboard");
+            } else {
+                navigate("/");
             }
-        } catch {
-            toast.error("Network error");
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Login failed");
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-            <div className="w-full max-w-md bg-white rounded-lg shadow-xl p-6">
-                <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
+        <div className="min-h-screen bg-gray-100 flex justify-center items-center">
+            <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
+                <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">
+                    Login
+                </h2>
 
                 <form onSubmit={onSubmit} className="space-y-4">
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        className="w-full p-3 border rounded-lg focus:ring focus:ring-indigo-300"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
 
-                    <div>
-                        <label className="block font-medium mb-1">Email</label>
-                        <input
-                            type="email"
-                            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block font-medium mb-1">Password</label>
-                        <input
-                            type="password"
-                            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        className="w-full p-3 border rounded-lg focus:ring focus:ring-indigo-300"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+                        className="w-full bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition"
                     >
                         Login
                     </button>
                 </form>
+
+                <p className="text-center text-sm mt-4">
+                    Don't have an account?{" "}
+                    <a href="/register" className="text-indigo-600 hover:underline">
+                        Register
+                    </a>
+                </p>
             </div>
         </div>
     );
