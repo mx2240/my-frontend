@@ -23,12 +23,12 @@ import Ad from './components/AdminDasbord/Ad';
 import AdminStudents from './pages/Admin/AdminStudents';
 import AdminCourses from './pages/Admin/AdminCourses';
 import AdminEnrollments from './pages/Admin/AdminEnrollments';
-import Fees from './components/Admin/Fees';
+
 import Notifications from './components/Admin/Notification';
-import AdminEnrollmentForm from './components/Admin/AdminEnrollmentForm';
-import AdminFees from './components/Admin/Fees';
-import FeesTracking from './pages/Admin/FeesTracking';
+
+import FeesTracking from './pages/Admin/FeeTracking';
 import AdminFeesPage from './pages/Admin/AdminFeesPage';
+import AssignFee from './pages/Admin/AssignFee';
 import AddStudent from './pages/Admin/AddStudent';
 import AdminInquiries from './pages/Admin/AdminInquiries';
 
@@ -138,7 +138,13 @@ function App() {
         <Route path="/admin/students" element={<Students />} />
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/enrollment" element={<AdminEnrollments />} />
-        <Route path="/admin/enrollment/form" element={<AdminEnrollmentForm />} />
+        <Route path="/Fees-Tracking" element={<FeesTracking />} />
+        <Route path="/Asignfees" element={<AssignFee />} />
+
+
+
+
+
 
 
         <Route path="/students" element={<AdminStudents />} />
