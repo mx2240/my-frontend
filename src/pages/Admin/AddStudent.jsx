@@ -1,54 +1,99 @@
-import { useState } from "react";
-import { apiPost } from './../../lib/api'
-import toast from "react-hot-toast";
-import AdminLayout from "../../layouts/AdminLayout";
+import React, { useState, useEffect } from "react";
+import fetch from '../../fetch'
 
-export default function AddStudent() {
+function StudentPage() {
     const [form, setForm] = useState({
-        fullName: "",
+        name: "",
         email: "",
-        studentId: "",
-        classLevel: "",
-        phone: "",
+        studentClass: "",
+        phone: ""
     });
+    const [students, setStudents] = useState([]);
+    const [message, setMessage] = useState("");
 
-    const handleChange = (e) => {
+    useEffect(() => {
+        loadStudents();
+    }, []);
+
+    const loadStudents = async () => {
+        const res = await axios.get("/api/students");
+        setStudents(res.data.students || []);
+    };
+
+    const handleChange = e => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async e => {
         e.preventDefault();
-        const res = await apiPost("/student", form);
+        setMessage("");
 
-        if (res.error) {
-            toast.error(res.message);
-        } else {
-            toast.success("Student added successfully");
-            setForm({
-                fullName: "",
-                email: "",
-                studentId: "",
-                classLevel: "",
-                phone: "",
-            });
+        try {
+            const res = await fetch.post("/api/students", form);
+            setMessage(res.data.message);
+            setForm({ name: "", email: "", studentClass: "", phone: "" });
+            loadStudents();
+        } catch (err) {
+            setMessage(err.response?.data?.message || "Error occurred");
         }
     };
 
     return (
-        <AdminLayout>
-            <div>
-                <h2>Add Student</h2>
+        <div style={{ maxWidth: "600px", margin: "20px auto", padding: "20px" }}>
+            <h2>Add Student</h2>
 
-                <form onSubmit={handleSubmit}>
-                    <input name="fullName" value={form.fullName} onChange={handleChange} placeholder="Full Name" required />
-                    <input name="email" value={form.email} onChange={handleChange} placeholder="Email" required />
-                    <input name="studentId" value={form.studentId} onChange={handleChange} placeholder="Student ID" required />
-                    <input name="classLevel" value={form.classLevel} onChange={handleChange} placeholder="Class Level" required />
-                    <input name="phone" value={form.phone} onChange={handleChange} placeholder="Phone" />
+            {message && (
+                <p style={{
+                    background: "#eee",
+                    padding: "10px",
+                    borderRadius: "5px",
+                    marginBottom: "10px"
+                }}>
+                    {message}
+                </p>
+            )}
 
-                    <button type="submit">Add Student</button>
-                </form>
-            </div>
-        </AdminLayout>
+            <form onSubmit={handleSubmit} style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px"
+            }}>
+                <input type="text" name="name" placeholder="Student Name"
+                    value={form.name} onChange={handleChange} required />
+
+                <input type="email" name="email" placeholder="Email"
+                    value={form.email} onChange={handleChange} required />
+
+                <input type="text" name="studentClass" placeholder="Class"
+                    value={form.studentClass} onChange={handleChange} />
+
+                <input type="text" name="phone" placeholder="Phone"
+                    value={form.phone} onChange={handleChange} />
+
+                <button style={{
+                    padding: "10px",
+                    background: "black",
+                    color: "white",
+                    borderRadius: "5px",
+                    cursor: "pointer"
+                }}>
+                    Add Student
+                </button>
+            </form>
+
+            <hr style={{ margin: "20px 0" }} />
+
+            <h3>All Students</h3>
+
+            <ul>
+                {students.map(s => (
+                    <li key={s._id}>
+                        {s.name} — {s.email} — {s.studentClass}
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 }
+
+export default StudentPage;
