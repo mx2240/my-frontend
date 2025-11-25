@@ -159,9 +159,9 @@ function App() {
         <Route path="/courses-list" element={<CoursesList />} />
         <Route path="/edit-course" element={<EditCourse />} />
         <Route path="/delete-course" element={<DeleteCourseModal />} />
-        <Route path="/student-form" element={<StudentForm />} />
+
         <Route path="/admin/dasbord" element={<Ad />} />
-        <Route path="/student-list" element={<StudentList />} />
+
 
 
 
