@@ -1,45 +1,99 @@
-import { useState } from "react";
-import fetch from '../fetch'
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import React, { useState } from "react";
+import fetch from "../fetch";
+// import "./Register.css";
 
-export default function Login() {
-    const navigate = useNavigate();
-    const [form, setForm] = useState({ email: "", password: "" });
+export default function Register() {
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        password: "",
+        role: "admin",
+    });
+
     const [loading, setLoading] = useState(false);
+    const [msg, setMsg] = useState("");
 
-    const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    const onChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
-    const submit = async (e) => {
+    const submitForm = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setMsg("");
+
         try {
-            setLoading(true);
-            const res = await fetch.post("/auth/register", form);
-            if (!res.data?.ok && !res.data?.body) {
-                // old shape fallback
-                if (!res.ok) return toast.error(res.message || "Login failed");
-            }
-            const payload = res.data?.body || res.data; // handle different shapes
-            const token = payload.token;
-            const user = payload.user;
-            localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(user));
-            toast.success("Login successful");
-            if (user.role === "admin") navigate("/admin");
-            else if (user.role === "student") navigate("/student/dashboard");
-            else navigate("/");
+            const res = await fetch.post(
+                "auth/register",
+                form
+            );
+
+            setMsg("✔ Registration Successful");
+            setForm({ name: "", email: "", password: "", role: "admin" });
         } catch (err) {
             console.error(err);
-            toast.error(err.response?.data?.message || "Login failed");
-        } finally { setLoading(false); }
+
+            const message = err.response?.data?.message || "Registration failed";
+            setMsg("❌ " + message);
+        }
+
+        setLoading(false);
     };
 
     return (
-        <form onSubmit={submit} className="max-w-md mx-auto p-6 bg-white rounded shadow">
-            <h2 className="text-xl font-bold mb-4">Login</h2>
-            <input name="email" value={form.email} onChange={handle} placeholder="Email" className="block w-full p-3 border rounded mb-3" />
-            <input name="password" value={form.password} onChange={handle} type="password" placeholder="Password" className="block w-full p-3 border rounded mb-4" />
-            <button disabled={loading} className="w-full bg-blue-600 text-white p-3 rounded">{loading ? "Logging in..." : "Login"}</button>
-        </form>
+        <div className="reg-container">
+            <h2>Create Account</h2>
+
+            {msg && <div className="alert">{msg}</div>}
+
+            <form onSubmit={submitForm} className="reg-form">
+                <div className="form-group">
+                    <label>Full Name</label>
+                    <input
+                        type="text"
+                        name="name"
+                        value={form.name}
+                        onChange={onChange}
+                        placeholder="John Doe"
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>Email Address</label>
+                    <input
+                        type="email"
+                        name="email"
+                        value={form.email}
+                        onChange={onChange}
+                        placeholder="example@mail.com"
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>Password</label>
+                    <input
+                        type="password"
+                        name="password"
+                        value={form.password}
+                        onChange={onChange}
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>Select Role</label>
+                    <select name="role" value={form.role} onChange={onChange}>
+                        <option value="admin">Admin</option>
+                        <option value="teacher">Student</option>
+                    </select>
+                </div>
+
+                <button disabled={loading}>
+                    {loading ? "Creating account..." : "Register"}
+                </button>
+            </form>
+        </div>
     );
 }
