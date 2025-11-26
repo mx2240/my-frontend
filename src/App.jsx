@@ -6,6 +6,9 @@ import './css/Login.css';
 import './css/Auth.css';
 import './css/Register.css';
 import './css/Fees.css';
+import './css/AdminDashboard.css'
+import './css/Adminayout.css'
+
 
 
 

@@ -1,144 +1,73 @@
+
+
 import React, { useEffect, useState } from "react";
-import { FaUsers, FaBook, FaClipboardList, FaDollarSign } from "react-icons/fa";
-import { Line } from "react-chartjs-2";
-import Sidebar from '../Sidebar';
-import Topbar from '../Topbar';
 import AdminLayout from "../../layouts/AdminLayout";
-import "chart.js/auto";
+import toast from "react-hot-toast";
+import { getAdminProfile, getAllStudents, getAllAdmins } from '../../myapi/Admin';
+import fetch from "../../fetch";
 
+export default function AdminDashboard() {
+    const [profile, setProfile] = useState({});
+    const [students, setStudents] = useState([]);
+    const [admins, setAdmins] = useState([]);
 
-
-const Ad = () => {
-    const [stats, setStats] = useState({
-        totalStudents: 0,
-        totalCourses: 0,
-        totalEnrollments: 0,
-        totalFees: 0,
-    });
-
-    const [chartData, setChartData] = useState({
-        labels: [],
-        datasets: [],
-    });
-
-    // Fetch stats (replace with real API calls)
     useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                // Fake API data
-                const students = 120;
-                const courses = 15;
-                const enrollments = 95;
-                const fees = 5000;
-
-                setStats({
-                    totalStudents: students,
-                    totalCourses: courses,
-                    totalEnrollments: enrollments,
-                    totalFees: fees,
-                });
-
-                // Sample chart data
-                setChartData({
-                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
-                    datasets: [
-                        {
-                            label: "New Enrollments",
-                            data: [12, 19, 14, 23, 20, 25, 30],
-                            borderColor: "#1d4ed8",
-                            backgroundColor: "rgba(29, 78, 216, 0.2)",
-                            tension: 0.4,
-                        },
-                        {
-                            label: "Fees Collected",
-                            data: [200, 400, 300, 500, 450, 600, 700],
-                            borderColor: "#16a34a",
-                            backgroundColor: "rgba(22, 163, 74, 0.2)",
-                            tension: 0.4,
-                        },
-                    ],
-                });
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
-
-
-
-        fetchStats();
+        loadData();
     }, []);
 
+    const loadData = async () => {
+        try {
+            // ✅ Fetch admin profile
+            const p = await getAdminProfile();
+            console.log("Admin profile response:", p);
+
+            if (p?.data?.ok) setProfile(p.data.body);
+
+            // ✅ Fetch students
+            const s = await getAllStudents();
+            if (s?.data?.ok) setStudents(s.data.body);
+
+            // ✅ Fetch admins
+            const a = await getAllAdmins();
+            if (a?.data?.ok) setAdmins(a.data.body);
+
+        } catch (err) {
+            console.error(err.response?.data || err.message);
+            toast.error("Failed to load admin data");
+        }
+    };
+
     return (
-
         <AdminLayout>
+            <div className="p-6 max-w-5xl mx-auto">
+                <h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
 
-            <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
-                {/* <Sidebar /> */}
+                <section className="mb-6">
+                    <h3 className="font-bold">Profile</h3>
+                    <p>Name: {profile.name}</p>
+                    <p>Email: {profile.email}</p>
+                </section>
 
-                <div className="flex-1 flex flex-col">
-                    {/* <Topbar /> */}
+                <section className="mb-6">
+                    <h3 className="font-bold">Students</h3>
+                    <ul className="list-disc pl-6">
+                        {students.map(s => (
+                            <li key={s._id}>{s.name} ({s.email})</li>
+                        ))}
+                    </ul>
+                </section>
 
-                    <main className="p-6 overflow-auto">
-                        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">
-                            Dasboard overview
-                        </h1>
-
-                        {/* Stats Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                            <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow flex items-center gap-4">
-                                <FaUsers className="text-3xl text-blue-600" />
-                                <div>
-                                    <p className="text-gray-500 dark:text-gray-300">Total Students</p>
-                                    <p className="text-2xl font-bold text-gray-800 dark:text-white">
-                                        {stats.totalStudents}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow flex items-center gap-4">
-                                <FaBook className="text-3xl text-green-600" />
-                                <div>
-                                    <p className="text-gray-500 dark:text-gray-300">Total Courses</p>
-                                    <p className="text-2xl font-bold text-gray-800 dark:text-white">
-                                        {stats.totalCourses}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow flex items-center gap-4">
-                                <FaClipboardList className="text-3xl text-yellow-600" />
-                                <div>
-                                    <p className="text-gray-500 dark:text-gray-300">Enrollments</p>
-                                    <p className="text-2xl font-bold text-gray-800 dark:text-white">
-                                        {stats.totalEnrollments}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow flex items-center gap-4">
-                                <FaDollarSign className="text-3xl text-red-600" />
-                                <div>
-                                    <p className="text-gray-500 dark:text-gray-300">Fees Collected</p>
-                                    <p className="text-2xl font-bold text-gray-800 dark:text-white">
-                                        GH₵ {stats.totalFees}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Charts */}
-                        <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow h-96 ">
-                            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
-                                Enrollment & Fees Trend
-                            </h2>
-                            <Line data={chartData} />
-                        </div>
-                    </main>
-                </div>
+                <section>
+                    <h3 className="font-bold">Admins</h3>
+                    <ul className="list-disc pl-6">
+                        {admins.map(a => (
+                            <li key={a._id}>{a.name} ({a.email})</li>
+                        ))}
+                    </ul>
+                </section>
             </div>
         </AdminLayout>
     );
-};
+}
 
-export default Ad;
+
