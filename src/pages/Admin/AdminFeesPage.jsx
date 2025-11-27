@@ -73,7 +73,7 @@ export default function FeesPage() {
         }
     };
 
-    const deleteFee = async (feeId) => {
+    const deleteFee = async (Id) => {
         if (!window.confirm("Delete this fee?")) return;
 
         try {
