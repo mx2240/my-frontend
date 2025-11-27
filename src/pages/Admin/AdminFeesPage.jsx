@@ -28,7 +28,7 @@ export default function FeesPage() {
     const loadFees = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch.get(`${API}/fees/list`, {
+            const res = await fetch.get(`${API}/fees/all`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
