@@ -3,7 +3,7 @@ import fetch from "../../fetch";
 import toast from "react-hot-toast";
 import AdminLayout from "../../layouts/AdminLayout";
 
-const API = "/api";
+// const API = "/api";
 
 export default function FeesPage() {
     const [fees, setFees] = useState([]);
@@ -28,7 +28,7 @@ export default function FeesPage() {
     const loadFees = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch.get(`${API}/fees/all`, {
+            const res = await fetch.get(`/fees/all`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -41,7 +41,7 @@ export default function FeesPage() {
     const loadStudents = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch.get(`${API}/students`, {
+            const res = await fetch.get(`/students`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (res.data.ok) setStudents(res.data.students);
@@ -59,7 +59,7 @@ export default function FeesPage() {
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch.post(`${API}/fees/create`, newFee, {
+            const res = await fetch.post(`/fees/create`, newFee, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -78,7 +78,7 @@ export default function FeesPage() {
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch.delete(`${API}/fees/delete/${feeId}`, {
+            const res = await fetch.delete(`/fees/delete/${feeId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -99,7 +99,7 @@ export default function FeesPage() {
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch.post(`${API}/fees/assign`, assignData, {
+            const res = await fetch.post(`/fees/assign`, assignData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
