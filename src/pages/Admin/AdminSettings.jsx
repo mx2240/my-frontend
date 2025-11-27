@@ -123,7 +123,7 @@
 
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import fetch from fetch
 
 export default function AdminSettings() {
     const [admin, setAdmin] = useState(null);
@@ -150,7 +150,7 @@ export default function AdminSettings() {
         const token = localStorage.getItem("token");
 
         try {
-            await axios.put(
+            await fetch.put(
                 "/auth/change-password",
                 passwords,
                 { headers: { Authorization: `Bearer ${token}` } }
