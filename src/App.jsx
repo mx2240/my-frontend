@@ -48,7 +48,7 @@ import Login from './Auth/Login';
 import Register from './Auth/Register'
 import PrivateRoute from './routes/PrivateRoute';
 import { AuthProvider } from "./context/AuthContext";
-import Logout from './Auth/Logoout';
+import Logout from './Auth/Logout';
 
 
 import LandingPage from './pages/LandingPage';
@@ -98,6 +98,10 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/Add-student" element={<StudentRegistration />} />
         <Route path="/logout" element={<Logout />} />
+
+
+
+
 
 
 

@@ -159,6 +159,8 @@ const AdminSidebar = () => {
                     </Link>
 
 
+                    <li onClick={logout}>Logout</li>
+
 
 
                 </li>
