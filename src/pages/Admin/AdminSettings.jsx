@@ -138,7 +138,7 @@ export default function AdminSettings() {
         const token = localStorage.getItem("token");
 
         axios
-            .get("/auth/me", {
+            .get("/admin/settings", {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((res) => setAdmin(res.data.user))
