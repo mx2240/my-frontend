@@ -244,7 +244,7 @@ function FeeTracking() {
     const fetchFees = async () => {
         setLoadingFees(true);
         try {
-            const res = await fetch.get(`${API}/fees`);
+            const res = await fetch.get(`/fees`);
             if (res.data.ok) setFees(res.data.fees);
         } catch (err) {
             console.error(err);
@@ -313,8 +313,8 @@ function FeeTracking() {
                                     key={fee._id}
                                     onClick={() => handleFeeClick(fee)}
                                     className={`p-3 mb-2 rounded-lg border cursor-pointer hover:bg-blue-500 hover:text-white transition-all ${selectedFee?._id === fee._id
-                                            ? "bg-blue-600 text-white"
-                                            : "bg-gray-50"
+                                        ? "bg-blue-600 text-white"
+                                        : "bg-gray-50"
                                         }`}
                                 >
                                     <h4 className="font-semibold">{fee.title}</h4>
