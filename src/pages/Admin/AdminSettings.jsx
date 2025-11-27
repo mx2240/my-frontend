@@ -100,142 +100,126 @@
 
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import fetch from '../../fetch'
 import toast from "react-hot-toast";
+import AdminLayout from "../../layouts/AdminLayout";
+
+const API = "/auth";
 
 export default function AdminSettings() {
-    const [adminData, setAdminData] = useState({
-        name: "",
-        email: "",
-    });
-
+    const [adminData, setAdminData] = useState({ name: "", email: "" });
     const [passwords, setPasswords] = useState({
         currentPassword: "",
-        newPassword: "",
+        newPassword: ""
     });
 
-    // Load current admin profile 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        axios
-            .get("/auth/me", {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-            .then((res) => setAdminData(res.data.user))
-            .catch(() => toast.error("Failed to load admin profile"));
+        const loadAdmin = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await fetch.get(`${API}/me`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (res.data.ok) setAdminData(res.data.user);
+            } catch {
+                toast.error("Failed to load admin profile");
+            }
+        };
+
+        loadAdmin();
     }, []);
 
-    // Update profile handler
     const updateProfile = async (e) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
-
-            const res = await axios.put(
-                "/update-profile",
-                adminData,
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
+            await fetch.put(`${API}/update-profile`, adminData, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
 
             toast.success("Profile updated");
-        } catch (err) {
+        } catch {
             toast.error("Update failed");
         }
     };
 
-    // Change password handler
     const changePassword = async (e) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
+            await fetch.post(`${API}/change-password`, passwords, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
 
-            const res = await axios.post(
-                "/auth/change-password",
-                passwords,
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
-
-            toast.success("Password updated");
+            toast.success("Password changed");
             setPasswords({ currentPassword: "", newPassword: "" });
         } catch (err) {
-            toast.error(err.response?.data?.message || "Password change failed");
+            toast.error(err.response?.data?.message || "Error updating password");
         }
     };
 
-    // Logout handler
     const logout = () => {
         localStorage.removeItem("token");
         window.location.href = "/login";
     };
 
     return (
-        <div className="settings-container">
-            <h2>Admin Settings</h2>
+        <AdminLayout>
 
-            {/* Update Profile */}
-            <div className="settings-box">
-                <h3>Update Profile</h3>
-                <form onSubmit={updateProfile}>
-                    <input
-                        type="text"
-                        placeholder="Full Name"
-                        value={adminData.name}
-                        onChange={(e) =>
-                            setAdminData({ ...adminData, name: e.target.value })
-                        }
-                        required
-                    />
+            <div className="settings-container">
+                <h2>Admin Settings</h2>
 
-                    <input
-                        type="email"
-                        placeholder="Email Address"
-                        value={adminData.email}
-                        onChange={(e) =>
-                            setAdminData({ ...adminData, email: e.target.value })
-                        }
-                        required
-                    />
+                <div className="settings-box">
+                    <h3>Update Profile</h3>
+                    <form onSubmit={updateProfile}>
+                        <input
+                            type="text"
+                            value={adminData.name}
+                            onChange={(e) => setAdminData({ ...adminData, name: e.target.value })}
+                            required
+                        />
+                        <input
+                            type="email"
+                            value={adminData.email}
+                            onChange={(e) =>
+                                setAdminData({ ...adminData, email: e.target.value })
+                            }
+                            required
+                        />
+                        <button type="submit">Save</button>
+                    </form>
+                </div>
 
-                    <button type="submit">Save Changes</button>
-                </form>
+                <div className="settings-box">
+                    <h3>Change Password</h3>
+                    <form onSubmit={changePassword}>
+                        <input
+                            type="password"
+                            placeholder="Current Password"
+                            value={passwords.currentPassword}
+                            onChange={(e) =>
+                                setPasswords({ ...passwords, currentPassword: e.target.value })
+                            }
+                            required
+                        />
+                        <input
+                            type="password"
+                            placeholder="New Password"
+                            value={passwords.newPassword}
+                            onChange={(e) =>
+                                setPasswords({ ...passwords, newPassword: e.target.value })
+                            }
+                            required
+                        />
+                        <button type="submit">Update Password</button>
+                    </form>
+                </div>
+
+                <button className="logout-btn" onClick={logout}>
+                    Logout
+                </button>
             </div>
-
-            {/* Change Password */}
-            <div className="settings-box">
-                <h3>Change Password</h3>
-                <form onSubmit={changePassword}>
-                    <input
-                        type="password"
-                        placeholder="Current Password"
-                        value={passwords.currentPassword}
-                        onChange={(e) =>
-                            setPasswords({ ...passwords, currentPassword: e.target.value })
-                        }
-                        required
-                    />
-
-                    <input
-                        type="password"
-                        placeholder="New Password"
-                        value={passwords.newPassword}
-                        onChange={(e) =>
-                            setPasswords({ ...passwords, newPassword: e.target.value })
-                        }
-                        required
-                    />
-
-                    <button type="submit">Update Password</button>
-                </form>
-            </div>
-
-            {/* Logout */}
-            <button className="logout-btn" onClick={logout}>
-                Logout
-            </button>
-        </div>
+        </AdminLayout>
     );
 }
