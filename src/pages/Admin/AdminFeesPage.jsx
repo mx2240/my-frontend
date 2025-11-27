@@ -73,12 +73,12 @@ export default function FeesPage() {
         }
     };
 
-    const deleteFee = async (Id) => {
+    const deleteFee = async (feeId) => {
         if (!window.confirm("Delete this fee?")) return;
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch.delete(`/fees/delete/${Id}`, {
+            const res = await fetch.delete(`/fees/delete/${feeId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
