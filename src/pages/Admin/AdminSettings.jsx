@@ -123,7 +123,7 @@
 
 
 import React, { useState, useEffect } from "react";
-import fetch from fetch
+import fetch from '../../fetch'
 
 export default function AdminSettings() {
     const [admin, setAdmin] = useState(null);
