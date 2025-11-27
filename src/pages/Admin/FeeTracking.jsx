@@ -107,17 +107,15 @@ export default function FeeTracking() {
     }, []);
 
     // Load assigned students when a fee is clicked
-    const loadFeeAssignments = async (feeId) => {
-        setSelectedFee(feeId);
-        setLoading(true);
+    const fetchAssignedStudents = async (feeId) => {
         try {
-            const res = await fetch.get(`/fees/${feeId}/assigned`);
-            setAssignedStudents(res.data.students || []);
+            const res = await axios.get(`/fees/${feeId}/assigned`);
+            setAssigned(res.data.assignedStudents);
         } catch (err) {
-            console.error("Error loading assigned students:", err);
+            console.log(err);
         }
-        setLoading(false);
     };
+
 
     // Update payment status
     const updateStatus = async (studentId, feeId, newStatus) => {
