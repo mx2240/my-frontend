@@ -78,7 +78,7 @@ export default function FeesPage() {
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch.delete(`/fees`, {
+            const res = await fetch.delete(`/fees/delete/${Id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
