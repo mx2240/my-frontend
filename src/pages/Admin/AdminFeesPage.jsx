@@ -74,6 +74,7 @@
 
 import React, { useState, useEffect } from "react";
 import fetch from '../../fetch'
+import AdminLayout from "../../layouts/AdminLayout";
 
 export default function AddFee() {
     const [form, setForm] = useState({
@@ -132,64 +133,68 @@ export default function AddFee() {
     };
 
     return (
-        <div className="fee-page">
-            <h2>Add Fee</h2>
+        <AdminLayout>
 
-            <form onSubmit={addFee} className="fee-form">
-                <input
-                    type="text"
-                    placeholder="Fee title"
-                    name="title"
-                    value={form.title}
-                    onChange={(e) => setForm({ ...form, title: e.target.value })}
-                    required
-                />
+            <div className="fee-page">
+                <h2>Add Fee</h2>
 
-                <input
-                    type="number"
-                    placeholder="Amount"
-                    name="amount"
-                    value={form.amount}
-                    onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                    required
-                />
+                <form onSubmit={addFee} className="fee-form">
+                    <input
+                        type="text"
+                        placeholder="Fee title"
+                        name="title"
+                        value={form.title}
+                        onChange={(e) => setForm({ ...form, title: e.target.value })}
+                        required
+                    />
 
-                <textarea
-                    placeholder="Description (optional)"
-                    name="description"
-                    value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                />
+                    <input
+                        type="number"
+                        placeholder="Amount"
+                        name="amount"
+                        value={form.amount}
+                        onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                        required
+                    />
 
-                <button type="submit">Add Fee</button>
-            </form>
+                    <textarea
+                        placeholder="Description (optional)"
+                        name="description"
+                        value={form.description}
+                        onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    />
 
-            <h3>All Fees</h3>
-            <table className="fee-table">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Amount</th>
-                        <th>Description</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
+                    <button type="submit">Add Fee</button>
+                </form>
 
-                <tbody>
-                    {fees.map((fee) => (
-                        <tr key={fee._id}>
-                            <td>{fee.title}</td>
-                            <td>{fee.amount}</td>
-                            <td>{fee.description}</td>
-                            <td>
-                                <button className="delete-btn" onClick={() => deleteFee(fee._id)}>
-                                    Delete
-                                </button>
-                            </td>
+                <h3>All Fees</h3>
+                <table className="fee-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Amount</th>
+                            <th>Description</th>
+                            <th>Action</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+
+                    <tbody>
+                        {fees.map((fee) => (
+                            <tr key={fee._id}>
+                                <td>{fee.title}</td>
+                                <td>{fee.amount}</td>
+                                <td>{fee.description}</td>
+                                <td>
+                                    <button className="delete-btn" onClick={() => deleteFee(fee._id)}>
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </AdminLayout>
     );
+
 }

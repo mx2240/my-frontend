@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import fetch from '../fetch'
-import "./AddStudent.css";
+
 
 export default function AddStudent() {
     const [form, setForm] = useState({

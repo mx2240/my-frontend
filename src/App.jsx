@@ -8,6 +8,7 @@ import './css/Register.css';
 import './css/Fees.css';
 import './css/AdminDashboard.css'
 import './css/StudentDashboard.css'
+import './css/AddStudent.css'
 
 
 
@@ -47,6 +48,7 @@ import Login from './Auth/Login';
 import Register from './Auth/Register'
 import PrivateRoute from './routes/PrivateRoute';
 import { AuthProvider } from "./context/AuthContext";
+import Logout from './Auth/Logoout';
 
 
 import LandingPage from './pages/LandingPage';
@@ -95,6 +97,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/Add-student" element={<StudentRegistration />} />
+        <Route path="/logout" element={<Logout />} />
+
 
 
 

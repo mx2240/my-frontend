@@ -16,10 +16,10 @@ const StudentDashboard = () => {
         async function loadStats() {
             try {
                 const [coursesRes, enrollRes, feesRes, notesRes] = await Promise.all([
-                    fetch("/api/courses", { headers: { Authorization: `Bearer ${token}` } }),
-                    fetch("/api/student/enrollments", { headers: { Authorization: `Bearer ${token}` } }),
-                    fetch("/api/fees/my-fees", { headers: { Authorization: `Bearer ${token}` } }),
-                    fetch("/api/notifications/my-notifications", { headers: { Authorization: `Bearer ${token}` } }),
+                    fetch("/courses", { headers: { Authorization: `Bearer ${token}` } }),
+                    fetch("/student/enrollments", { headers: { Authorization: `Bearer ${token}` } }),
+                    fetch("/fees/my-fees", { headers: { Authorization: `Bearer ${token}` } }),
+                    fetch("/notifications/my-notifications", { headers: { Authorization: `Bearer ${token}` } }),
                 ]);
 
                 const [courses, enrollments, fees, notes] = await Promise.all([
