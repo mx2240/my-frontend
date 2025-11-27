@@ -90,7 +90,7 @@ export default function AddFee() {
     // Load all fees
     const loadFees = () => {
         fetch
-            .get("/api/fees", {
+            .get("/fees", {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((res) => setFees(res.data.fees))
@@ -123,7 +123,7 @@ export default function AddFee() {
 
         try {
             await fetch.delete(
-                `/api/fees/${id}`,
+                `/fees/${id}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             loadFees();
