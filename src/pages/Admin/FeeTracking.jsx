@@ -111,7 +111,7 @@ export default function FeeTracking() {
         setSelectedFee(feeId);
         setLoading(true);
         try {
-            const res = await fetch.get(`/assigned`);
+            const res = await fetch.get(`/fees/assigned`);
             setAssignedStudents(res.data.students || []);
         } catch (err) {
             console.error("Error loading assigned students:", err);
