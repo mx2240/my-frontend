@@ -125,7 +125,7 @@ function AssignFee() {
 
     const loadData = async () => {
         try {
-            const resStudents = await fetch.get("/students/all");
+            const resStudents = await fetch.get("/students");
             const resFees = await axios.get("/fees");
 
             setStudents(resStudents.data.students);
