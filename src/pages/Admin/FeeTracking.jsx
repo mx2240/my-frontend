@@ -95,7 +95,7 @@ function FeeTracking() {
 
     const fetchAssignments = async () => {
         try {
-            const res = await fetch.get("/assign");
+            const res = await fetch.get("/assign-fee/");
             setAssignedFees(res.data.data || []);
             setLoading(false);
         } catch (error) {
