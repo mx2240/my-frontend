@@ -112,7 +112,7 @@
 
 
 import React, { useEffect, useState } from "react";
-import fetch from "../../fetch"
+import fetch from "../../fetch";
 import toast from "react-hot-toast";
 import AdminLayout from "../../layouts/AdminLayout";
 
@@ -126,7 +126,7 @@ function AssignFee() {
     const loadData = async () => {
         try {
             const resStudents = await fetch.get("/students");
-            const resFees = await axios.get("/fees");
+            const resFees = await fetch.get("/fees");
 
             setStudents(resStudents.data.students);
             setFees(resFees.data.fees);
