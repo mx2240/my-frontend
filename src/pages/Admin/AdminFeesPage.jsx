@@ -99,7 +99,7 @@ export default function FeesPage() {
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch.post(`/fees/assign`, assignData, {
+            const res = await fetch.post(`/assign-fee/assign`, assignData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
