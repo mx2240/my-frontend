@@ -1,121 +1,72 @@
-// import React, { useContext, useState } from "react";
-// import StudentLayout from "../../layouts/StudentLayout";
-// import { AuthContext } from "../../context/AuthProvider";
-
-// const Profile = () => {
-//     const { user, token, login } = useContext(AuthContext);
-//     const [form, setForm] = useState({ name: user?.name || '', email: user?.email || '' });
-
-//     const handleSave = async () => {
-//         try {
-//             const res = await fetch(`/api/users/${user._id}`, {
-//                 method: 'PUT',
-//                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-//                 body: JSON.stringify(form)
-//             });
-//             const data = await res.json();
-//             if (res.ok) login(data.user, token); // update context and localStorage
-//             alert(data.message || "Profile updated");
-//         } catch (err) { console.error(err); alert("Save failed"); }
-//     };
-
-//     return (
-//         <StudentLayout>
-//             <h2 className="text-xl font-semibold mb-4">Profile</h2>
-//             <div className="bg-white p-6 rounded shadow max-w-xl">
-//                 <label className="block mb-2">Full name</label>
-//                 <input className="w-full p-2 border rounded mb-4" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
-//                 <label className="block mb-2">Email</label>
-//                 <input className="w-full p-2 border rounded mb-4" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-//                 <button onClick={handleSave} className="px-4 py-2 bg-[var(--navy)] text-white rounded">Save</button>
-//             </div>
-//         </StudentLayout>
-//     );
-// };
-// export default Profile;
-
-import { useState } from "react";
-import { FaUser } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import StudentLayout from "../../layouts/StudentLayout";
+import fetch from "../../fetch";
 
 const StudentProfile = () => {
-    const [profilePic, setProfilePic] = useState(null);
+    const [student, setStudent] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const handlePicUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) setProfilePic(URL.createObjectURL(file));
-    };
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const token = localStorage.getItem("token"); // Adjust if using context
+                const res = await fetch.get("/students/me", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setStudent(res.data.student);
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
+    if (loading) return <StudentLayout><p>Loading profile...</p></StudentLayout>;
+    if (!student) return <StudentLayout><p>No profile found.</p></StudentLayout>;
 
     return (
-        <div className="min-h-screen bg-gray-100 p-6">
-            <div className="bg-white shadow rounded-xl p-8 max-w-3xl mx-auto">
+        <StudentLayout>
+            <h1 className="text-2xl font-bold mb-6">My Profile</h1>
 
-                <h1 className="text-2xl font-bold text-gray-800 mb-6">
-                    Student Profile
-                </h1>
-
-                {/* Profile Picture */}
-                <div className="flex flex-col items-center mb-8">
-                    <img
-                        src={
-                            profilePic ||
-                            "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                        }
-                        className="w-32 h-32 rounded-full shadow mb-4 object-cover"
-                    />
-
-                    <label className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                        Upload Photo
-                        <input type="file" className="hidden" onChange={handlePicUpload} />
-                    </label>
-                </div>
-
-                {/* Profile Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                    <div>
-                        <label className="text-gray-600 text-sm">Full Name</label>
-                        <input
-                            type="text"
-                            className="w-full mt-1 p-3 border rounded-lg"
-                            placeholder="John Doe"
-                        />
+            <div className="bg-white shadow rounded-xl p-6 max-w-xl">
+                <div className="flex items-center mb-6">
+                    <div className="w-20 h-20 bg-gray-200 rounded-full mr-6 flex items-center justify-center text-3xl">
+                        {student.name.charAt(0)}
                     </div>
-
                     <div>
-                        <label className="text-gray-600 text-sm">Email Address</label>
-                        <input
-                            type="email"
-                            className="w-full mt-1 p-3 border rounded-lg"
-                            placeholder="student@example.com"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="text-gray-600 text-sm">Phone Number</label>
-                        <input
-                            type="text"
-                            className="w-full mt-1 p-3 border rounded-lg"
-                            placeholder="+233 50 000 0000"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="text-gray-600 text-sm">Program</label>
-                        <input
-                            type="text"
-                            className="w-full mt-1 p-3 border rounded-lg"
-                            placeholder="BSc Computer Science"
-                        />
+                        <h2 className="text-xl font-semibold">{student.name}</h2>
+                        <p className="text-gray-500">{student.email}</p>
                     </div>
                 </div>
 
-                <button className="mt-8 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
-                    Save Changes
-                </button>
+                <div className="space-y-3">
+                    <div>
+                        <span className="font-medium text-gray-600">Class Level:</span> {student.classLevel || "N/A"}
+                    </div>
+                    <div>
+                        <span className="font-medium text-gray-600">Class:</span> {student.studentClass || "N/A"}
+                    </div>
+                    <div>
+                        <span className="font-medium text-gray-600">Phone:</span> {student.phone || "N/A"}
+                    </div>
+                    <div>
+                        <span className="font-medium text-gray-600">Joined:</span> {new Date(student.createdAt).toLocaleDateString()}
+                    </div>
+                </div>
+
+                <div className="mt-6">
+                    <button className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        Edit Profile
+                    </button>
+                </div>
             </div>
-        </div>
+        </StudentLayout>
     );
 };
 
 export default StudentProfile;
-

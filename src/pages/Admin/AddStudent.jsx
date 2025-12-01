@@ -74,6 +74,7 @@ function StudentPage() {
                     <input type="text" name="phone" placeholder="Phone"
                         value={form.phone} onChange={handleChange} />
 
+
                     <button style={{
                         padding: "10px",
                         background: "black",
