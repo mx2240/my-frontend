@@ -80,7 +80,7 @@ import StudentGrades from './pages/Student/StudentGrades';
 import StudentNotifications from './pages/Student/StudentNotifications';
 import StudentAssignments from './pages/Student/StudentAssignments';
 import Dashboard from './components/StudentDasboard/Dashboard';
-import StudentRegistration from './Auth/StudentRegistration'
+// import StudentRegistration from './Auth/StudentRegistration'
 
 
 
@@ -96,7 +96,7 @@ function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/Add-student" element={<StudentRegistration />} />
+        {/* <Route path="/Add-student" element={<StudentRegistration />} /> */}
         <Route path="/logout" element={<Logout />} />
 
 
