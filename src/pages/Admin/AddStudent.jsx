@@ -74,6 +74,10 @@ function StudentPage() {
                     <input type="text" name="phone" placeholder="Phone"
                         value={form.phone} onChange={handleChange} />
 
+                    <input type="password" name="password" placeholder="password"
+                        value={form.password} onChange={handleChange} />
+
+
 
                     <button style={{
                         padding: "10px",
