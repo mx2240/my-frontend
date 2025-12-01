@@ -14,7 +14,7 @@ export default function Login() {
         e.preventDefault();
         try {
             setLoading(true);
-            const res = await fetch.post("/students/login", form);
+            const res = await fetch.post("/student/login", form);
             if (!res.data?.ok && !res.data?.body) {
                 // old shape fallback
                 if (!res.ok) return toast.error(res.message || "Login failed");
