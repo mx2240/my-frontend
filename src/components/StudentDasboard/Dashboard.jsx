@@ -136,56 +136,59 @@ export default function StudentDashboard() {
 
     return (
 
+        <StudentLayout>
 
-        <div className="p-6">
+            <div className="p-6">
 
-            {/* Welcome Section */}
-            <div className="bg-gradient-to-r from-blue-500 to-blue-700 text-white p-6 rounded-xl shadow">
-                <h2 className="text-2xl font-bold">
-                    Welcome, {student?.name || "Student"} 👋
-                </h2>
-                <p className="text-sm opacity-80 mt-1">
-                    Here's an overview of your academic activity.
-                </p>
+                {/* Welcome Section */}
+                <div className="bg-gradient-to-r from-blue-500 to-blue-700 text-white p-6 rounded-xl shadow">
+                    <h2 className="text-2xl font-bold">
+                        Welcome, {student?.name || "Student"} 👋
+                    </h2>
+                    <p className="text-sm opacity-80 mt-1">
+                        Here's an overview of your academic activity.
+                    </p>
+                </div>
+
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+
+                    <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
+                        <h3 className="text-lg font-semibold">My Fees</h3>
+                        <p className="text-3xl font-bold text-blue-600">{fees}</p>
+                    </div>
+
+                    <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
+                        <h3 className="text-lg font-semibold">Attendance</h3>
+                        <p className="text-3xl font-bold text-green-600">{attendance}%</p>
+                    </div>
+
+                    <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
+                        <h3 className="text-lg font-semibold">Results</h3>
+                        <p className="text-3xl font-bold text-purple-600">{results}</p>
+                    </div>
+
+                    <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
+                        <h3 className="text-lg font-semibold">Courses</h3>
+                        <p className="text-3xl font-bold text-orange-600">{courses}</p>
+                    </div>
+
+                </div>
+
+                {/* Notifications */}
+                <div className="mt-8">
+                    <h3 className="text-xl font-bold mb-3">Latest Notifications</h3>
+
+                    <div className="bg-white p-5 rounded-xl shadow space-y-3">
+                        <p className="text-gray-700">📢 Fee payment reminder.</p>
+                        <p className="text-gray-700">📘 New course material uploaded.</p>
+                        <p className="text-gray-700">📝 Results for Term 2 released.</p>
+                    </div>
+                </div>
+
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-
-                <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
-                    <h3 className="text-lg font-semibold">My Fees</h3>
-                    <p className="text-3xl font-bold text-blue-600">{fees}</p>
-                </div>
-
-                <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
-                    <h3 className="text-lg font-semibold">Attendance</h3>
-                    <p className="text-3xl font-bold text-green-600">{attendance}%</p>
-                </div>
-
-                <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
-                    <h3 className="text-lg font-semibold">Results</h3>
-                    <p className="text-3xl font-bold text-purple-600">{results}</p>
-                </div>
-
-                <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
-                    <h3 className="text-lg font-semibold">Courses</h3>
-                    <p className="text-3xl font-bold text-orange-600">{courses}</p>
-                </div>
-
-            </div>
-
-            {/* Notifications */}
-            <div className="mt-8">
-                <h3 className="text-xl font-bold mb-3">Latest Notifications</h3>
-
-                <div className="bg-white p-5 rounded-xl shadow space-y-3">
-                    <p className="text-gray-700">📢 Fee payment reminder.</p>
-                    <p className="text-gray-700">📘 New course material uploaded.</p>
-                    <p className="text-gray-700">📝 Results for Term 2 released.</p>
-                </div>
-            </div>
-
-        </div>
+        </StudentLayout>
 
     );
 }

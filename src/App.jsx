@@ -81,6 +81,7 @@ import StudentNotifications from './pages/Student/StudentNotifications';
 import StudentAssignments from './pages/Student/StudentAssignments';
 import Dashboard from './components/StudentDasboard/Dashboard';
 import StudentRegistration from './Auth/StudentRegistration'
+import StudentAssignments from './pages/Student/StudentAssignments';
 
 
 
@@ -186,6 +187,7 @@ function App() {
 
 
         {/* StudentRout */}
+        <Route path="/student/layout" element={<StudentLayout />} />
         <Route path="/student/fees" element={<StudentFees />} />
         <Route path="/student/dashboard" element={<StudentDashboard />} />
         <Route path="/Dashboard" element={<Dashboard />} />
