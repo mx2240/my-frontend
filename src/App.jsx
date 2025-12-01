@@ -81,7 +81,6 @@ import StudentNotifications from './pages/Student/StudentNotifications';
 import StudentAssignments from './pages/Student/StudentAssignments';
 import Dashboard from './components/StudentDasboard/Dashboard';
 import StudentRegistration from './Auth/StudentRegistration'
-import StudentAssignments from './pages/Student/StudentAssignments';
 
 
 
