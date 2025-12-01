@@ -56,3 +56,45 @@
 // };
 
 // export default StudentSidebar;
+
+
+
+
+// src/components/student/StudentSidebar.jsx
+import React from "react";
+import { Link } from "react-router-dom";
+
+const StudentSidebar = ({ onNavigate }) => {
+    const menu = [
+        { name: "Dashboard", path: "/student/dashboard" },
+        { name: "My Profile", path: "/student/profile" },
+        { name: "My Courses", path: "/student/courses" },
+        { name: "Attendance", path: "/student/attendance" },
+        { name: "Fees & Payments", path: "/student/fees" },
+        { name: "Exams & Results", path: "/student/results" },
+        { name: "Library", path: "/student/library" },
+        { name: "Hostel", path: "/student/hostel" },
+        { name: "Messages", path: "/student/messages" },
+    ];
+
+    return (
+        <div className="bg-white fixed top-0 left-0 h-full w-64 shadow-md p-6 hidden md:block">
+            <h2 className="text-xl font-bold mb-6">Student Portal</h2>
+
+            <nav>
+                {menu.map((item) => (
+                    <Link
+                        key={item.name}
+                        to={item.path}
+                        onClick={onNavigate}
+                        className="block py-3 px-3 rounded-md text-gray-700 hover:bg-gray-100"
+                    >
+                        {item.name}
+                    </Link>
+                ))}
+            </nav>
+        </div>
+    );
+};
+
+export default StudentSidebar;
