@@ -1,45 +1,93 @@
-import { useState } from "react";
-import fetch from '../fetch'
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import React, { useState } from "react";
+import fetch from "../fetch";
+import { toast } from "react-hot-toast";
 
-export default function Login() {
-    const navigate = useNavigate();
-    const [form, setForm] = useState({ email: "", password: "" });
+const StudentLogin = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
-    const submit = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
+        if (!email || !password) return toast.error("All fields required");
+
         try {
             setLoading(true);
-            const res = await fetch.post("/student", form);
-            if (!res.data?.ok && !res.data?.body) {
-                // old shape fallback
-                if (!res.ok) return toast.error(res.message || "Login failed");
+
+            const res = await fetch.post(
+                "/student/login",
+                { email, password }
+            );
+
+            if (res.data.ok) {
+                toast.success("Login successful");
+
+                // store token
+                localStorage.setItem("studentToken", res.data.token);
+                localStorage.setItem("student", JSON.stringify(res.data.student));
+
+                // redirect to dashboard
+                window.location.href = "/student/dashboard";
             }
-            const payload = res.data?.body || res.data; // handle different shapes
-            const token = payload.token;
-            const user = payload.user;
-            localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(user));
-            toast.success("Login successful");
-            if (user.role === "admin") navigate("/admin");
-            else if (user.role === "student") navigate("/student/dashboard");
-            else navigate("/");
         } catch (err) {
-            console.error(err);
             toast.error(err.response?.data?.message || "Login failed");
-        } finally { setLoading(false); }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <form onSubmit={submit} className="max-w-md mx-auto p-6 bg-white rounded shadow">
-            <h2 className="text-xl font-bold mb-4">Student Login</h2>
-            <input name="email" value={form.email} onChange={handle} placeholder="Email" className="block w-full p-3 border rounded mb-3" />
-            <input name="password" value={form.password} onChange={handle} type="password" placeholder="Password" className="block w-full p-3 border rounded mb-4" />
-            <button disabled={loading} className="w-full bg-blue-600 text-white p-3 rounded">{loading ? "Logging in..." : "Login"}</button>
-        </form>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
+            <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
+                {/* Title */}
+                <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">
+                    Student Login
+                </h2>
+
+                {/* Login Form */}
+                <form onSubmit={handleLogin} className="space-y-4">
+                    <div>
+                        <label className="block text-sm mb-1 text-gray-600">Email</label>
+                        <input
+                            type="email"
+                            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            placeholder="student@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm mb-1 text-gray-600">Password</label>
+                        <input
+                            type="password"
+                            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            placeholder="Enter your password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+
+                    {/* Login Button */}
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+                    >
+                        {loading ? "Logging in..." : "Login"}
+                    </button>
+                </form>
+
+                {/* Footer Info */}
+                <p className="text-center text-gray-600 mt-4 text-sm">
+                    Forgot password?
+                    <span className="text-blue-600 cursor-pointer ml-1 hover:underline">
+                        Contact Admin
+                    </span>
+                </p>
+            </div>
+        </div>
     );
-}
+};
+
+export default StudentLogin;
