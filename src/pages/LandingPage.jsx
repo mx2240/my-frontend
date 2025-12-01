@@ -44,6 +44,7 @@ const LandingPage = () => {
                 <div className="auth-buttons">
                     <a href="/login" className="login-btn">Login</a>
                     <a href="/register" className="register-btn">Register</a>
+                    <a href="/student/login" className="register-btn">Student</a>
                 </div>
             </div>
 
@@ -59,6 +60,7 @@ const LandingPage = () => {
                     <div className="hero-buttons">
                         <a href="/login" className="hero-login">Login</a>
                         <a href="/register" className="hero-register">Register</a>
+                        <a href="/student/login" className="register-btn">Student</a>
                     </div>
                 </div>
             </header>
