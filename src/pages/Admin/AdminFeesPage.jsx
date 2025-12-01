@@ -41,7 +41,7 @@ export default function FeesPage() {
     const loadStudents = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch.get(`/admin/students`, {
+            const res = await fetch.get(`/students`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (res.data.ok) setStudents(res.data.students);
