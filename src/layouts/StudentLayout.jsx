@@ -45,7 +45,7 @@ export default function StudentLayout() {
                 <div className="p-4 text-xl font-bold border-b">Student Portal</div>
 
                 <nav className="p-4 space-y-2">
-                    <Link className="block p-2 rounded hover:bg-gray-200" to="/student/dashboard">
+                    <Link className="block p-2 rounded hover:bg-gray-200" to="/Dashboard">
                         📊 Dashboard
                     </Link>
                     <Link className="block p-2 rounded hover:bg-gray-200" to="/student/fees">

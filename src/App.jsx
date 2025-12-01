@@ -188,7 +188,8 @@ function App() {
         {/* StudentRout */}
         <Route path="/student/fees" element={<StudentFees />} />
         <Route path="/student/dashboard" element={<StudentDashboard />} />
-        <Route path="/payments" element={<Payments />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/student/payments" element={<Payments />} />
         <Route path="/student/timetable" element={<Timetable />} />
         <Route path="/student/my-courses" element={<MyCourses />} />
         <Route path="/student/course-details" element={<CourseDetails />} />
@@ -197,11 +198,12 @@ function App() {
         <Route path="/student/support" element={<StudentSupport />} />
         <Route path="/student/payments" element={<StudentPayments />} />
         <Route path="/student/timetable" element={<StudentTimetable />} />
-        {/* <Route path="/student/announcements" element={<StudentAnnouncements />} /> */}
         <Route path="/student/profile" element={<StudentProfile />} />
         <Route path="/student/grades" element={<StudentGrades />} />
         <Route path="/student/notifications" element={<StudentNotifications />} />
         <Route path="/student/assignments" element={<StudentAssignments />} />
+
+
 
 
 
