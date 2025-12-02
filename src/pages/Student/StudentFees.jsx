@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import fetch from "../../fetch";
-import StudentLayout from "../../layout/StudentLayout";
+import StudentLayout from "../../layouts/StudentLayout";
 
 const StudentFees = () => {
     const [fees, setFees] = useState([]);
