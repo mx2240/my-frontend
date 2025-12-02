@@ -13,7 +13,7 @@ const StudentFees = () => {
         const fetchFees = async () => {
             try {
                 const res = await fetch.get(
-                    "/my/fees",
+                    "fees/my/fees",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
