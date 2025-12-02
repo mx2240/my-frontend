@@ -1,147 +1,56 @@
-// import React, { useEffect, useState } from "react";
-// import StudentLayout from "../../layouts/StudentLayout";
-// import fetch from "../../fetch";
-
-// const StudentProfile = () => {
-//     const [student, setStudent] = useState(null);
-//     const [loading, setLoading] = useState(true);
-
-//     useEffect(() => {
-//         const fetchProfile = async () => {
-//             try {
-//                 const token = localStorage.getItem("token"); // Adjust if using context
-//                 const res = await fetch.get("/students/me", {
-//                     headers: {
-//                         Authorization: `Bearer ${token}`,
-//                     },
-//                 });
-//                 setStudent(res.data.student);
-//             } catch (error) {
-//                 console.error("Error fetching profile:", error);
-//             } finally {
-//                 setLoading(false);
-//             }
-//         };
-
-//         fetchProfile();
-//     }, []);
-
-//     if (loading) return <StudentLayout><p>Loading profile...</p></StudentLayout>;
-//     if (!student) return <StudentLayout><p>No profile found.</p></StudentLayout>;
-
-//     return (
-//         <StudentLayout>
-//             <h1 className="text-2xl font-bold mb-6">My Profile</h1>
-
-//             <div className="bg-white shadow rounded-xl p-6 max-w-xl">
-//                 <div className="flex items-center mb-6">
-//                     <div className="w-20 h-20 bg-gray-200 rounded-full mr-6 flex items-center justify-center text-3xl">
-//                         {student.name.charAt(0)}
-//                     </div>
-//                     <div>
-//                         <h2 className="text-xl font-semibold">{student.name}</h2>
-//                         <p className="text-gray-500">{student.email}</p>
-//                     </div>
-//                 </div>
-
-//                 <div className="space-y-3">
-//                     <div>
-//                         <span className="font-medium text-gray-600">Class Level:</span> {student.classLevel || "N/A"}
-//                     </div>
-//                     <div>
-//                         <span className="font-medium text-gray-600">Class:</span> {student.studentClass || "N/A"}
-//                     </div>
-//                     <div>
-//                         <span className="font-medium text-gray-600">Phone:</span> {student.phone || "N/A"}
-//                     </div>
-//                     <div>
-//                         <span className="font-medium text-gray-600">Joined:</span> {new Date(student.createdAt).toLocaleDateString()}
-//                     </div>
-//                 </div>
-
-//                 <div className="mt-6">
-//                     <button className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-//                         Edit Profile
-//                     </button>
-//                 </div>
-//             </div>
-//         </StudentLayout>
-//     );
-// };
-
-// export default StudentProfile;
-
-
-
 import React, { useEffect, useState } from "react";
 import StudentLayout from "../../layouts/StudentLayout";
 import fetch from "../../fetch";
+import toast from "react-hot-toast";
 
-const StudentProfile = () => {
-    const [student, setStudent] = useState(null);
-    const [loading, setLoading] = useState(true);
+export default function Profile() {
+    const [form, setForm] = useState({ name: "", phone: "", studentClass: "", password: "" });
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const fetchProfile = async () => {
+        (async () => {
             try {
-                const token = localStorage.getItem("token"); // Adjust if using context
-                const res = await fetch.get("/students/me", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                setStudent(res.data.student);
-            } catch (error) {
-                console.error("Error fetching profile:", error);
-            } finally {
-                setLoading(false);
+                const res = await fetch.get("/student/profile/me");
+                if (res.data.ok) setForm({ ...form, ...res.data.student, password: "" });
+            } catch (err) {
+                console.error(err);
+                toast.error("Failed to load profile");
             }
-        };
-
-        fetchProfile();
+        })();
+        // eslint-disable-next-line
     }, []);
 
-    if (loading) return <StudentLayout><p>Loading profile...</p></StudentLayout>;
-    if (!student) return <StudentLayout><p>No profile found.</p></StudentLayout>;
+    const update = async (e) => {
+        e.preventDefault();
+        try {
+            setLoading(true);
+            const res = await fetch.put("/student/profile/me", form);
+            if (res.data.ok) {
+                toast.success("Profile updated");
+                // update local storage user if present
+                const curr = JSON.parse(localStorage.getItem("student") || "null");
+                if (curr) {
+                    localStorage.setItem("student", JSON.stringify(res.data.student));
+                }
+            } else toast.error(res.data.message || "Update failed");
+        } catch (err) {
+            console.error(err);
+            toast.error("Update failed");
+        } finally { setLoading(false); }
+    };
 
     return (
         <StudentLayout>
-            <h1 className="text-2xl font-bold mb-6">My Profile</h1>
-
-            <div className="bg-white shadow rounded-xl p-6 max-w-xl">
-                <div className="flex items-center mb-6">
-                    <div className="w-20 h-20 bg-gray-200 rounded-full mr-6 flex items-center justify-center text-3xl">
-                        {student.name.charAt(0)}
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-semibold">{student.name}</h2>
-                        <p className="text-gray-500">{student.email}</p>
-                    </div>
-                </div>
-
-                <div className="space-y-3">
-                    <div>
-                        <span className="font-medium text-gray-600">Class Level:</span> {student.classLevel || "N/A"}
-                    </div>
-                    <div>
-                        <span className="font-medium text-gray-600">Class:</span> {student.studentClass || "N/A"}
-                    </div>
-                    <div>
-                        <span className="font-medium text-gray-600">Phone:</span> {student.phone || "N/A"}
-                    </div>
-                    <div>
-                        <span className="font-medium text-gray-600">Joined:</span> {new Date(student.createdAt).toLocaleDateString()}
-                    </div>
-                </div>
-
-                <div className="mt-6">
-                    <button className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                        Edit Profile
-                    </button>
-                </div>
+            <div className="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+                <h2 className="text-xl font-semibold mb-4">Your Profile</h2>
+                <form onSubmit={update} className="flex flex-col gap-3">
+                    <input type="text" placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="p-2 border rounded" />
+                    <input type="text" placeholder="Class" value={form.studentClass} onChange={e => setForm({ ...form, studentClass: e.target.value })} className="p-2 border rounded" />
+                    <input type="text" placeholder="Phone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="p-2 border rounded" />
+                    <input type="password" placeholder="New password (leave empty to keep)" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} className="p-2 border rounded" />
+                    <button disabled={loading} className="py-2 px-4 bg-blue-600 text-white rounded">{loading ? "Saving..." : "Save changes"}</button>
+                </form>
             </div>
         </StudentLayout>
     );
-};
-
-export default StudentProfile;
+}
