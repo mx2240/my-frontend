@@ -13,7 +13,7 @@ const StudentFees = () => {
         const fetchFees = async () => {
             try {
                 const res = await fetch.get(
-                    "https://my-backend-amber.vercel.app/api/student/my-fees",
+                    "/my/fees",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
