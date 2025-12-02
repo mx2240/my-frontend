@@ -1,49 +1,71 @@
-import { FaMoneyBillWave, FaCheck, FaTimes } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import api from "../../utils/api"
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import StudentLayout from "../../layouts/StudentLayout";
 
-const StudentPayments = () => {
-    const payments = [
-        { invoice: "INV-001", amount: "₵450", status: "Paid" },
-        { invoice: "INV-002", amount: "₵300", status: "Unpaid" },
-        { invoice: "INV-003", amount: "₵200", status: "Paid" },
-    ];
+function StudentPaymentPage() {
+    const [fees, setFees] = useState([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        fetchFees();
+    }, []);
+
+    async function fetchFees() {
+        try {
+            const res = await api.get("/student/my-fees");
+            if (res.data.ok) setFees(res.data.fees);
+        } catch (err) {
+            toast.error("Unable to load fees");
+        }
+    }
+
+    async function handlePay(assignedFeeId) {
+        try {
+            const res = await api.post("/paystack/initiate", { assignedFeeId });
+
+            if (res.data.ok) {
+                window.location.href = res.data.authorization_url; // redirect to paystack
+            }
+
+        } catch (err) {
+            toast.error("Payment init failed");
+        }
+    }
 
     return (
-        <div className="min-h-screen bg-gray-100 p-6">
-            <h1 className="text-2xl font-bold mb-6">Payment History</h1>
+        <StudentLayout>
+            <div className="p-5">
+                <h2 className="text-2xl font-bold mb-4">My Fees & Payments</h2>
 
-            <div className="bg-white shadow rounded-xl p-6">
-                <table className="w-full border-collapse">
-                    <thead>
-                        <tr className="bg-gray-200 text-left">
-                            <th className="p-3">Invoice</th>
-                            <th className="p-3">Amount</th>
-                            <th className="p-3">Status</th>
-                        </tr>
-                    </thead>
+                <div className="space-y-4">
+                    {fees.map((item) => (
+                        <div key={item._id} className="border p-4 rounded shadow bg-white">
+                            <h3 className="font-bold text-lg">{item.fee.title}</h3>
+                            <p>Amount: GH₵ {item.fee.amount}</p>
+                            <p>Status:
+                                <span
+                                    className={`ml-2 px-2 py-1 rounded text-white 
+                                ${item.status === "paid" ? "bg-green-600" : "bg-red-600"}`}>
+                                    {item.status}
+                                </span>
+                            </p>
 
-                    <tbody>
-                        {payments.map((item, index) => (
-                            <tr key={index} className="border-b">
-                                <td className="p-3">{item.invoice}</td>
-                                <td className="p-3">{item.amount}</td>
-                                <td className="p-3">
-                                    {item.status === "Paid" ? (
-                                        <span className="text-green-600 flex items-center gap-2">
-                                            <FaCheck /> Paid
-                                        </span>
-                                    ) : (
-                                        <span className="text-red-600 flex items-center gap-2">
-                                            <FaTimes /> Unpaid
-                                        </span>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                            {item.status !== "paid" && (
+                                <button
+                                    className="mt-3 bg-blue-600 text-white px-4 py-2 rounded"
+                                    onClick={() => handlePay(item._id)}
+                                >
+                                    Pay Now
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
+        </StudentLayout>
     );
-};
+}
 
-export default StudentPayments;
+export default StudentPaymentPage;

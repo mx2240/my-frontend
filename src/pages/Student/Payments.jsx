@@ -1,39 +1,68 @@
-import React, { useContext, useEffect, useState } from "react";
-import StudentLayout from "../../layouts/StudentLayout";
-import { AuthContext } from "../../context/AuthProvider";
+import React, { useEffect, useState } from "react";
+import api from "../utils/api";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
-const Payments = () => {
-    const { token } = useContext(AuthContext);
+function StudentPaymentPage() {
     const [fees, setFees] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        (async () => {
-            try {
-                const res = await fetch("/api/fees/my-fees", { headers: { Authorization: `Bearer ${token}` } });
-                const data = await res.json();
-                setFees(Array.isArray(data) ? data : []);
-            } catch (err) { console.error(err); }
-        })();
-    }, [token]);
+        fetchFees();
+    }, []);
+
+    async function fetchFees() {
+        try {
+            const res = await api.get("/student-fees/my-fees");
+            if (res.data.ok) setFees(res.data.fees);
+        } catch (err) {
+            toast.error("Unable to load fees");
+        }
+    }
+
+    async function handlePay(assignedFeeId) {
+        try {
+            const res = await api.post("/paystack/initiate", { assignedFeeId });
+
+            if (res.data.ok) {
+                window.location.href = res.data.authorization_url; // redirect to paystack
+            }
+
+        } catch (err) {
+            toast.error("Payment init failed");
+        }
+    }
 
     return (
-        <StudentLayout>
-            <h2 className="text-xl font-semibold mb-4">My Payments</h2>
-            <div className="grid gap-4">
-                {fees.length === 0 && <div className="p-4 bg-white rounded shadow">No fees found.</div>}
-                {fees.map(f => (
-                    <div key={f._id} className="p-4 bg-white rounded shadow flex justify-between items-center">
-                        <div>
-                            <h3 className="font-semibold">{f.title}</h3>
-                            <p className="text-sm text-gray-500">Amount: GH₵{f.amount}</p>
-                        </div>
-                        <div>
-                            <span className={`px-3 py-1 rounded ${f.isPaid ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{f.isPaid ? 'Paid' : 'Pending'}</span>
-                        </div>
+        <div className="p-5">
+            <h2 className="text-2xl font-bold mb-4">My Fees & Payments</h2>
+
+            <div className="space-y-4">
+                {fees.map((item) => (
+                    <div key={item._id} className="border p-4 rounded shadow bg-white">
+                        <h3 className="font-bold text-lg">{item.fee.title}</h3>
+                        <p>Amount: GH₵ {item.fee.amount}</p>
+                        <p>Status:
+                            <span
+                                className={`ml-2 px-2 py-1 rounded text-white 
+                                ${item.status === "paid" ? "bg-green-600" : "bg-red-600"}`}>
+                                {item.status}
+                            </span>
+                        </p>
+
+                        {item.status !== "paid" && (
+                            <button
+                                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded"
+                                onClick={() => handlePay(item._id)}
+                            >
+                                Pay Now
+                            </button>
+                        )}
                     </div>
                 ))}
             </div>
-        </StudentLayout>
+        </div>
     );
-};
-export default Payments;
+}
+
+export default StudentPaymentPage;

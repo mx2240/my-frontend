@@ -1,0 +1,13 @@
+import axios from "axios";
+
+const api = axios.create({
+    baseURL: "https://my-backend-amber.vercel.app/api",
+});
+
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem("studentToken");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
+
+export default api;
