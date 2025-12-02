@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import fetch from "../../fetch";
 import StudentLayout from "../../layout/StudentLayout";
 
 const StudentFees = () => {
@@ -12,7 +12,7 @@ const StudentFees = () => {
     useEffect(() => {
         const fetchFees = async () => {
             try {
-                const res = await axios.get(
+                const res = await fetch.get(
                     "https://my-backend-amber.vercel.app/api/student/my-fees",
                     {
                         headers: {
@@ -93,8 +93,8 @@ const StudentFees = () => {
                                     Status:{" "}
                                     <span
                                         className={`px-3 py-1 rounded-lg text-white ${item.status === "paid"
-                                                ? "bg-green-600"
-                                                : "bg-red-500"
+                                            ? "bg-green-600"
+                                            : "bg-red-500"
                                             }`}
                                     >
                                         {item.status ? item.status.toUpperCase() : "UNPAID"}
