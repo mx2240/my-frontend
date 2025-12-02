@@ -1,61 +1,86 @@
 import React, { useEffect, useState } from "react";
-import api from "../../utils/api";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import toast from "react-hot-toast";
-import StudentLayout from "../../layouts/StudentLayout";
 
 function StudentPaymentPage() {
     const [fees, setFees] = useState([]);
-    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+
+    const API_BASE = "https://my-backend-amber.vercel.app";
+
+    const token = localStorage.getItem("studentToken");
 
     useEffect(() => {
         fetchFees();
     }, []);
 
-    async function fetchFees() {
+    const fetchFees = async () => {
         try {
-            const res = await api.get("/student/my-fees");
-            if (res.data.ok) setFees(res.data.fees);
-        } catch (err) {
-            toast.error("Unable to load fees");
-        }
-    }
+            const res = await axios.get(`${API_BASE}/api/student/fees/my-fees`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
 
-    async function handlePay(assignedFeeId) {
+            if (res.data.ok) {
+                setFees(res.data.fees);
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to load fees");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // ▶️ Paystack Initiate Payment
+    const handlePayNow = async (assignedFeeId) => {
         try {
-            const res = await api.post("/paystack/initiate", { assignedFeeId });
+            const res = await axios.post(
+                `${API_BASE}/api/payments/initiate`,
+                { assignedFeeId },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
 
             if (res.data.ok) {
                 window.location.href = res.data.authorization_url; // redirect to paystack
             }
-
         } catch (err) {
-            toast.error("Payment init failed");
+            console.error(err);
+            toast.error("Unable to initiate payment");
         }
-    }
+    };
+
+    if (loading) return <p>Loading fees...</p>;
 
     return (
-        <StudentLayout>
-            <div className="p-5">
-                <h2 className="text-2xl font-bold mb-4">My Fees & Payments</h2>
+        <div style={styles.container}>
+            <h2 style={styles.header}>My Fees & Payment</h2>
 
-                <div className="space-y-4">
+            {fees.length === 0 ? (
+                <p>No fees assigned.</p>
+            ) : (
+                <div style={styles.cardWrapper}>
                     {fees.map((item) => (
-                        <div key={item._id} className="border p-4 rounded shadow bg-white">
-                            <h3 className="font-bold text-lg">{item.fee.title}</h3>
-                            <p>Amount: GH₵ {item.fee.amount}</p>
-                            <p>Status:
+                        <div key={item._id} style={styles.card}>
+                            <h3>{item.fee.title}</h3>
+                            <p><strong>Amount:</strong> GHS {item.fee.amount}</p>
+                            <p><strong>Status:</strong>
                                 <span
-                                    className={`ml-2 px-2 py-1 rounded text-white 
-                                ${item.status === "paid" ? "bg-green-600" : "bg-red-600"}`}>
-                                    {item.status}
+                                    style={{
+                                        color: item.status === "paid" ? "green" : "red",
+                                        fontWeight: "bold",
+                                    }}
+                                >
+                                    {item.status.toUpperCase()}
                                 </span>
                             </p>
 
+                            {/* Show Pay Now if unpaid */}
                             {item.status !== "paid" && (
                                 <button
-                                    className="mt-3 bg-blue-600 text-white px-4 py-2 rounded"
-                                    onClick={() => handlePay(item._id)}
+                                    style={styles.payBtn}
+                                    onClick={() => handlePayNow(item._id)}
                                 >
                                     Pay Now
                                 </button>
@@ -63,9 +88,41 @@ function StudentPaymentPage() {
                         </div>
                     ))}
                 </div>
-            </div>
-        </StudentLayout>
+            )}
+        </div>
     );
 }
+
+const styles = {
+    container: {
+        padding: "30px",
+        maxWidth: "900px",
+        margin: "0 auto",
+        fontFamily: "Arial",
+    },
+    header: {
+        marginBottom: "20px",
+    },
+    cardWrapper: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gap: "20px",
+    },
+    card: {
+        padding: "20px",
+        borderRadius: "10px",
+        background: "#fff",
+        boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
+    },
+    payBtn: {
+        padding: "10px 15px",
+        background: "green",
+        color: "white",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+        marginTop: "10px",
+    },
+};
 
 export default StudentPaymentPage;
