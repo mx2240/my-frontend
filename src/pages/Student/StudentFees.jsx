@@ -1,111 +1,116 @@
 import React, { useEffect, useState } from "react";
-import fetch from "../../fetch";
-import Studentlayout from '../../layouts/StudentLayout'
+import axios from "axios";
+import StudentLayout from "../../layout/StudentLayout";
 
-const API_URL = "https://my-backend-amber.vercel.app/api/student/fees";
-
-function StudentFees() {
+const StudentFees = () => {
     const [fees, setFees] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
+    const token = localStorage.getItem("studentToken");
+
     useEffect(() => {
-        fetchFees();
-    }, []);
+        const fetchFees = async () => {
+            try {
+                const res = await axios.get(
+                    "https://my-backend-amber.vercel.app/api/student/my-fees",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
-    const fetchFees = async () => {
-        try {
-            const token = localStorage.getItem("studentToken");
+                if (res.data.ok) {
+                    setFees(res.data.fees);
+                } else {
+                    setError("Failed to load fees");
+                }
+            } catch (err) {
+                console.error(err);
 
-            if (!token) {
-                setError("No token found — please login again");
+                if (err.response && err.response.status === 401) {
+                    setError("Session expired. Please login again.");
+                    localStorage.removeItem("studentToken");
+                    localStorage.removeItem("student");
+                } else {
+                    setError("Failed to fetch fees");
+                }
+            } finally {
                 setLoading(false);
-                return;
             }
+        };
 
-            const res = await fetch.get(`${API_URL}/my-fees`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+        fetchFees();
+    }, [token]);
 
-            if (res.data.ok) {
-                setFees(res.data.fees);
-            } else {
-                setError(res.data.message || "Failed to load fees");
-            }
-        } catch (err) {
-            console.error("Fees fetch error:", err);
-            setError("Server error");
-        }
+    if (loading) {
+        return (
+            <StudentLayout>
+                <div className="text-center py-10 text-lg font-semibold">
+                    Loading fees...
+                </div>
+            </StudentLayout>
+        );
+    }
 
-        setLoading(false);
-    };
+    if (error) {
+        return (
+            <StudentLayout>
+                <div className="text-center py-10 text-red-500 text-lg font-semibold">
+                    {error}
+                </div>
+            </StudentLayout>
+        );
+    }
 
     return (
-        <Studentlayout>
-            <div className="p-6 max-w-4xl mx-auto">
-                <h1 className="text-2xl font-bold mb-4 text-blue-700">📘 My Fees</h1>
+        <StudentLayout>
+            <div className="p-4">
+                <h1 className="text-2xl font-bold mb-6">My Fees</h1>
 
-                {/* Loading */}
-                {loading && (
-                    <p className="text-center text-gray-600">Loading fees...</p>
-                )}
+                {fees.length === 0 ? (
+                    <p className="text-gray-600">No fees assigned yet.</p>
+                ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {fees.map((item) => (
+                            <div
+                                key={item._id}
+                                className="p-5 bg-white rounded-xl shadow border"
+                            >
+                                <h2 className="text-xl font-semibold">
+                                    {item.fee?.title || "Untitled Fee"}
+                                </h2>
 
-                {/* Error */}
-                {error && (
-                    <p className="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">
-                        {error}
-                    </p>
-                )}
+                                <p className="text-gray-700 mt-2">
+                                    Amount:{" "}
+                                    <span className="font-bold text-green-600">
+                                        GH₵ {item.fee?.amount}
+                                    </span>
+                                </p>
 
-                {/* Fees Table */}
-                {!loading && !error && fees.length === 0 && (
-                    <p className="text-center text-gray-500">No fees assigned yet.</p>
-                )}
-
-                {!loading && fees.length > 0 && (
-                    <div className="overflow-x-auto rounded-lg shadow">
-                        <table className="w-full border-collapse">
-                            <thead>
-                                <tr className="bg-blue-600 text-white text-left">
-                                    <th className="p-3">Fee Title</th>
-                                    <th className="p-3">Amount</th>
-                                    <th className="p-3">Status</th>
-                                    <th className="p-3">Assigned On</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {fees.map((item) => (
-                                    <tr
-                                        key={item._id}
-                                        className="border-b hover:bg-gray-50 transition"
+                                <p className="mt-3">
+                                    Status:{" "}
+                                    <span
+                                        className={`px-3 py-1 rounded-lg text-white ${item.status === "paid"
+                                                ? "bg-green-600"
+                                                : "bg-red-500"
+                                            }`}
                                     >
-                                        <td className="p-3 font-medium">{item.fee?.title}</td>
-                                        <td className="p-3 text-green-700 font-semibold">
-                                            GH₵{item.fee?.amount}
-                                        </td>
-                                        <td className="p-3">
-                                            <span
-                                                className={`px-2 py-1 rounded text-white text-sm ${item.status === "paid"
-                                                    ? "bg-green-600"
-                                                    : "bg-red-500"
-                                                    }`}
-                                            >
-                                                {item.status?.toUpperCase() || "UNPAID"}
-                                            </span>
-                                        </td>
-                                        <td className="p-3">
-                                            {new Date(item.createdAt).toLocaleDateString()}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                        {item.status ? item.status.toUpperCase() : "UNPAID"}
+                                    </span>
+                                </p>
+
+                                <p className="mt-3 text-sm text-gray-500">
+                                    Assigned on: {new Date(item.createdAt).toLocaleDateString()}
+                                </p>
+                            </div>
+                        ))}
                     </div>
                 )}
             </div>
-        </Studentlayout>
+        </StudentLayout>
     );
-}
+};
 
 export default StudentFees;
