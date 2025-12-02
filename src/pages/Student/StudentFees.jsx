@@ -24,7 +24,7 @@ function StudentFees() {
             }
 
             const res = await fetch.get(`${API_URL}/my-fees`, {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${studentToken}` },
             });
 
             if (res.data.ok) {
