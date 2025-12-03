@@ -13,7 +13,7 @@ const MyCourses = () => {
     const loadMyCourses = async () => {
         try {
             const res = await fetch(
-                `${import.meta.env.VITE_API_URL}/enrollments/my-courses`,
+                `/enrollments/my-courses`,
                 {
                     headers: {
                         "Content-Type": "application/json",
