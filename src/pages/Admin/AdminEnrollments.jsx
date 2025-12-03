@@ -12,8 +12,11 @@ export default function AdminEnroll() {
 
     const load = async () => {
         try {
-            const s = await fetch.get("/students");
-            setStudents(s.data?.body || []);
+            const res = await fetch.get(`/students`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.data.ok) setStudents(res.data.students);
+
             const c = await fetch.get("/courses"); // ensure /courses returns list
             setCourses(c.data?.body || c.data || []);
             const e = await fetch.get("/enrollments");
