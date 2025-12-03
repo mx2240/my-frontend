@@ -7,37 +7,71 @@ export default function AdminEnroll() {
     const [students, setStudents] = useState([]);
     const [courses, setCourses] = useState([]);
     const [enrollments, setEnrollments] = useState([]);
-    const [selected, setSelected] = useState({ studentId: "", courseId: "" });
+
+    const [selectedStudent, setSelectedStudent] = useState("");
+    const [selectedCourse, setSelectedCourse] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const load = async () => {
-        try {
-            const s = await fetch.get("/students");
-            setStudents(s.data?.body || []);
-            const c = await fetch.get("/courses"); // ensure /courses returns list
-            setCourses(c.data?.body || c.data || []);
-            const e = await fetch.get("/enrollments");
-            setEnrollments(e.data?.body || e.data || []);
-        } catch (err) { console.error(err); toast.error("Load failed"); }
-    };
+    // Load students, courses, enrollments
+    useEffect(() => {
+        loadStudents();
+        loadCourses();
+        loadEnrollments();
+    }, []);
 
-    useEffect(() => { load(); }, []);
-
-    const enroll = async () => {
-        if (!selected.studentId || !selected.courseId) return toast.error("Select both");
+    const loadStudents = async () => {
         try {
-            setLoading(true);
-            const res = await fetch.post("/enrollments/admin/enroll", { studentId: selected.studentId, courseId: selected.courseId });
-            if (res.data?.ok) {
-                toast.success("Enrolled");
-                setSelected({ studentId: "", courseId: "" });
-                load();
-            } else toast.error(res.data?.message || "Failed");
+            const res = await api.get("/students"); // ✅ correct route
+            if (res.data.ok) setStudents(res.data.body);
         } catch (err) {
             console.error(err);
-            toast.error(err.response?.data?.message || "Failed");
-        } finally { setLoading(false); }
-    }
+            toast.error("Failed to load students");
+        }
+    };
+
+    const loadCourses = async () => {
+        try {
+            const res = await api.get("/courses"); // ✅ ensure this matches your backend route
+            setCourses(res.data.body || []);
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to load courses");
+        }
+    };
+
+    const loadEnrollments = async () => {
+        try {
+            const res = await api.get("/enrollments"); // ✅ ensure route exists
+            setEnrollments(res.data.body || []);
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to load enrollments");
+        }
+    };
+
+    const handleEnroll = async () => {
+        if (!selectedStudent || !selectedCourse)
+            return toast.error("Select student & course");
+
+        try {
+            setLoading(true);
+
+            const res = await api.post("/enrollments/admin/enroll", { // ✅ ensure route exists
+                studentId: selectedStudent,
+                courseId: selectedCourse,
+            });
+
+            toast.success("Enrollment successful!");
+            loadEnrollments();
+            setSelectedStudent("");
+            setSelectedCourse("");
+        } catch (err) {
+            console.error(err);
+            toast.error(err.response?.data?.message || "Enrollment failed");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <AdminLayout>
