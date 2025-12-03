@@ -1,82 +1,71 @@
 import React, { useEffect, useState, useContext } from "react";
 import StudentLayout from "../../layouts/StudentLayout";
 import { AuthContext } from "../../context/AuthProvider";
+import api from "../../fetch";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import fetch from "../../fetch"
 
-const MyCourses = () => {
+export default function MyCourses() {
     const { token } = useContext(AuthContext);
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const loadMyCourses = async () => {
+    useEffect(() => {
+        loadCourses();
+    }, [token]);
+
+    async function loadCourses() {
         try {
-            const res = await fetch.get(
-                `/enrollments/my-courses`,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await api.get("/enrollments/my-courses", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
 
-            const data = await res.json();
-
-            if (!res.ok) {
-                toast.error(data.message || "Failed to load courses");
-                return;
+            if (res.data.ok) {
+                setCourses(res.data.body || []);
+            } else {
+                toast.error(res.data.message || "Failed to load courses");
             }
-
-            // Ensure backend returns array
-            setCourses(data.courses || data || []);
         } catch (err) {
             console.error(err);
-            toast.error("Failed to load courses");
+            toast.error("Error loading courses");
         } finally {
             setLoading(false);
         }
-    };
-
-    useEffect(() => {
-        if (token) loadMyCourses();
-    }, [token]);
+    }
 
     return (
         <StudentLayout>
-            <div className="p-4">
+            <div className="p-6 max-w-4xl mx-auto">
                 <h2 className="text-2xl font-bold mb-4">My Courses</h2>
 
-                {/* Loading */}
                 {loading && (
-                    <div className="bg-white p-4 rounded shadow">Loading...</div>
+                    <div className="p-4 bg-white rounded shadow">Loading…</div>
                 )}
 
-                {/* No courses */}
                 {!loading && courses.length === 0 && (
-                    <div className="bg-white p-4 rounded shadow">
-                        You are not enrolled in any courses.
+                    <div className="p-4 bg-white rounded shadow">
+                        You have no enrolled courses.
                     </div>
                 )}
 
-                {/* Courses list */}
                 <div className="grid gap-4">
-                    {courses.map((c) => (
+                    {courses.map((item) => (
                         <div
-                            key={c._id}
+                            key={item._id}
                             className="p-4 bg-white rounded shadow flex justify-between items-center"
                         >
                             <div>
-                                <h3 className="font-semibold text-lg">{c.title}</h3>
-                                <p className="text-sm text-gray-500">{c.description}</p>
+                                <h3 className="font-semibold">{item.course?.title}</h3>
+                                <p className="text-gray-500 text-sm">
+                                    {item.course?.description}
+                                </p>
                             </div>
 
                             <Link
-                                to={`/student/courses/${c._id}`}
+                                to={`/student/courses/${item.course?._id}`}
                                 className="text-blue-600 font-medium"
                             >
-                                View
+                                Open
                             </Link>
                         </div>
                     ))}
@@ -84,6 +73,4 @@ const MyCourses = () => {
             </div>
         </StudentLayout>
     );
-};
-
-export default MyCourses;
+}
