@@ -8,7 +8,7 @@ export default function Results() {
     useEffect(() => {
         (async () => {
             try {
-                const res = await fetch.get("/student/results"); // create backend if needed
+                const res = await fetch.get("/reports"); // create backend if needed
                 if (res.data.ok) setResults(res.data.results);
             } catch (err) {
                 // fallback: no results endpoint
@@ -22,7 +22,7 @@ export default function Results() {
             <div className="max-w-4xl mx-auto">
                 <h2 className="text-2xl font-bold mb-4">Results</h2>
                 {results.length === 0 ? (
-                    <div className="bg-white p-4 rounded shadow">No results yet.</div>
+                    <div className="bg-white p-4 rounded shadow">No reports yet.</div>
                 ) : (
                     <table className="w-full bg-white rounded shadow">
                         <thead><tr><th>Course</th><th>Score</th><th>Grade</th></tr></thead>
