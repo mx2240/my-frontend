@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import fetch from "../../fetch";
 import toast from "react-hot-toast";
+import StudentLayout from "../../layouts/StudentLayout";
 
 function StudentPaymentPage() {
     const [fees, setFees] = useState([]);
@@ -16,7 +17,7 @@ function StudentPaymentPage() {
 
     const fetchFees = async () => {
         try {
-            const res = await axios.get(`${API_BASE}/api/student/fees/my-fees`, {
+            const res = await fetch.get(`${API_BASE}/api/student/my-fees`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -34,7 +35,7 @@ function StudentPaymentPage() {
     // ▶️ Paystack Initiate Payment
     const handlePayNow = async (assignedFeeId) => {
         try {
-            const res = await axios.post(
+            const res = await fetch.post(
                 `${API_BASE}/api/payments/initiate`,
                 { assignedFeeId },
                 {
@@ -54,42 +55,44 @@ function StudentPaymentPage() {
     if (loading) return <p>Loading fees...</p>;
 
     return (
-        <div style={styles.container}>
-            <h2 style={styles.header}>My Fees & Payment</h2>
+        <StudentLayout>
+            <div style={styles.container}>
+                <h2 style={styles.header}>My Fees & Payment</h2>
 
-            {fees.length === 0 ? (
-                <p>No fees assigned.</p>
-            ) : (
-                <div style={styles.cardWrapper}>
-                    {fees.map((item) => (
-                        <div key={item._id} style={styles.card}>
-                            <h3>{item.fee.title}</h3>
-                            <p><strong>Amount:</strong> GHS {item.fee.amount}</p>
-                            <p><strong>Status:</strong>
-                                <span
-                                    style={{
-                                        color: item.status === "paid" ? "green" : "red",
-                                        fontWeight: "bold",
-                                    }}
-                                >
-                                    {item.status.toUpperCase()}
-                                </span>
-                            </p>
+                {fees.length === 0 ? (
+                    <p>No fees assigned.</p>
+                ) : (
+                    <div style={styles.cardWrapper}>
+                        {fees.map((item) => (
+                            <div key={item._id} style={styles.card}>
+                                <h3>{item.fee.title}</h3>
+                                <p><strong>Amount:</strong> GHS {item.fee.amount}</p>
+                                <p><strong>Status:</strong>
+                                    <span
+                                        style={{
+                                            color: item.status === "paid" ? "green" : "red",
+                                            fontWeight: "bold",
+                                        }}
+                                    >
+                                        {item.status.toUpperCase()}
+                                    </span>
+                                </p>
 
-                            {/* Show Pay Now if unpaid */}
-                            {item.status !== "paid" && (
-                                <button
-                                    style={styles.payBtn}
-                                    onClick={() => handlePayNow(item._id)}
-                                >
-                                    Pay Now
-                                </button>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+                                {/* Show Pay Now if unpaid */}
+                                {item.status !== "paid" && (
+                                    <button
+                                        style={styles.payBtn}
+                                        onClick={() => handlePayNow(item._id)}
+                                    >
+                                        Pay Now
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </StudentLayout>
     );
 }
 
