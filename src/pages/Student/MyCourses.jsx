@@ -61,12 +61,12 @@ export default function MyCourses() {
                                 </p>
                             </div>
 
-                            <Link
+                            {/* <Link
                                 to={`/student/courses/${item.course?._id}`}
                                 className="text-blue-600 font-medium"
                             >
                                 Open
-                            </Link>
+                            </Link> */}
                         </div>
                     ))}
                 </div>
