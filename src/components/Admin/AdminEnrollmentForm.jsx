@@ -21,7 +21,7 @@ export default function AdminEnroll() {
 
     const loadStudents = async () => {
         try {
-            const res = await api.get("/admin/students"); // ✅ correct route
+            const res = await api.get("/students"); // ✅ correct route
             if (res.data.ok) setStudents(res.data.body);
         } catch (err) {
             console.error(err);
