@@ -12,7 +12,7 @@ const MyCourses = () => {
 
     const loadMyCourses = async () => {
         try {
-            const res = await fetch(
+            const res = await fetch.get(
                 `/enrollments/my-courses`,
                 {
                     headers: {
