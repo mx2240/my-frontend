@@ -57,7 +57,7 @@ export default function StudentSidebar() {
                 <button className="py-2 px-3 mt-4 text-left rounded hover:bg-gray-100" onClick={() => {
                     localStorage.removeItem("token");
                     localStorage.removeItem("student");
-                    window.location.href = "/login";
+                    window.location.href = "/student/login";
                 }}>Logout</button>
             </nav>
         </aside>
