@@ -49,29 +49,6 @@ export default function AdminEnroll() {
         }
     };
 
-    const handleEnroll = async () => {
-        if (!selectedStudent || !selectedCourse)
-            return toast.error("Select student & course");
-
-        try {
-            setLoading(true);
-
-            const res = await api.post("/enrollments/admin/enroll", { // ✅ ensure route exists
-                studentId: selectedStudent,
-                courseId: selectedCourse,
-            });
-
-            toast.success("Enrollment successful!");
-            loadEnrollments();
-            setSelectedStudent("");
-            setSelectedCourse("");
-        } catch (err) {
-            console.error(err);
-            toast.error(err.response?.data?.message || "Enrollment failed");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     return (
         <AdminLayout>
