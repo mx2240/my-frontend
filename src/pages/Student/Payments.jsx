@@ -51,8 +51,9 @@ function StudentPaymentPage() {
             toast.error("Unable to initiate payment");
         }
     };
-
-    if (loading) return <p>Loading fees...</p>;
+    <StudentLayout>
+        if (loading) return <p>Loading fees...</p>;
+    </StudentLayout>
 
     return (
         <StudentLayout>
