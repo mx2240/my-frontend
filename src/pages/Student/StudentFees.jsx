@@ -31,7 +31,7 @@ export default function StudentFeesPage() {
 
     async function handlePay(assignedFeeId) {
         try {
-            const res = await api.post("/paystack/initiate", { assignedFeeId });
+            const res = await api.post("/payments/initiate", { assignedFeeId });
 
             if (res.data.ok) {
                 window.location.href = res.data.authorization_url;
@@ -78,7 +78,7 @@ export default function StudentFeesPage() {
                                 {fees.map((fee) => (
                                     <tr key={fee._id} className="text-center">
                                         <td className="border p-3">{fee.fee.title}</td>
-                                        <td className="border p-3">₦{fee.fee.amount.toLocaleString()}</td>
+                                        <td className="border p-3">GHS{fee.fee.amount.toLocaleString()}</td>
                                         <td className="border p-3">
                                             {fee.isPaid ? (
                                                 <span className="bg-green-200 text-green-800 px-3 py-1 rounded">
