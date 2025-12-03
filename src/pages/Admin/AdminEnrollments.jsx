@@ -12,7 +12,7 @@ export default function AdminEnroll() {
 
     const load = async () => {
         try {
-            const s = await fetch.get("/admin/students/all");
+            const s = await fetch.get("`/students");
             setStudents(s.data?.body || []);
             const c = await fetch.get("/courses"); // ensure /courses returns list
             setCourses(c.data?.body || c.data || []);
