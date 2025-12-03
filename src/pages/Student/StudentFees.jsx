@@ -1,34 +1,29 @@
-import { useEffect, useState, useContext } from "react";
-import { AuthContext } from "../../context/AuthProvider";
+import { useEffect, useState } from "react";
+import api from "../../utils/api";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import api from "../../fetch"; // Axios instance
-import toast from "react-hot-toast";
 import StudentLayout from "../../layouts/StudentLayout";
 
-export default function StudentPaymentPage() {
-    const { token } = useContext(AuthContext);
+export default function StudentFeesPage() {
     const [fees, setFees] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (token) fetchFees();
-    }, [token]);
+        loadFees();
+    }, []);
 
-    async function fetchFees() {
+    async function loadFees() {
         try {
-            const res = await api.get("/student/my-fees", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get("/student/my-fees");
 
             if (res.data.ok) {
                 setFees(res.data.fees);
             } else {
-                toast.error(res.data.message || "Unable to load fees");
+                toast.error("Unable to load fees");
             }
         } catch (err) {
-            console.error(err);
-            toast.error("Unable to load fees");
+            toast.error("Server error loading fees");
         } finally {
             setLoading(false);
         }
@@ -36,77 +31,89 @@ export default function StudentPaymentPage() {
 
     async function handlePay(assignedFeeId) {
         try {
-            const res = await api.post(
-                "/paystack/initiate",
-                { assignedFeeId },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const res = await api.post("/paystack/initiate", { assignedFeeId });
 
             if (res.data.ok) {
-                // Paystack redirect
                 window.location.href = res.data.authorization_url;
             } else {
-                toast.error(res.data.message || "Payment failed");
+                toast.error("Payment failed to start");
             }
         } catch (err) {
-            console.error(err);
-            toast.error("Payment init failed");
+            toast.error("Payment error");
         }
+    }
+
+    if (loading) {
+        return (
+            <StudentLayout>
+                <div className="p-6 text-center text-lg font-semibold">
+                    Loading fees...
+                </div>
+            </StudentLayout>
+        );
     }
 
     return (
         <StudentLayout>
-            <div className="p-6 max-w-3xl mx-auto">
+            <div className="p-6">
+                <h2 className="text-2xl font-bold mb-4">My Fees</h2>
 
-                <h2 className="text-2xl font-bold mb-4">My Fees & Payments</h2>
+                {fees.length === 0 ? (
+                    <div className="text-center text-gray-600 pt-10">
+                        No assigned fees yet.
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full border-collapse shadow-md">
+                            <thead>
+                                <tr className="bg-gray-100">
+                                    <th className="p-3 border">Title</th>
+                                    <th className="p-3 border">Amount</th>
+                                    <th className="p-3 border">Status</th>
+                                    <th className="p-3 border">Action</th>
+                                </tr>
+                            </thead>
 
-                {/* Loading */}
-                {loading && (
-                    <div className="p-4 bg-white rounded shadow">Loading fees…</div>
-                )}
+                            <tbody>
+                                {fees.map((fee) => (
+                                    <tr key={fee._id} className="text-center">
+                                        <td className="border p-3">{fee.fee.title}</td>
+                                        <td className="border p-3">₦{fee.fee.amount.toLocaleString()}</td>
+                                        <td className="border p-3">
+                                            {fee.isPaid ? (
+                                                <span className="bg-green-200 text-green-800 px-3 py-1 rounded">
+                                                    PAID
+                                                </span>
+                                            ) : (
+                                                <span className="bg-red-200 text-red-800 px-3 py-1 rounded">
+                                                    PENDING
+                                                </span>
+                                            )}
+                                        </td>
 
-                {/* If no fees */}
-                {!loading && fees.length === 0 && (
-                    <div className="p-4 bg-white rounded shadow">
-                        You don't have any assigned fees yet.
+                                        <td className="border p-3">
+                                            {fee.isPaid ? (
+                                                <button
+                                                    className="bg-gray-400 cursor-default text-white px-4 py-2 rounded"
+                                                    disabled
+                                                >
+                                                    Paid
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handlePay(fee._id)}
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                                                >
+                                                    Pay Now
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
-
-                {/* Fees List */}
-                <div className="space-y-4">
-                    {fees.map(fee => (
-                        <div
-                            key={fee._id}
-                            className="p-4 bg-white rounded shadow flex justify-between items-center"
-                        >
-                            <div>
-                                <h3 className="font-semibold text-lg">{fee.fee.title}</h3>
-                                <p className="text-gray-500 text-sm">
-                                    Amount: GH₵ {fee.fee.amount}
-                                </p>
-                                <p
-                                    className={`font-medium ${fee.status === "paid"
-                                        ? "text-green-600"
-                                        : "text-red-600"
-                                        }`}
-                                >
-                                    Status: {fee.status.toUpperCase()}
-                                </p>
-                            </div>
-
-                            {/* Only show Pay button if not paid */}
-                            {fee.status !== "paid" && (
-                                <button
-                                    onClick={() => handlePay(fee._id)}
-                                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                                >
-                                    Pay Now
-                                </button>
-                            )}
-                        </div>
-                    ))}
-                </div>
-
             </div>
         </StudentLayout>
     );
