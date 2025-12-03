@@ -10,7 +10,7 @@ const MyCourses = () => {
     useEffect(() => {
         (async () => {
             try {
-                const res = await fetch("/api/student/enrollments", { headers: { Authorization: `Bearer ${token}` } });
+                const res = await fetch("/enrollments/my-courses", { headers: { Authorization: `Bearer ${token}` } });
                 const data = await res.json();
                 setCourses(Array.isArray(data) ? data : []);
             } catch (err) { console.error(err); }
