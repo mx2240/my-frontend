@@ -3,7 +3,7 @@ import StudentLayout from "../../layouts/StudentLayout";
 import { AuthContext } from "../../context/AuthProvider";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import fetch from "../../fetch"
+// import fetch from "../../fetch"
 
 const MyCourses = () => {
     const { token } = useContext(AuthContext);
@@ -12,7 +12,7 @@ const MyCourses = () => {
 
     const loadMyCourses = async () => {
         try {
-            const res = await fetch.get(
+            const res = await fetch(
                 `${import.meta.env.VITE_API_URL}/enrollments/my-courses`,
                 {
                     headers: {
