@@ -81,7 +81,9 @@ import StudentNotifications from './pages/Student/StudentNotifications';
 import StudentAssignments from './pages/Student/StudentAssignments';
 import Dashboard from './components/StudentDasboard/Dashboard';
 import Studentlogin from './Auth/Studentlogin';
-
+import PaymentCallback from './pages/Student/PaymentCallback';
+import PaymentSuccess from './pages/Student/PaymentSuccess';
+import PaymentFailed from './pages/Student/PaymentFailed';
 
 
 
@@ -204,6 +206,10 @@ function App() {
         <Route path="/student/notifications" element={<StudentNotifications />} />
         <Route path="/student/assignments" element={<StudentAssignments />} />
         <Route path="/student/login" element={<Studentlogin />} />
+        <Route path="/payment-callback" element={<PaymentCallback />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-failed" element={<PaymentFailed />} />
+
 
 
 
