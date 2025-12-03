@@ -95,7 +95,7 @@ function AdminEnrollmentPage() {
     const fetchData = async () => {
         try {
             const [studentRes, classRes] = await Promise.all([
-                axios.get(`${API_BASE}/api/admin/students`, {
+                fetch.get(`${API_BASE}/api/admin/students`, {
                     headers: { Authorization: `Bearer ${token}` },
                 }),
                 fetch.get(`${API_BASE}/api/admin/classes`, {
