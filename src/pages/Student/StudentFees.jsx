@@ -1,83 +1,112 @@
-
-
-
-import React, { useEffect, useState } from "react";
-import StudentLayout from "../../layouts/StudentLayout";
-import fetch from "../../fetch";
+import { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../../context/AuthProvider";
+import { useNavigate } from "react-router-dom";
+import api from "../../fetch"; // Axios instance
 import toast from "react-hot-toast";
+import StudentLayout from "../../layouts/StudentLayout";
 
-export default function StudentFees() {
+export default function StudentPaymentPage() {
+    const { token } = useContext(AuthContext);
     const [fees, setFees] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [payLoading, setPayLoading] = useState(false);
+    const navigate = useNavigate();
 
-    async function load() {
+    useEffect(() => {
+        if (token) fetchFees();
+    }, [token]);
+
+    async function fetchFees() {
         try {
-            setLoading(true);
-            const res = await fetch.get("/student/my-fees");
-            if (res.data.ok) setFees(res.data.fees);
-            else toast.error(res.data.message || "Failed to load fees");
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to load fees");
-        } finally { setLoading(false); }
-    }
-
-    useEffect(() => { load(); }, []);
-
-    const pay = async (assignment) => {
-        try {
-            setPayLoading(true);
-            // call your paystack init endpoint
-            const res = await fetch.post("/payments/initiate", {
-                assignmentId: assignment._id,
-                email: assignment.studentEmail || (JSON.parse(localStorage.getItem("student") || "null")?.email)
+            const res = await api.get("/student/my-fees", {
+                headers: { Authorization: `Bearer ${token}` }
             });
 
-            if (res.data.ok && res.data.authorization_url) {
-                // open paystack checkout in new tab
-                window.open(res.data.authorization_url, "_blank");
-                toast.success("Opening Paystack checkout...");
+            if (res.data.ok) {
+                setFees(res.data.fees);
             } else {
-                toast.error("Payment initialization failed");
+                toast.error(res.data.message || "Unable to load fees");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Unable to load fees");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function handlePay(assignedFeeId) {
+        try {
+            const res = await api.post(
+                "/paystack/initiate",
+                { assignedFeeId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (res.data.ok) {
+                // Paystack redirect
+                window.location.href = res.data.authorization_url;
+            } else {
+                toast.error(res.data.message || "Payment failed");
             }
         } catch (err) {
             console.error(err);
             toast.error("Payment init failed");
-        } finally { setPayLoading(false); }
-    };
+        }
+    }
 
     return (
         <StudentLayout>
-            <div className="max-w-4xl mx-auto">
-                <h2 className="text-2xl font-bold mb-4">Your Fees</h2>
+            <div className="p-6 max-w-3xl mx-auto">
 
-                {loading ? <div>Loading...</div> : (
-                    <div className="grid gap-4">
-                        {fees.length === 0 ? (
-                            <div className="p-4 bg-white rounded shadow">No fees assigned yet.</div>
-                        ) : fees.map(f => (
-                            <div key={f._id} className="p-4 bg-white rounded shadow flex justify-between items-center">
-                                <div>
-                                    <div className="font-semibold">{f.fee.title} — GH₵{f.fee.amount}</div>
-                                    <div className="text-sm text-gray-600">{f.fee.description}</div>
-                                    <div className="mt-2 text-sm">Assigned: {new Date(f.createdAt).toLocaleDateString()}</div>
-                                </div>
+                <h2 className="text-2xl font-bold mb-4">My Fees & Payments</h2>
 
-                                <div className="flex flex-col items-end gap-2">
-                                    <div className={`font-semibold ${f.status === "paid" ? "text-green-600" : "text-red-600"}`}>{f.status?.toUpperCase()}</div>
-                                    {f.status !== "paid" && (
-                                        <div className="flex gap-2">
-                                            <button onClick={() => pay(f)} disabled={payLoading} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                                                {payLoading ? "Processing..." : "Pay Online"}
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
+                {/* Loading */}
+                {loading && (
+                    <div className="p-4 bg-white rounded shadow">Loading fees…</div>
+                )}
+
+                {/* If no fees */}
+                {!loading && fees.length === 0 && (
+                    <div className="p-4 bg-white rounded shadow">
+                        You don't have any assigned fees yet.
                     </div>
                 )}
+
+                {/* Fees List */}
+                <div className="space-y-4">
+                    {fees.map(fee => (
+                        <div
+                            key={fee._id}
+                            className="p-4 bg-white rounded shadow flex justify-between items-center"
+                        >
+                            <div>
+                                <h3 className="font-semibold text-lg">{fee.fee.title}</h3>
+                                <p className="text-gray-500 text-sm">
+                                    Amount: GH₵ {fee.fee.amount}
+                                </p>
+                                <p
+                                    className={`font-medium ${fee.status === "paid"
+                                        ? "text-green-600"
+                                        : "text-red-600"
+                                        }`}
+                                >
+                                    Status: {fee.status.toUpperCase()}
+                                </p>
+                            </div>
+
+                            {/* Only show Pay button if not paid */}
+                            {fee.status !== "paid" && (
+                                <button
+                                    onClick={() => handlePay(fee._id)}
+                                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                >
+                                    Pay Now
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
             </div>
         </StudentLayout>
     );
