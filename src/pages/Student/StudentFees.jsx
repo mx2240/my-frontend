@@ -188,18 +188,17 @@ function StudentFeesPage() {
                 {fees.length === 0 ? (
                     <p className="no-fees">No fees assigned yet.</p>
                 ) : (
-                    <div className="fees-container">
-                        {fees.map((fee) => (
-                            <div key={fee._id} className="fee-card">
-                                <h3>{fee.title}</h3>
-                                <p className="desc">{fee.description || "No description"}</p>
-                                <p className="amount">Amount: ₦{fee.amount}</p>
-
-                                <button className="pay-btn" onClick={() => handlePay(fee)}>
-                                    Pay Now
-                                </button>
-                            </div>
-                        ))}
+                    <div className="fees-list">
+                        {fees
+                            .filter(item => item && item.fee)
+                            .map(item => (
+                                <div key={item._id} className="fee-item">
+                                    <h3>{item.fee.title}</h3>
+                                    <p>{item.fee.description}</p>
+                                    <p>GHS{item.fee.amount}</p>
+                                    <button onClick={() => handlePay(item)}>Pay Now</button>
+                                </div>
+                            ))}
                     </div>
                 )}
             </div>
