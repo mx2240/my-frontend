@@ -131,7 +131,7 @@ function StudentFeesPage() {
 
     const fetchFees = async () => {
         try {
-            const res = await fetch.get("https://my-backend-amber.vercel.app/api/fees/my-fees", {
+            const res = await fetch.get("https://my-backend-amber.vercel.app/api/student/my-fees", {
                 withCredentials: true,
             });
 
