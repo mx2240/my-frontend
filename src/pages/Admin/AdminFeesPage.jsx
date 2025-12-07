@@ -311,8 +311,8 @@ export default function FeesPage() {
     const createFee = async (e) => {
         e.preventDefault();
 
-        if (!newFee.title || !newFee.amount) {
-            return toast.error("Title & Amount are required");
+        if (!newFee.title || !newFee.amount || !newFee.description) {
+            return toast.error("Title, Amount, and Description are required");
         }
 
         try {
