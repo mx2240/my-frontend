@@ -321,15 +321,21 @@ export default function FeesPage() {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            if (res.data.ok) {
-                toast.success("Fee created successfully 🎉");
+            console.log("Create Fee Response:", res.data);
+
+            if (res.data.ok || res.data.success) {
+                toast.success("Fee created 🎉");
                 setNewFee({ title: "", amount: "", description: "" });
                 loadFees();
+            } else {
+                toast.error("Unexpected response");
             }
-        } catch {
-            toast.error("Error creating fee");
+
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Error creating fee");
         }
     };
+
 
     const deleteFee = async (feeId) => {
         if (!window.confirm("Do you really want to delete this fee?")) return;
