@@ -7,8 +7,7 @@ import './css/Auth.css';
 import './css/Register.css';
 import './css/Fees.css';
 import './css/AdminDashboard.css'
-import './css/StudentDashboard.css'
-import './css/AddStudent.css'
+import './css/StudentFees.css'
 
 
 
