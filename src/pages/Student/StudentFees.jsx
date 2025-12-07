@@ -157,7 +157,7 @@ export default function StudentFeesPage() {
         try {
             const token = localStorage.getItem("token");
             const res = await api.post(
-                "/paystack/initiate",
+                "/payments/initiate",
                 { assignedFeeId: assignedId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
