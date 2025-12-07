@@ -311,8 +311,8 @@ export default function FeesPage() {
     const createFee = async (e) => {
         e.preventDefault();
 
-        if (!newFee.title || !newFee.amount || !newFee.description) {
-            return toast.error("Title, Amount, and Description are required");
+        if (!newFee.title || !newFee.amount) {
+            return toast.error("Title & Amount are required");
         }
 
         try {
@@ -321,20 +321,16 @@ export default function FeesPage() {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            console.log("Create Fee Response:", res.data);
-
-            if (res.data.ok || res.data.success) {
-                toast.success("Fee created 🎉");
+            if (res.data.ok) {
+                toast.success("Fee created");
                 setNewFee({ title: "", amount: "", description: "" });
                 loadFees();
-            } else {
-                toast.error("Unexpected response");
             }
-
-        } catch (err) {
-            toast.error(err.response?.data?.message || "Error creating fee");
+        } catch {
+            toast.error("Error creating fee");
         }
     };
+
 
 
     const deleteFee = async (feeId) => {
