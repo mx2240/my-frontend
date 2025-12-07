@@ -120,133 +120,92 @@
 // }
 
 
-
-import { useEffect, useState } from "react";
-import api from "../../fetch";
+import React, { useEffect, useState } from "react";
+import fetch from "../../fetch";
 import toast from "react-hot-toast";
 import StudentLayout from "../../layouts/StudentLayout";
 
-export default function StudentFeesPage() {
+function StudentFeesPage() {
     const [fees, setFees] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadStudentFees();
-    }, []);
-
-    // 📌 Get student assigned fees
-    const loadStudentFees = async () => {
+    const fetchFees = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await api.get("/student/my-fees", {
-                headers: { Authorization: `Bearer ${token}` }
+            const res = await fetch.get("https://my-backend-amber.vercel.app/api/fees/my-fees", {
+                withCredentials: true,
             });
 
-            if (res.data.ok) {
-                setFees(res.data.assigned);
+            if (!res.data || !Array.isArray(res.data.data)) {
+                toast.error("Invalid response from server");
+                setLoading(false);
+                return;
             }
+
+            // Filter out null/bad objects to prevent errors
+            const validFees = res.data.data.filter(
+                (item) => item && item.title && item.amount
+            );
+
+            setFees(validFees);
         } catch (err) {
-            toast.error("Unable to load fees");
+            toast.error("Failed to load fees");
+            console.log("Fetch Fees Error:", err);
         } finally {
             setLoading(false);
         }
     };
 
-    // 📌 Handle Pay (Paystack)
-    const handlePay = async (assignedId) => {
+    useEffect(() => {
+        fetchFees();
+    }, []);
+
+    const handlePay = async (fee) => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await api.post(
-                "/payments/initiate",
-                { assignedFeeId: assignedId },
-                { headers: { Authorization: `Bearer ${token}` } }
+            const res = await fetch.post(
+                "https://my-backend-amber.vercel.app/api/paystack/initiate",
+                { feeId: fee._id },
+                { withCredentials: true }
             );
 
-            if (res.data.ok) {
+            if (res.data?.authorization_url) {
                 window.location.href = res.data.authorization_url;
+            } else {
+                toast.error("Payment initiation failed");
             }
         } catch (err) {
-            toast.error("Payment failed");
+            toast.error("Unable to start payment");
+            console.log(err);
         }
     };
 
+    if (loading) return <p className="text-center mt-10">Loading fees...</p>;
+
     return (
         <StudentLayout>
-            <div className="p-5 max-w-5xl mx-auto">
+            <div className="student-fee-page">
+                <h2 className="page-title">My Fees</h2>
 
-                {/* PAGE TITLE */}
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">
-                    💳 My Fees & Payments
-                </h1>
+                {fees.length === 0 ? (
+                    <p className="no-fees">No fees assigned yet.</p>
+                ) : (
+                    <div className="fees-container">
+                        {fees.map((fee) => (
+                            <div key={fee._id} className="fee-card">
+                                <h3>{fee.title}</h3>
+                                <p className="desc">{fee.description || "No description"}</p>
+                                <p className="amount">Amount: ₦{fee.amount}</p>
 
-                {/* LOADING STATE */}
-                {loading && (
-                    <p className="text-center text-gray-600">Loading fees...</p>
-                )}
-
-                {/* NO FEES */}
-                {!loading && fees.length === 0 && (
-                    <p classimper="text-center text-gray-600">
-                        No assigned fees yet.
-                    </p>
-                )}
-
-                {/* FEES LIST */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {fees.map((item) => (
-                        <div
-                            key={item._id}
-                            className="bg-white rounded-2xl shadow-md border p-5 hover:shadow-lg transition"
-                        >
-                            <h2 className="text-xl font-semibold text-gray-800">
-                                {item.fee?.title}
-                            </h2>
-
-                            <p className="text-gray-600 mt-2">
-                                {item.fee?.description || "No description"}
-                            </p>
-
-                            <div className="mt-3">
-                                <p className="text-lg font-bold text-gray-900">
-                                    GH₵ {item.fee?.amount}
-                                </p>
-                            </div>
-
-                            {/* STATUS */}
-                            <div className="mt-3">
-                                {item.isPaid ? (
-                                    <span className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-lg">
-                                        Paid ✓
-                                    </span>
-                                ) : (
-                                    <span className="px-3 py-1 bg-red-100 text-red-600 text-sm rounded-lg">
-                                        Pending
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* PAY BUTTON */}
-                            {!item.isPaid && (
-                                <button
-                                    onClick={() => handlePay(item._id)}
-                                    className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg"
-                                >
+                                <button className="pay-btn" onClick={() => handlePay(fee)}>
                                     Pay Now
                                 </button>
-                            )}
-
-                            {item.isPaid && (
-                                <button
-                                    disabled
-                                    className="w-full mt-4 bg-gray-300 text-gray-600 py-2 rounded-lg cursor-not-allowed"
-                                >
-                                    Payment Completed
-                                </button>
-                            )}
-                        </div>
-                    ))}
-                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </StudentLayout>
     );
 }
+
+export default StudentFeesPage;
+
