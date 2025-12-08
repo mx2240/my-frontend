@@ -238,7 +238,7 @@
 import React from "react";
 import fetch from "../fetch";
 import toast from "react-hot-toast";
-import AdminLayout from "../layouts/AdminLayout";
+import AdminLayout from "../../layouts/AdminLayout";
 
 function Events() {
     const [events, setEvents] = React.useState([]);
