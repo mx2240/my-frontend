@@ -238,6 +238,7 @@
 import React from "react";
 import fetch from "../fetch";
 import toast from "react-hot-toast";
+import AdminLayout from "../layouts/AdminLayout";
 
 function Events() {
     const [events, setEvents] = React.useState([]);
@@ -328,110 +329,112 @@ function Events() {
     };
 
     return (
-        <div className="p-6">
+        <AdminLayout>
+            <div className="p-6">
 
-            <h1 className="text-3xl font-bold mb-6">Manage Events</h1>
+                <h1 className="text-3xl font-bold mb-6">Manage Events</h1>
 
-            {/* Event Form */}
-            <form
-                onSubmit={editMode ? handleUpdate : handleCreate}
-                className="event-form"
-            >
-                <h2 className="text-xl font-semibold mb-4">
-                    {editMode ? "Update Event" : "Add New Event"}
-                </h2>
+                {/* Event Form */}
+                <form
+                    onSubmit={editMode ? handleUpdate : handleCreate}
+                    className="event-form"
+                >
+                    <h2 className="text-xl font-semibold mb-4">
+                        {editMode ? "Update Event" : "Add New Event"}
+                    </h2>
 
-                <input
-                    type="text"
-                    name="title"
-                    placeholder="Event Title"
-                    value={form.title}
-                    onChange={handleChange}
-                    className="input"
-                />
+                    <input
+                        type="text"
+                        name="title"
+                        placeholder="Event Title"
+                        value={form.title}
+                        onChange={handleChange}
+                        className="input"
+                    />
 
-                <textarea
-                    name="description"
-                    placeholder="Event Description"
-                    value={form.description}
-                    onChange={handleChange}
-                    className="input"
-                />
+                    <textarea
+                        name="description"
+                        placeholder="Event Description"
+                        value={form.description}
+                        onChange={handleChange}
+                        className="input"
+                    />
 
-                <input
-                    type="text"
-                    name="image"
-                    placeholder="Image URL"
-                    value={form.image}
-                    onChange={handleChange}
-                    className="input"
-                />
+                    <input
+                        type="text"
+                        name="image"
+                        placeholder="Image URL"
+                        value={form.image}
+                        onChange={handleChange}
+                        className="input"
+                    />
 
-                <input
-                    type="text"
-                    name="date"
-                    placeholder="Event Date (optional)"
-                    value={form.date}
-                    onChange={handleChange}
-                    className="input"
-                />
+                    <input
+                        type="text"
+                        name="date"
+                        placeholder="Event Date (optional)"
+                        value={form.date}
+                        onChange={handleChange}
+                        className="input"
+                    />
 
-                <button className="btn-save">
-                    {editMode ? "Update Event" : "Create Event"}
-                </button>
-
-                {editMode && (
-                    <button
-                        type="button"
-                        className="btn-cancel"
-                        onClick={() => {
-                            setEditMode(false);
-                            setForm({ title: "", description: "", image: "", date: "" });
-                        }}
-                    >
-                        Cancel Edit
+                    <button className="btn-save">
+                        {editMode ? "Update Event" : "Create Event"}
                     </button>
-                )}
-            </form>
 
-            <hr className="my-6" />
+                    {editMode && (
+                        <button
+                            type="button"
+                            className="btn-cancel"
+                            onClick={() => {
+                                setEditMode(false);
+                                setForm({ title: "", description: "", image: "", date: "" });
+                            }}
+                        >
+                            Cancel Edit
+                        </button>
+                    )}
+                </form>
 
-            {/* Events List */}
-            <div className="event-list">
-                {events.length === 0 ? (
-                    <p>No events available.</p>
-                ) : (
-                    events.map(event => (
-                        <div key={event._id} className="event-row">
-                            <img src={event.image} alt="" className="event-thumb" />
+                <hr className="my-6" />
 
-                            <div className="event-info">
-                                <h3>{event.title}</h3>
-                                <p>{event.description}</p>
-                                {event.date && <small>Date: {event.date}</small>}
+                {/* Events List */}
+                <div className="event-list">
+                    {events.length === 0 ? (
+                        <p>No events available.</p>
+                    ) : (
+                        events.map(event => (
+                            <div key={event._id} className="event-row">
+                                <img src={event.image} alt="" className="event-thumb" />
+
+                                <div className="event-info">
+                                    <h3>{event.title}</h3>
+                                    <p>{event.description}</p>
+                                    {event.date && <small>Date: {event.date}</small>}
+                                </div>
+
+                                <div className="event-actions">
+                                    <button
+                                        className="btn-edit"
+                                        onClick={() => handleEdit(event)}
+                                    >
+                                        Edit
+                                    </button>
+
+                                    <button
+                                        className="btn-delete"
+                                        onClick={() => handleDelete(event._id)}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
                             </div>
+                        ))
+                    )}
+                </div>
 
-                            <div className="event-actions">
-                                <button
-                                    className="btn-edit"
-                                    onClick={() => handleEdit(event)}
-                                >
-                                    Edit
-                                </button>
-
-                                <button
-                                    className="btn-delete"
-                                    onClick={() => handleDelete(event._id)}
-                                >
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    ))
-                )}
             </div>
-
-        </div>
+        </AdminLayout>
     );
 }
 
