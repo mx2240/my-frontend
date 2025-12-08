@@ -38,8 +38,7 @@ import CourseEnrollment from './pages/Admin/Courses/CourseEnrollment';
 import CoursesList from './pages/Admin/Courses/CoursesList';
 import EditCourse from './pages/Admin/Courses/EditCourse';
 import DeleteCourseModal from './pages/Admin/Courses/DeleteCourseModal';
-import EditCourse from './pages/Admin/Courses/EditCourse';
-
+import Events from './pages/Admin/Events';
 
 
 
