@@ -235,70 +235,305 @@
 
 
 
-import React from "react";
-import fetch from "../../fetch";
+// import React from "react";
+// import fetch from "../../fetch";
+// import toast from "react-hot-toast";
+// import AdminLayout from "../../layouts/AdminLayout";
+
+// function Events() {
+//     const [events, setEvents] = React.useState([]);
+//     const [editMode, setEditMode] = React.useState(false);
+//     const [selectedId, setSelectedId] = React.useState(null);
+
+//     const [form, setForm] = React.useState({
+//         title: "",
+//         description: "",
+//         image: "",
+//         date: ""
+//     });
+
+//     // Load all events
+//     const loadEvents = async () => {
+//         try {
+//             const response = await fetch.get("/events");
+//             setEvents(response.data);
+//         } catch (error) {
+//             toast.error("Failed to load events");
+//         }
+//     };
+
+//     React.useEffect(() => {
+//         loadEvents();
+//     }, []);
+
+//     // Handle form input
+//     const handleChange = (e) => {
+//         setForm({ ...form, [e.target.name]: e.target.value });
+//     };
+
+//     // Submit new event
+//     const handleCreate = async (e) => {
+//         e.preventDefault();
+
+//         try {
+//             const response = await fetch.post("/events/create", form);
+//             toast.success("Event created!");
+//             setForm({ title: "", description: "", image: "", date: "" });
+//             loadEvents();
+
+//         } catch (error) {
+//             toast.error(error.response?.data?.message || "Error creating event");
+//         }
+//     };
+
+//     // Update event
+//     const handleUpdate = async (e) => {
+//         e.preventDefault();
+
+//         try {
+//             await fetch.put(`/events/${selectedId}`, form);
+//             toast.success("Event updated!");
+//             setForm({ title: "", description: "", image: "", date: "" });
+//             setEditMode(false);
+//             loadEvents();
+
+//         } catch (error) {
+//             toast.error("Failed to update event");
+//         }
+//     };
+
+//     // Delete event
+//     const handleDelete = async (id) => {
+//         if (!window.confirm("Delete this event?")) return;
+
+//         try {
+//             await fetch.delete(`/events/${id}`);
+//             toast.success("Event deleted");
+//             loadEvents();
+
+//         } catch (error) {
+//             toast.error("Error deleting event");
+//         }
+//     };
+
+//     // Load event into form for editing
+//     const handleEdit = (event) => {
+//         setEditMode(true);
+//         setSelectedId(event._id);
+//         setForm({
+//             title: event.title,
+//             description: event.description,
+//             image: event.image,
+//             date: event.date || ""
+//         });
+//     };
+
+//     return (
+//         <AdminLayout>
+//             <div className="p-6">
+
+//                 <h1 className="text-3xl font-bold mb-6">Manage Events</h1>
+
+//                 {/* Event Form */}
+//                 <form
+//                     onSubmit={editMode ? handleUpdate : handleCreate}
+//                     className="event-form"
+//                 >
+//                     <h2 className="text-xl font-semibold mb-4">
+//                         {editMode ? "Update Event" : "Add New Event"}
+//                     </h2>
+
+//                     <input
+//                         type="text"
+//                         name="title"
+//                         placeholder="Event Title"
+//                         value={form.title}
+//                         onChange={handleChange}
+//                         className="input"
+//                     />
+
+//                     <textarea
+//                         name="description"
+//                         placeholder="Event Description"
+//                         value={form.description}
+//                         onChange={handleChange}
+//                         className="input"
+//                     />
+
+//                     <input
+//                         type="text"
+//                         name="image"
+//                         placeholder="Image URL"
+//                         value={form.image}
+//                         onChange={handleChange}
+//                         className="input"
+//                     />
+
+//                     <input
+//                         type="text"
+//                         name="date"
+//                         placeholder="Event Date (optional)"
+//                         value={form.date}
+//                         onChange={handleChange}
+//                         className="input"
+//                     />
+
+//                     <button className="btn-save">
+//                         {editMode ? "Update Event" : "Create Event"}
+//                     </button>
+
+//                     {editMode && (
+//                         <button
+//                             type="button"
+//                             className="btn-cancel"
+//                             onClick={() => {
+//                                 setEditMode(false);
+//                                 setForm({ title: "", description: "", image: "", date: "" });
+//                             }}
+//                         >
+//                             Cancel Edit
+//                         </button>
+//                     )}
+//                 </form>
+
+//                 <hr className="my-6" />
+
+//                 {/* Events List */}
+//                 <div className="event-list">
+//                     {events.length === 0 ? (
+//                         <p>No events available.</p>
+//                     ) : (
+//                         events.map(event => (
+//                             <div key={event._id} className="event-row">
+//                                 <img src={event.image} alt="" className="event-thumb" />
+
+//                                 <div className="event-info">
+//                                     <h3>{event.title}</h3>
+//                                     <p>{event.description}</p>
+//                                     {event.date && <small>Date: {event.date}</small>}
+//                                 </div>
+
+//                                 <div className="event-actions">
+//                                     <button
+//                                         className="btn-edit"
+//                                         onClick={() => handleEdit(event)}
+//                                     >
+//                                         Edit
+//                                     </button>
+
+//                                     <button
+//                                         className="btn-delete"
+//                                         onClick={() => handleDelete(event._id)}
+//                                     >
+//                                         Delete
+//                                     </button>
+//                                 </div>
+//                             </div>
+//                         ))
+//                     )}
+//                 </div>
+
+//             </div>
+//         </AdminLayout>
+//     );
+// }
+
+// export default Events;
+
+
+
+
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import AdminLayout from "../../layouts/AdminLayout";
+import fetch from "../../fetch";
 
 function Events() {
-    const [events, setEvents] = React.useState([]);
-    const [editMode, setEditMode] = React.useState(false);
-    const [selectedId, setSelectedId] = React.useState(null);
+    const [events, setEvents] = useState([]);
+    const [editMode, setEditMode] = useState(false);
+    const [selectedId, setSelectedId] = useState(null);
 
-    const [form, setForm] = React.useState({
+    const [form, setForm] = useState({
         title: "",
         description: "",
-        image: "",
-        date: ""
+        date: "",
+        imageFile: null,
     });
+
+    const [preview, setPreview] = useState(null);
 
     // Load all events
     const loadEvents = async () => {
         try {
-            const response = await fetch.get("/events");
-            setEvents(response.data);
-        } catch (error) {
+            const res = await fetch.get("/events");
+            setEvents(res.data);
+        } catch (err) {
             toast.error("Failed to load events");
         }
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         loadEvents();
     }, []);
 
-    // Handle form input
+    // Handle text fields
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    // Submit new event
-    const handleCreate = async (e) => {
-        e.preventDefault();
+    // Handle image upload
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        setForm({ ...form, imageFile: file });
 
-        try {
-            const response = await fetch.post("/events/create", form);
-            toast.success("Event created!");
-            setForm({ title: "", description: "", image: "", date: "" });
-            loadEvents();
-
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Error creating event");
+        if (file) {
+            setPreview(URL.createObjectURL(file));
         }
     };
 
-    // Update event
+    // CREATE Event
+    const handleCreate = async (e) => {
+        e.preventDefault();
+
+        const fd = new FormData();
+        fd.append("title", form.title);
+        fd.append("description", form.description);
+        fd.append("date", form.date);
+        if (form.imageFile) fd.append("image", form.imageFile);
+
+        try {
+            await fetch.post("/events/create", fd, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            toast.success("Event created!");
+            resetForm();
+            loadEvents();
+        } catch (err) {
+            toast.error("Failed to create event");
+        }
+    };
+
+    // UPDATE Event
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        try {
-            await fetch.put(`/events/${selectedId}`, form);
-            toast.success("Event updated!");
-            setForm({ title: "", description: "", image: "", date: "" });
-            setEditMode(false);
-            loadEvents();
+        const fd = new FormData();
+        fd.append("title", form.title);
+        fd.append("description", form.description);
+        fd.append("date", form.date);
+        if (form.imageFile) fd.append("image", form.imageFile);
 
-        } catch (error) {
-            toast.error("Failed to update event");
+        try {
+            await fetch.put(`/events/${selectedId}`, fd, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            toast.success("Event updated!");
+            resetForm();
+            loadEvents();
+        } catch (err) {
+            toast.error("Update failed");
         }
     };
 
@@ -310,22 +545,36 @@ function Events() {
             await fetch.delete(`/events/${id}`);
             toast.success("Event deleted");
             loadEvents();
-
-        } catch (error) {
+        } catch (err) {
             toast.error("Error deleting event");
         }
     };
 
-    // Load event into form for editing
+    // Load event into edit form
     const handleEdit = (event) => {
         setEditMode(true);
         setSelectedId(event._id);
+
         setForm({
             title: event.title,
             description: event.description,
-            image: event.image,
-            date: event.date || ""
+            date: event.date,
+            imageFile: null,
         });
+
+        setPreview(event.image);
+    };
+
+    const resetForm = () => {
+        setEditMode(false);
+        setSelectedId(null);
+        setForm({
+            title: "",
+            description: "",
+            date: "",
+            imageFile: null,
+        });
+        setPreview(null);
     };
 
     return (
@@ -334,103 +583,116 @@ function Events() {
 
                 <h1 className="text-3xl font-bold mb-6">Manage Events</h1>
 
-                {/* Event Form */}
-                <form
-                    onSubmit={editMode ? handleUpdate : handleCreate}
-                    className="event-form"
-                >
+                {/* FORM CARD */}
+                <div className="bg-white p-6 rounded-xl shadow-md max-w-xl mb-10">
                     <h2 className="text-xl font-semibold mb-4">
                         {editMode ? "Update Event" : "Add New Event"}
                     </h2>
 
-                    <input
-                        type="text"
-                        name="title"
-                        placeholder="Event Title"
-                        value={form.title}
-                        onChange={handleChange}
-                        className="input"
-                    />
+                    <form onSubmit={editMode ? handleUpdate : handleCreate}>
 
-                    <textarea
-                        name="description"
-                        placeholder="Event Description"
-                        value={form.description}
-                        onChange={handleChange}
-                        className="input"
-                    />
+                        <input
+                            type="text"
+                            name="title"
+                            placeholder="Event Title"
+                            value={form.title}
+                            onChange={handleChange}
+                            className="w-full p-3 border rounded-lg mb-3"
+                        />
 
-                    <input
-                        type="text"
-                        name="image"
-                        placeholder="Image URL"
-                        value={form.image}
-                        onChange={handleChange}
-                        className="input"
-                    />
+                        <textarea
+                            name="description"
+                            placeholder="Event Description"
+                            value={form.description}
+                            onChange={handleChange}
+                            className="w-full p-3 border rounded-lg mb-3"
+                        />
 
-                    <input
-                        type="text"
-                        name="date"
-                        placeholder="Event Date (optional)"
-                        value={form.date}
-                        onChange={handleChange}
-                        className="input"
-                    />
+                        <input
+                            type="text"
+                            name="date"
+                            placeholder="Event Date (optional)"
+                            value={form.date}
+                            onChange={handleChange}
+                            className="w-full p-3 border rounded-lg mb-3"
+                        />
 
-                    <button className="btn-save">
-                        {editMode ? "Update Event" : "Create Event"}
-                    </button>
+                        {/* Image Upload */}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="w-full p-3 border rounded-lg mb-3"
+                        />
 
-                    {editMode && (
-                        <button
-                            type="button"
-                            className="btn-cancel"
-                            onClick={() => {
-                                setEditMode(false);
-                                setForm({ title: "", description: "", image: "", date: "" });
-                            }}
-                        >
-                            Cancel Edit
+                        {/* Image Preview */}
+                        {preview && (
+                            <img
+                                src={preview}
+                                alt="Preview"
+                                className="w-full h-40 object-cover rounded-lg mb-3 border"
+                            />
+                        )}
+
+                        <button className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
+                            {editMode ? "Update Event" : "Create Event"}
                         </button>
-                    )}
-                </form>
 
-                <hr className="my-6" />
+                        {editMode && (
+                            <button
+                                type="button"
+                                onClick={resetForm}
+                                className="w-full mt-2 bg-gray-500 text-white p-3 rounded-lg hover:bg-gray-600"
+                            >
+                                Cancel Edit
+                            </button>
+                        )}
+                    </form>
+                </div>
 
-                {/* Events List */}
-                <div className="event-list">
-                    {events.length === 0 ? (
-                        <p>No events available.</p>
-                    ) : (
-                        events.map(event => (
-                            <div key={event._id} className="event-row">
-                                <img src={event.image} alt="" className="event-thumb" />
+                {/* EVENT LIST */}
+                <h2 className="text-2xl font-semibold mb-4">All Events</h2>
 
-                                <div className="event-info">
-                                    <h3>{event.title}</h3>
-                                    <p>{event.description}</p>
-                                    {event.date && <small>Date: {event.date}</small>}
-                                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {events.map((event) => (
+                        <div
+                            key={event._id}
+                            className="bg-white rounded-xl shadow-lg overflow-hidden"
+                        >
+                            <img
+                                src={event.image}
+                                alt={event.title}
+                                className="w-full h-48 object-cover"
+                            />
 
-                                <div className="event-actions">
+                            <div className="p-4">
+                                <h3 className="font-bold text-lg">{event.title}</h3>
+                                <p className="text-gray-600">{event.description}</p>
+
+                                {event.date && (
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        📅 {event.date}
+                                    </p>
+                                )}
+
+                                <div className="flex gap-3 mt-4">
                                     <button
-                                        className="btn-edit"
                                         onClick={() => handleEdit(event)}
+                                        className="flex-1 bg-yellow-500 text-white p-2 rounded-lg"
                                     >
                                         Edit
                                     </button>
 
                                     <button
-                                        className="btn-delete"
                                         onClick={() => handleDelete(event._id)}
+                                        className="flex-1 bg-red-600 text-white p-2 rounded-lg"
                                     >
                                         Delete
                                     </button>
                                 </div>
                             </div>
-                        ))
-                    )}
+                        </div>
+                    ))}
                 </div>
 
             </div>
@@ -439,3 +701,4 @@ function Events() {
 }
 
 export default Events;
+
