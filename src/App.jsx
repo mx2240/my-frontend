@@ -38,6 +38,7 @@ import CourseEnrollment from './pages/Admin/Courses/CourseEnrollment';
 import CoursesList from './pages/Admin/Courses/CoursesList';
 import EditCourse from './pages/Admin/Courses/EditCourse';
 import DeleteCourseModal from './pages/Admin/Courses/DeleteCourseModal';
+import EditCourse from './pages/Admin/Courses/EditCourse';
 
 
 
@@ -155,6 +156,8 @@ function App() {
         <Route path="/admin/fees" element={<AdminfeesPage />} />
         <Route path="/admin/feetracking" element={<FeeTracking />} />
         <Route path="/admin/assignfee" element={<AssignFee />} />
+        <Route path="/events" element={<Events />} />
+
 
 
 
