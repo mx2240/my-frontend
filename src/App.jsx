@@ -48,6 +48,8 @@ import Register from './Auth/Register'
 import PrivateRoute from './routes/PrivateRoute';
 import { AuthProvider } from "./context/AuthContext";
 import Logout from './Auth/Logout';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 
 import LandingPage from './pages/LandingPage';
@@ -100,6 +102,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         {/* <Route path="/Add-student" element={<StudentRegistration />} /> */}
         <Route path="/logout" element={<Logout />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
 
 
