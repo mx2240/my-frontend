@@ -91,10 +91,10 @@ export default function Login() {
                 <h1 className="text-xl font-bold text-blue-700">School Portal</h1>
 
                 <div className="space-x-6">
-                    <Link className="text-gray-600 hover:text-blue-700" to="/">
+                    <Link className="text-gray-600 hover:text-blue-700" to="https://vite-react-delta-six-49.vercel.app/">
                         Home
                     </Link>
-                    <Link className="text-gray-600 hover:text-blue-700" to="/about">
+                    <Link className="text-gray-600 hover:text-blue-700" to="https://vite-react-delta-six-49.vercel.app/Aboutus">
                         About
                     </Link>
                 </div>
