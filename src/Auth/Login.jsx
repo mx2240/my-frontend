@@ -1,6 +1,54 @@
+// import { useState } from "react";
+// import fetch from '../fetch'
+// import { useNavigate } from "react-router-dom";
+// import toast from "react-hot-toast";
+
+// export default function Login() {
+//     const navigate = useNavigate();
+//     const [form, setForm] = useState({ email: "", password: "" });
+//     const [loading, setLoading] = useState(false);
+
+//     const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+//     const submit = async (e) => {
+//         e.preventDefault();
+//         try {
+//             setLoading(true);
+//             const res = await fetch.post("/auth/login", form);
+//             if (!res.data?.ok && !res.data?.body) {
+//                 // old shape fallback
+//                 if (!res.ok) return toast.error(res.message || "Login failed");
+//             }
+//             const payload = res.data?.body || res.data; // handle different shapes
+//             const token = payload.token;
+//             const user = payload.user;
+//             localStorage.setItem("token", token);
+//             localStorage.setItem("user", JSON.stringify(user));
+//             toast.success("Login successful");
+//             if (user.role === "admin") navigate("/admin");
+//             else if (user.role === "student") navigate("/student/dashboard");
+//             else navigate("/");
+//         } catch (err) {
+//             console.error(err);
+//             toast.error(err.response?.data?.message || "Login failed");
+//         } finally { setLoading(false); }
+//     };
+
+//     return (
+//         <form onSubmit={submit} className="max-w-md mx-auto p-6 bg-white rounded shadow">
+//             <h2 className="text-xl font-bold mb-4">Login</h2>
+//             <input name="email" value={form.email} onChange={handle} placeholder="Email" className="block w-full p-3 border rounded mb-3" />
+//             <input name="password" value={form.password} onChange={handle} type="password" placeholder="Password" className="block w-full p-3 border rounded mb-4" />
+//             <button disabled={loading} className="w-full bg-blue-600 text-white p-3 rounded">{loading ? "Logging in..." : "Login"}</button>
+//         </form>
+//     );
+// }
+
+
+
 import { useState } from "react";
-import fetch from '../fetch'
-import { useNavigate } from "react-router-dom";
+import fetch from "../fetch";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 export default function Login() {
@@ -15,31 +63,106 @@ export default function Login() {
         try {
             setLoading(true);
             const res = await fetch.post("/auth/login", form);
-            if (!res.data?.ok && !res.data?.body) {
-                // old shape fallback
-                if (!res.ok) return toast.error(res.message || "Login failed");
-            }
-            const payload = res.data?.body || res.data; // handle different shapes
+
+            const payload = res.data?.body || res.data;
             const token = payload.token;
             const user = payload.user;
+
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
+
             toast.success("Login successful");
+
             if (user.role === "admin") navigate("/admin");
-            else if (user.role === "student") navigate("/student/dashboard");
-            else navigate("/");
+            else navigate("/student/dashboard");
+
         } catch (err) {
-            console.error(err);
             toast.error(err.response?.data?.message || "Login failed");
-        } finally { setLoading(false); }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <form onSubmit={submit} className="max-w-md mx-auto p-6 bg-white rounded shadow">
-            <h2 className="text-xl font-bold mb-4">Login</h2>
-            <input name="email" value={form.email} onChange={handle} placeholder="Email" className="block w-full p-3 border rounded mb-3" />
-            <input name="password" value={form.password} onChange={handle} type="password" placeholder="Password" className="block w-full p-3 border rounded mb-4" />
-            <button disabled={loading} className="w-full bg-blue-600 text-white p-3 rounded">{loading ? "Logging in..." : "Login"}</button>
-        </form>
+        <div className="min-h-screen bg-gray-100 flex flex-col">
+
+            {/* 🔹 TOP NAV BAR */}
+            <nav className="w-full bg-white shadow px-6 py-4 flex justify-between items-center">
+                <h1 className="text-xl font-bold text-blue-700">School Portal</h1>
+
+                <div className="space-x-6">
+                    <Link className="text-gray-600 hover:text-blue-700" to="/">
+                        Home
+                    </Link>
+                    <Link className="text-gray-600 hover:text-blue-700" to="/about">
+                        About
+                    </Link>
+                </div>
+            </nav>
+
+            {/* 🔹 LOGIN CONTAINER */}
+            <div className="flex-grow flex items-center justify-center px-4">
+                <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-md">
+
+                    <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
+                        Welcome Back 👋
+                    </h2>
+
+                    <form onSubmit={submit} className="space-y-5">
+
+                        {/* Email */}
+                        <div>
+                            <label className="block font-medium mb-1">Email Address</label>
+                            <input
+                                name="email"
+                                value={form.email}
+                                onChange={handle}
+                                placeholder="Enter your email"
+                                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+
+                        {/* Password */}
+                        <div>
+                            <label className="block font-medium mb-1">Password</label>
+                            <input
+                                name="password"
+                                value={form.password}
+                                onChange={handle}
+                                type="password"
+                                placeholder="Enter password"
+                                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+
+                        {/* Forgot password link */}
+                        <div className="flex justify-end">
+                            <Link
+                                to="/forgot-password"
+                                className="text-blue-600 text-sm hover:underline"
+                            >
+                                Forgot Password?
+                            </Link>
+                        </div>
+
+                        {/* Login button */}
+                        <button
+                            disabled={loading}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition"
+                        >
+                            {loading ? "Logging in..." : "Login"}
+                        </button>
+                    </form>
+
+                    {/* Extra */}
+                    <p className="mt-5 text-center text-gray-500 text-sm">
+                        Don’t have an account?
+                        <span className="text-blue-600 ml-1 cursor-pointer hover:underline">Contact School Admin</span>
+                    </p>
+                </div>
+            </div>
+        </div>
     );
 }
+
+
