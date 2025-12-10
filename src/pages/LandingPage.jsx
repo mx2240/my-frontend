@@ -15,13 +15,12 @@ const LandingPage = () => {
 
             {/* NAVBAR */}
             <nav className="navbar">
-                <h2 className="logo">Royal Academy</h2>
+                <h2 className="logo">Kingster</h2>
 
                 <div className="nav-links">
-                    <a href="#">Home</a>
-                    <a href="#">About</a>
-                    <a href="#">Programs</a>
-                    <a href="#">Contact</a>
+                    <a href="https://vite-react-delta-six-49.vercel.app/">Home</a>
+                    <a href="https://vite-react-delta-six-49.vercel.app/Aboutus">About</a>
+                    <a href="https://vite-react-delta-six-49.vercel.app/Contact">Contact</a>
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -36,10 +35,12 @@ const LandingPage = () => {
                     ✕
                 </button>
 
-                <a href="#">Home</a>
-                <a href="#">About</a>
-                <a href="#">Programs</a>
-                <a href="#">Contact</a>
+                <a href="https://vite-react-delta-six-49.vercel.app/">Home</a>
+                <a href="https://vite-react-delta-six-49.vercel.app/Aboutus">About</a>
+                <a href="https://vite-react-delta-six-49.vercel.app/Contact">Contact</a>
+
+
+
 
                 <div className="auth-buttons">
                     <a href="/login" className="login-btn">Login</a>
