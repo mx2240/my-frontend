@@ -86,7 +86,7 @@ import PaymentCallback from './pages/Student/PaymentCallback';
 import PaymentSuccess from './pages/Student/PaymentSuccess';
 import PaymentFailed from './pages/Student/PaymentFailed';
 import Results from './pages/Student/Results';
-import StudentForgotPassword from './pages/studentForgotpassword';
+import StudentForgotPassword from './pages/studentForgotpassword.jsx';
 import StudentResetPass from './pages/StudentRestpass';
 
 
