@@ -1,16 +1,17 @@
 import { Navigate } from "react-router-dom";
 
 export default function StudentProtectedRoute({ children }) {
-    const studentToken = localStorage.getItem("studentToken");
+    const token = localStorage.getItem("studentToken");
     const student = JSON.parse(localStorage.getItem("student"));
 
-    // Not logged in at all
-    if (!studentToken || !student) {
+    if (!token || !student) {
         return <Navigate to="/student/login" replace />;
     }
 
-    // Must be a student
-    if (!student.role || student.role !== "student") {
+    // If role is missing, fallback to treat as student
+    const role = student.role || "student";
+
+    if (role !== "student") {
         return <Navigate to="/student/login" replace />;
     }
 
