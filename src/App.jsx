@@ -220,7 +220,7 @@ function App() {
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
 
-        <Route path="/Student/forgot-password" element={<StudentForgotpassword />} />
+        <Route path="/Student/forgot-password" element={<StudentForgotPassword />} />
         <Route path="/student/reset-password/:token" element={<StudentResetPass />} />
 
 
