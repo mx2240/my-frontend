@@ -54,6 +54,7 @@ export default function StudentSidebar() {
                 <Link to="/student/profile" className="py-2 px-3 rounded hover:bg-gray-100">Profile</Link>
                 <Link to="/student/payments" className="py-2 px-3 rounded hover:bg-gray-100">Fees & Payment</Link>
                 <Link to="/student/my-courses" className="py-2 px-3 rounded hover:bg-gray-100">My Course</Link>
+                <Link to="https://wa.link/1v6obk" className="py-2 px-3 rounded hover:bg-gray-100">Support</Link>
                 <button className="py-2 px-3 mt-4 text-left rounded hover:bg-gray-100" onClick={() => {
                     localStorage.removeItem("token");
                     localStorage.removeItem("student");
