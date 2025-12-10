@@ -1,8 +1,8 @@
 import { Navigate } from "react-router-dom";
 
 export default function StudentProtectedRoute({ children }) {
-    const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("studentToken");
+    const user = JSON.parse(localStorage.getItem("student"));
 
     // Not logged in at all
     if (!token || !user) {
