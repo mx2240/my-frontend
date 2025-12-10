@@ -168,21 +168,21 @@ function App() {
 
         {/* StudentRout */}
 
-        <Route path="/student/fees" element={<StudentProtectedRoute role="student"><StudentFees /></StudentProtectedRoute>} />
-        <Route path="/student/dashboard" element={<StudentProtectedRoute role="student"><StudentDashboard /></StudentProtectedRoute>} />
-        <Route path="/Dashboard" element={<Dashboard />} />
-        <Route path="/student/payments" element={<Payments />} />
-        <Route path="/student/timetable" element={<Timetable />} />
-        <Route path="/student/my-courses" element={<MyCourses />} />
-        <Route path="/student/course-details" element={<CourseDetails />} />
-        <Route path="/student/profile" element={<Profile />} />
-        <Route path="/student/announcements" element={<Announcements />} />
-        <Route path="/student/support" element={<StudentSupport />} />
-        <Route path="/student/payments" element={<StudentPayments />} />
-        <Route path="/student/timetable" element={<StudentTimetable />} />
-        <Route path="/student/profile" element={<StudentProfile />} />
-        <Route path="/student/grades" element={<StudentGrades />} />
-        <Route path="/student/notifications" element={<StudentNotifications />} />
+        <Route path="/student/fees" element={<StudentProtectedRoute><StudentFees /></StudentProtectedRoute>} />
+        <Route path="/student/dashboard" element={<StudentProtectedRoute><StudentDashboard /></StudentProtectedRoute>} />
+        <Route path="/Dashboard" element={<StudentProtectedRoute><Dashboard /></StudentProtectedRoute>} />
+        <Route path="/student/payments" element={<StudentProtectedRoute><StudentPayments /></StudentProtectedRoute>} />
+        <Route path="/student/timetable" element={<StudentProtectedRoute><StudentTimetable /></StudentProtectedRoute>} />
+        <Route path="/student/my-courses" element={<StudentProtectedRoute><MyCourses /></StudentProtectedRoute>} />
+        <Route path="/student/course-details" element={<StudentProtectedRoute><CourseDetails /></StudentProtectedRoute>} />
+        <Route path="/student/profile" element={<StudentProtectedRoute><Profile /></StudentProtectedRoute>} />
+        <Route path="/student/announcements" element={<StudentProtectedRoute><Announcements /></StudentProtectedRoute>} />
+        <Route path="/student/support" element={<StudentProtectedRoute><StudentSupport /></StudentProtectedRoute>} />
+        <Route path="/student/payments" element={<StudentProtectedRoute><StudentPayments /></StudentProtectedRoute>} />
+        <Route path="/student/timetable" element={<StudentProtectedRoute><StudentTimetable /></StudentProtectedRoute>} />
+        <Route path="/student/profile" element={<StudentProtectedRoute><StudentProfile /></StudentProtectedRoute>} />
+        <Route path="/student/grades" element={<StudentProtectedRoute><StudentGrades /></StudentProtectedRoute>} />
+        <Route path="/student/notifications" element={<StudentProtectedRoute><StudentNotifications /></StudentProtectedRoute>} />
         <Route path="/student/assignments" element={<StudentAssignments />} />
         <Route path="/student/login" element={<Studentlogin />} />
         <Route path="/student/results" element={<Results />} />
@@ -192,6 +192,7 @@ function App() {
         <Route path="/payment-failed" element={<PaymentFailed />} />
         <Route path="/student/reset-password/:token" element={<StudentResetPass />} />
         <Route path="/student/forgot-password" element={<StudentPassword />} />
+
 
 
 
