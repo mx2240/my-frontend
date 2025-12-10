@@ -100,7 +100,7 @@ const StudentLogin = () => {
                     <p className="text-center text-gray-600 mt-4 text-sm">
                         Forgot password?
                         <span className="text-blue-600 cursor-pointer ml-1 hover:underline">
-                            Contact Admin
+                            <Link to="/student/forgot-password">Reset here</Link>
                         </span>
                     </p>
                 </div>
