@@ -151,18 +151,18 @@ function App() {
 
 
 
-
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/profile" element={<AdminProfile />} />
-        <Route path="/admin/settings" element={<AdminSettings />} />
-        <Route path="/admin/students" element={<Students />} />
-        <Route path="/admin/dashboard" element={<Dashboard />} />
-        <Route path="/admin/enrollment" element={<AdminEnrollments />} />
-        <Route path="/admin/fees" element={<AdminfeesPage />} />
-        <Route path="/admin/feetracking" element={<FeeTracking />} />
-        <Route path="/admin/assignfee" element={<AssignFee />} />
-        <Route path="/events" element={<Events />} />
-
+        <Route element={<PrivateRoute allowedRoles={["admin", "student"]} />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/profile" element={<AdminProfile />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin/students" element={<Students />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/enrollment" element={<AdminEnrollments />} />
+          <Route path="/admin/fees" element={<AdminfeesPage />} />
+          <Route path="/admin/feetracking" element={<FeeTracking />} />
+          <Route path="/admin/assignfee" element={<AssignFee />} />
+          <Route path="/events" element={<Events />} />
+        </Route>
 
 
 
