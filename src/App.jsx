@@ -168,8 +168,8 @@ function App() {
 
         {/* StudentRout */}
 
-        <Route path="/student/fees" element={<StudentFees />} />
-        <Route path="/student/dashboard" element={<StudentDashboard />} />
+        <Route path="/student/fees" element={<StudentProtectedRoute role="student"><StudentFees /></StudentProtectedRoute>} />
+        <Route path="/student/dashboard" element={<StudentProtectedRoute role="student"><StudentDashboard /></StudentProtectedRoute>} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/student/payments" element={<Payments />} />
         <Route path="/student/timetable" element={<Timetable />} />
