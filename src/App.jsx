@@ -86,8 +86,8 @@ import PaymentCallback from './pages/Student/PaymentCallback';
 import PaymentSuccess from './pages/Student/PaymentSuccess';
 import PaymentFailed from './pages/Student/PaymentFailed';
 import Results from './pages/Student/Results';
-import StudentForgotPassword from './pages/studentForgotpassword.jsx';
 import StudentResetPass from './pages/StudentRestpass';
+import StudentPassword from './pages/Studentpassword';
 
 
 
@@ -219,9 +219,8 @@ function App() {
         <Route path="/payment-callback" element={<PaymentCallback />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
-
-        <Route path="/Student/forgot-password" element={<StudentForgotPassword />} />
         <Route path="/student/reset-password/:token" element={<StudentResetPass />} />
+        <Route path="/student/forgot-password" element={<StudentPassword />} />
 
 
 
