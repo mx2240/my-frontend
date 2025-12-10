@@ -171,24 +171,23 @@ function App() {
 
         <Route path="/student/fees" element={<StudentFees />} />
         <Route path="/student/dashboard" element={<StudentProtectedRoute><StudentDashboard /></StudentProtectedRoute>} />
-        <Route path="/Dashboard" element={<Dashboard />} />
-        <Route path="/student/payments" element={<Payments />} />
-        <Route path="/student/timetable" element={<Timetable />} />
-        <Route path="/student/my-courses" element={<MyCourses />} />
-        <Route path="/student/course-details" element={<CourseDetails />} />
-        <Route path="/student/profile" element={<Profile />} />
-        <Route path="/student/announcements" element={<Announcements />} />
-        <Route path="/student/support" element={<StudentSupport />} />
-        <Route path="/student/payments" element={<StudentPayments />} />
-        <Route path="/student/timetable" element={<StudentTimetable />} />
-        <Route path="/student/profile" element={<StudentProfile />} />
-        <Route path="/student/grades" element={<StudentGrades />} />
-        <Route path="/student/notifications" element={<StudentNotifications />} />
-        <Route path="/student/assignments" element={<StudentAssignments />} />
+        <Route path="/Dashboard" element={<StudentProtectedRoute><Dashboard /></StudentProtectedRoute>} />
+        <Route path="/student/payments" element={<StudentProtectedRoute><Payments /></StudentProtectedRoute>} />
+        <Route path="/student/timetable" element={<StudentProtectedRoute><Timetable /></StudentProtectedRoute>} />
+        <Route path="/student/my-courses" element={<StudentProtectedRoute><MyCourses /></StudentProtectedRoute>} />
+        <Route path="/student/course-details" element={<StudentProtectedRoute><CourseDetails /></StudentProtectedRoute>} />
+        <Route path="/student/profile" element={<StudentProtectedRoute><Profile /></StudentProtectedRoute>} />
+        <Route path="/student/announcements" element={<StudentProtectedRoute><Announcements /></StudentProtectedRoute>} />
+        <Route path="/student/support" element={<StudentProtectedRoute><StudentSupport /></StudentProtectedRoute>} />
+        <Route path="/student/payments" element={<StudentProtectedRoute><Payments /></StudentProtectedRoute>} />
+        <Route path="/student/timetable" element={<StudentProtectedRoute><StudentTimetable /></StudentProtectedRoute>} />
+        <Route path="/student/profile" element={<StudentProtectedRoute><StudentProfile /></StudentProtectedRoute>} />
+        <Route path="/student/grades" element={<StudentProtectedRoute><StudentGrades /></StudentProtectedRoute>} />
+        <Route path="/student/notifications" element={<StudentProtectedRoute><StudentNotifications /></StudentProtectedRoute>} />
+        <Route path="/student/assignments" element={<StudentProtectedRoute><StudentAssignments /></StudentProtectedRoute>} />
+        <Route path="/student/results" element={<StudentProtectedRoute><Results /></StudentProtectedRoute>} />
         <Route path="/student/login" element={<Studentlogin />} />
-        <Route path="/student/results" element={<Results />} />
-
-        <Route path="/payment-callback" element={<PaymentCallback />} />
+        <Route path="/student/payment-callback" element={<PaymentCallback />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
         <Route path="/student/reset-password/:token" element={<StudentResetPass />} />
