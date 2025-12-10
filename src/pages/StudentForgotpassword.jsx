@@ -2,7 +2,7 @@ import { useState } from "react";
 import fetch from "../fetch";
 import toast from "react-hot-toast";
 
-export default function ForgotPassword() {
+export default function StudentForgotPassword() {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
 
