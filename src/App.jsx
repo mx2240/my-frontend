@@ -120,47 +120,18 @@ function App() {
 
 
 
-        {/* Protected Routes */}
-
-        {/* <Route
-          path="/admin/dashboard"
-          element={
-            <PrivateRoute allowedRoles={["admin"]}>
-              <AdminDashboard />
-            </PrivateRoute>
-          }
-        /> */}
-
-        {/* <Route
-          path="/admin/add-course"
-          element={
-            <PrivateRoute allowedRoles={["admin"]}>
-              <AddCourse />
-            
-          }
-        /> */}
-
-
-        {/* <Route
-          path="/student/dashboard"
-          element={
-            <PrivateRoute allowedRoles={["student"]}>
-              <StudentDashboard />
-            </PrivateRoute>
-          }
-        /> */}
 
 
         <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
         <Route path="/admin/profile" element={<ProtectedRoute role="admin"><AdminProfile /></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
         <Route path="/admin/students" element={<ProtectedRoute role="admin"><Students /></ProtectedRoute>} />
-        <Route path="/admin/dashboard" element={<Dashboard />} />
-        <Route path="/admin/enrollment" element={<AdminEnrollments />} />
-        <Route path="/admin/fees" element={<AdminfeesPage />} />
-        <Route path="/admin/feetracking" element={<FeeTracking />} />
-        <Route path="/admin/assignfee" element={<AssignFee />} />
-        <Route path="/events" element={<Events />} />
+        <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><Dashboard /></ProtectedRoute>} />
+        <Route path="/admin/enrollment" element={<ProtectedRoute role="admin"><AdminEnrollments /></ProtectedRoute>} />
+        <Route path="/admin/fees" element={<ProtectedRoute role="admin"><AdminfeesPage /></ProtectedRoute>} />
+        <Route path="/admin/feetracking" element={<ProtectedRoute role="admin"><FeeTracking /></ProtectedRoute>} />
+        <Route path="/admin/assignfee" element={<ProtectedRoute role="admin"><AssignFee /></ProtectedRoute>} />
+        <Route path="/events" element={<ProtectedRoute role="admin"><Events /></ProtectedRoute>} />
 
 
 
@@ -173,17 +144,17 @@ function App() {
 
 
 
-        <Route path="/students" element={<AdminStudents />} />
-        <Route path="/courses" element={<AdminCourses />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/add-student" element={<AddStudent />} />
-        <Route path="/inquiries" element={<AdminInquiries />} />
-        <Route path="/course-enrollment" element={<CourseEnrollment />} />
-        <Route path="/courses-list" element={<CoursesList />} />
-        <Route path="/edit-course" element={<EditCourse />} />
-        <Route path="/delete-course" element={<DeleteCourseModal />} />
+        <Route path="/students" element={<ProtectedRoute role="admin"><AdminStudents /></ProtectedRoute>} />
+        <Route path="/courses" element={<ProtectedRoute role="admin"><AdminCourses /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute role="admin"><Notifications /></ProtectedRoute>} />
+        <Route path="/add-student" element={<ProtectedRoute role="admin"><AddStudent /></ProtectedRoute>} />
+        <Route path="/inquiries" element={<ProtectedRoute role="admin"><AdminInquiries /></ProtectedRoute>} />
+        <Route path="/course-enrollment" element={<ProtectedRoute role="admin"><CourseEnrollment /></ProtectedRoute>} />
+        <Route path="/courses-list" element={<ProtectedRoute role="admin"><CoursesList /></ProtectedRoute>} />
+        <Route path="/edit-course" element={<ProtectedRoute role="admin"><EditCourse /></ProtectedRoute>} />
+        <Route path="/delete-course" element={<ProtectedRoute role="admin"><DeleteCourseModal /></ProtectedRoute>} />
 
-        <Route path="/admin/dasbord" element={<Ad />} />
+        <Route path="/admin/dasbord" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
 
 
 
