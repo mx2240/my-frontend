@@ -47,6 +47,7 @@ import Login from './Auth/Login';
 import Register from './Auth/Register'
 import PrivateRoute from './routes/PrivateRoute';
 import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from './components/ProtectedRoute';
 import Logout from './Auth/Logout';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
@@ -150,11 +151,10 @@ function App() {
         /> */}
 
 
-
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/profile" element={<AdminProfile />} />
-        <Route path="/admin/settings" element={<AdminSettings />} />
-        <Route path="/admin/students" element={<Students />} />
+        <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/profile" element={<ProtectedRoute role="admin"><AdminProfile /></ProtectedRoute>} />
+        <Route path="/admin/settings" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
+        <Route path="/admin/students" element={<ProtectedRoute role="admin"><Students /></ProtectedRoute>} />
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/enrollment" element={<AdminEnrollments />} />
         <Route path="/admin/fees" element={<AdminfeesPage />} />
