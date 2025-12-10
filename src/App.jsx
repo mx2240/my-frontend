@@ -48,6 +48,7 @@ import Register from './Auth/Register'
 import PrivateRoute from './routes/PrivateRoute';
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from './components/ProtectedRoute';
+import StudentProtectedRoute from './components/StudentProtectedRoute';
 import Logout from './Auth/Logout';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
@@ -166,25 +167,25 @@ function App() {
 
 
         {/* StudentRout */}
-        {/* <Route path="/student/layout" element={<StudentLayout />} /> */}
-        <Route path="/student/fees" element={<StudentFees />} />
-        <Route path="/student/dashboard" element={<StudentDashboard />} />
-        <Route path="/Dashboard" element={<Dashboard />} />
-        <Route path="/student/payments" element={<Payments />} />
-        <Route path="/student/timetable" element={<Timetable />} />
-        <Route path="/student/my-courses" element={<MyCourses />} />
-        <Route path="/student/course-details" element={<CourseDetails />} />
-        <Route path="/student/profile" element={<Profile />} />
-        <Route path="/student/announcements" element={<Announcements />} />
-        <Route path="/student/support" element={<StudentSupport />} />
-        <Route path="/student/payments" element={<StudentPayments />} />
-        <Route path="/student/timetable" element={<StudentTimetable />} />
-        <Route path="/student/profile" element={<StudentProfile />} />
-        <Route path="/student/grades" element={<StudentGrades />} />
-        <Route path="/student/notifications" element={<StudentNotifications />} />
-        <Route path="/student/assignments" element={<StudentAssignments />} />
+
+        <Route path="/student/fees" element={<StudentProtectedRoute role="student"><StudentFees /></StudentProtectedRoute>} />
+        <Route path="/student/dashboard" element={<StudentProtectedRoute role="student"><StudentDashboard /></StudentProtectedRoute>} />
+        <Route path="/Dashboard" element={<StudentProtectedRoute role="student"><Dashboard /></StudentProtectedRoute>} />
+        <Route path="/student/payments" element={<StudentProtectedRoute role="student"><Payments /></StudentProtectedRoute>} />
+        <Route path="/student/timetable" element={<StudentProtectedRoute role="student"><Timetable /></StudentProtectedRoute>} />
+        <Route path="/student/my-courses" element={<StudentProtectedRoute role="student"><MyCourses /></StudentProtectedRoute>} />
+        <Route path="/student/course-details" element={<StudentProtectedRoute role="student"><CourseDetails /></StudentProtectedRoute>} />
+        <Route path="/student/profile" element={<StudentProtectedRoute role="student"><Profile /></StudentProtectedRoute>} />
+        <Route path="/student/announcements" element={<StudentProtectedRoute role="student"><Announcements /></StudentProtectedRoute>} />
+        <Route path="/student/support" element={<StudentProtectedRoute role="student"><StudentSupport /></StudentProtectedRoute>} />
+        <Route path="/student/payments" element={<StudentProtectedRoute role="student"><Payments /></StudentProtectedRoute>} />
+        <Route path="/student/timetable" element={<StudentProtectedRoute role="student"><Timetable /></StudentProtectedRoute>} />
+        <Route path="/student/profile" element={<StudentProtectedRoute role="student"><Profile /></StudentProtectedRoute>} />
+        <Route path="/student/grades" element={<StudentProtectedRoute role="student"><StudentGrades /></StudentProtectedRoute>} />
+        <Route path="/student/notifications" element={<StudentProtectedRoute role="student"><StudentNotifications /></StudentProtectedRoute>} />
+        <Route path="/student/assignments" element={<StudentProtectedRoute role="student"><StudentAssignments /></StudentProtectedRoute>} />
         <Route path="/student/login" element={<Studentlogin />} />
-        <Route path="/student/results" element={<Results />} />
+        <Route path="/student/results" element={<StudentProtectedRoute role="student"><Results /></StudentProtectedRoute>} />
 
         <Route path="/payment-callback" element={<PaymentCallback />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
