@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import fetch from "../fetch";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+
 
 
 export default function ResetPassword() {
