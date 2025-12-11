@@ -126,7 +126,7 @@ const Ad = () => {
                         </div>
 
                         {/* Charts */}
-                        <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow h-50  ">
+                        <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow h-96  ">
                             <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
                                 Enrollment & Fees Trend
                             </h2>
