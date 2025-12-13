@@ -133,6 +133,7 @@ function App() {
         <Route path="/admin/feetracking" element={<ProtectedRoute role="admin"><FeeTracking /></ProtectedRoute>} />
         <Route path="/admin/assignfee" element={<ProtectedRoute role="admin"><AssignFee /></ProtectedRoute>} />
         <Route path="/events" element={<ProtectedRoute role="admin"><Events /></ProtectedRoute>} />
+        <Route path="/ad-profile" element={<ProtectedRoute role="admin"><Ad /></ProtectedRoute>} />
 
 
 
