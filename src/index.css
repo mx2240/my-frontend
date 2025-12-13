@@ -1,8 +1,12 @@
+/* stylelint-disable at-rule-no-unknown */
 @import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 
 
 
-/* .input {
+.input {
     @apply border rounded-lg px-3 py-2 w-full shadow-sm focus:ring-2 focus:ring-blue-500;
-} */
+}
