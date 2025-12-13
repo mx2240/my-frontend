@@ -33,26 +33,10 @@
 
 
 
-import React, { useEffect, useState } from "react";
 import AdminSidebar from "../components/Sidebar";
 import AdminTopbar from "../components/Topbar";
 
 const AdminLayout = ({ children }) => {
-    const [darkMode, setDarkMode] = useState(
-        localStorage.getItem("theme") === "dark"
-    );
-
-    // Apply dark mode globally
-    useEffect(() => {
-        if (darkMode) {
-            document.documentElement.classList.add("dark");
-            localStorage.setItem("theme", "dark");
-        } else {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("theme", "light");
-        }
-    }, [darkMode]);
-
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
             <div className="flex">
@@ -60,11 +44,11 @@ const AdminLayout = ({ children }) => {
                 {/* Sidebar */}
                 <AdminSidebar />
 
-                {/* Main Content */}
-                <div className="flex-1 lg:ml-64 min-h-screen transition-all">
+                {/* Main */}
+                <div className="flex-1 lg:ml-64">
 
                     {/* Topbar */}
-                    <AdminTopbar darkMode={darkMode} setDarkMode={setDarkMode} />
+                    <AdminTopbar />
 
                     {/* Page Content */}
                     <main className="p-4 md:p-6">
@@ -78,8 +62,3 @@ const AdminLayout = ({ children }) => {
 };
 
 export default AdminLayout;
-
-
-
-
-
