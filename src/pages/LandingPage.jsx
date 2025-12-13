@@ -64,6 +64,12 @@ const LandingPage = () => {
                         <a href="/student/login" className="register-btn">Student</a>
                     </div>
                 </div>
+
+                <div className="p-6 bg-white dark:bg-black text-black dark:text-white">
+                    DARK MODE TEST
+
+                </div>
+
             </header>
         </div>
 

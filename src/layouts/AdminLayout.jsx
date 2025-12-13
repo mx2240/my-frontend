@@ -41,21 +41,16 @@ const AdminLayout = ({ children }) => {
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
             <div className="flex">
 
-                {/* Sidebar */}
                 <AdminSidebar />
 
-                {/* Main */}
                 <div className="flex-1 lg:ml-64">
-
-                    {/* Topbar */}
                     <AdminTopbar />
 
-                    {/* Page Content */}
                     <main className="p-4 md:p-6">
                         {children}
                     </main>
-
                 </div>
+
             </div>
         </div>
     );

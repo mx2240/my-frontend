@@ -12,14 +12,16 @@ export const ThemeProvider = ({ children }) => {
 
         if (darkMode) {
             root.classList.add("dark");
-            localStorage.setItem("theme", "dark");
         } else {
             root.classList.remove("dark");
-            localStorage.setItem("theme", "light");
         }
+
+        localStorage.setItem("theme", darkMode ? "dark" : "light");
     }, [darkMode]);
 
-    const toggleTheme = () => setDarkMode(prev => !prev);
+    const toggleTheme = () => {
+        setDarkMode(prev => !prev);
+    };
 
     return (
         <ThemeContext.Provider value={{ darkMode, toggleTheme }}>
@@ -28,5 +30,4 @@ export const ThemeProvider = ({ children }) => {
     );
 };
 
-// Custom hook (clean usage)
 export const useTheme = () => useContext(ThemeContext);
