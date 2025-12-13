@@ -40,11 +40,7 @@ const AdminTopbar = () => {
                    bg-gray-100 dark:bg-gray-700
                    hover:bg-gray-200 dark:hover:bg-gray-600 transition"
             >
-                {darkMode ? (
-                    <FaSun className="text-yellow-400" />
-                ) : (
-                    <FaMoon className="text-gray-700" />
-                )}
+                {darkMode ? <FaSun className="text-yellow-400" /> : <FaMoon className="text-gray-700" />}
             </button>
         </header>
     );
