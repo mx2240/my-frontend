@@ -193,154 +193,77 @@ import {
     FaCog,
     FaCalendarAlt,
     FaSignOutAlt,
+    FaUserCircle,
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 
-const navItem =
-    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-sm font-medium";
+const baseItem =
+    "flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium";
 const activeItem =
-    "bg-blue-600 text-white shadow";
+    "bg-blue-600 text-white shadow-md";
 const inactiveItem =
-    "text-gray-600 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700";
+    "text-gray-600 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-800";
+
+const SectionTitle = ({ children }) => (
+    <p className="mb-3 mt-6 text-xs font-semibold uppercase tracking-wide text-gray-400">
+        {children}
+    </p>
+);
+
+const NavItem = ({ to, icon: Icon, label }) => (
+    <NavLink
+        to={to}
+        className={({ isActive }) =>
+            `${baseItem} ${isActive ? activeItem : inactiveItem}`
+        }
+    >
+        <Icon className="text-lg" />
+        {label}
+    </NavLink>
+);
 
 const AdminSidebar = () => {
     return (
-        <aside className="fixed left-0 top-0 h-screen w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 px-5 py-6">
+        <aside className="fixed left-0 top-0 h-screen w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col px-5 py-6">
 
-            {/* Logo */}
-            <div className="mb-10">
+            {/* Brand */}
+            <div className="mb-8">
                 <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                     Admin Panel
                 </h1>
-                <p className="text-xs text-gray-400">Management Dashboard</p>
+                <p className="text-xs text-gray-400">
+                    Management Dashboard
+                </p>
             </div>
 
             {/* Navigation */}
-            <nav className="space-y-8 text-sm">
+            <nav className="flex-1 overflow-y-auto text-sm">
 
-                {/* Dashboard */}
-                <div>
-                    <p className="mb-2 text-xs font-semibold uppercase text-gray-400">
-                        Overview
-                    </p>
-                    <NavLink
-                        to="/admin"
-                        className={({ isActive }) =>
-                            `${navItem} ${isActive ? activeItem : inactiveItem}`
-                        }
-                    >
-                        <FaTachometerAlt />
-                        Dashboard
-                    </NavLink>
-                </div>
+                <SectionTitle>Overview</SectionTitle>
+                <NavItem to="/admin" icon={FaTachometerAlt} label="Dashboard" />
 
-                {/* Management */}
-                <div>
-                    <p className="mb-2 text-xs font-semibold uppercase text-gray-400">
-                        Management
-                    </p>
+                <SectionTitle>Management</SectionTitle>
+                <NavItem to="/add-student" icon={FaUsers} label="Students" />
+                <NavItem to="/admin/enrollment" icon={FaUsers} label="Enrollments" />
+                <NavItem to="/courses" icon={FaBook} label="Courses" />
 
-                    <NavLink
-                        to="/add-student"
-                        className={({ isActive }) =>
-                            `${navItem} ${isActive ? activeItem : inactiveItem}`
-                        }
-                    >
-                        <FaUsers />
-                        Students
-                    </NavLink>
+                <SectionTitle>Finance</SectionTitle>
+                <NavItem to="/admin/fees" icon={FaMoneyBillWave} label="Fees & Payments" />
+                <NavItem to="/admin/assignfee" icon={FaMoneyBillWave} label="Assign Fees" />
+                <NavItem to="/admin/feetracking" icon={FaMoneyBillWave} label="Fee Tracking" />
 
-                    <NavLink
-                        to="/admin/enrollment"
-                        className={({ isActive }) =>
-                            `${navItem} ${isActive ? activeItem : inactiveItem}`
-                        }
-                    >
-                        <FaUsers />
-                        Enrollments
-                    </NavLink>
+                <SectionTitle>System</SectionTitle>
+                <NavItem to="/events" icon={FaCalendarAlt} label="Events" />
+                <NavItem to="/ad-profile" icon={FaUserCircle} label="Admin Profile" />
+                <NavItem to="/admin/settings" icon={FaCog} label="Settings" />
 
-                    <NavLink
-                        to="/courses"
-                        className={({ isActive }) =>
-                            `${navItem} ${isActive ? activeItem : inactiveItem}`
-                        }
-                    >
-                        <FaBook />
-                        Courses
-                    </NavLink>
-                </div>
-
-                {/* Finance */}
-                <div>
-                    <p className="mb-2 text-xs font-semibold uppercase text-gray-400">
-                        Finance
-                    </p>
-
-                    <NavLink
-                        to="/admin/fees"
-                        className={({ isActive }) =>
-                            `${navItem} ${isActive ? activeItem : inactiveItem}`
-                        }
-                    >
-                        <FaMoneyBillWave />
-                        Fees & Payments
-                    </NavLink>
-
-                    <NavLink
-                        to="/admin/assignfee"
-                        className={({ isActive }) =>
-                            `${navItem} ${isActive ? activeItem : inactiveItem}`
-                        }
-                    >
-                        <FaMoneyBillWave />
-                        Assign Fees
-                    </NavLink>
-
-                    <NavLink
-                        to="/admin/feetracking"
-                        className={({ isActive }) =>
-                            `${navItem} ${isActive ? activeItem : inactiveItem}`
-                        }
-                    >
-                        <FaMoneyBillWave />
-                        Fee Tracking
-                    </NavLink>
-                </div>
-
-                {/* System */}
-                <div>
-                    <p className="mb-2 text-xs font-semibold uppercase text-gray-400">
-                        System
-                    </p>
-
-                    <NavLink
-                        to="/events"
-                        className={({ isActive }) =>
-                            `${navItem} ${isActive ? activeItem : inactiveItem}`
-                        }
-                    >
-                        <FaCalendarAlt />
-                        Events
-                    </NavLink>
-
-                    <NavLink
-                        to="/admin/settings"
-                        className={({ isActive }) =>
-                            `${navItem} ${isActive ? activeItem : inactiveItem}`
-                        }
-                    >
-                        <FaCog />
-                        Settings
-                    </NavLink>
-                </div>
             </nav>
-            <br />
+
             {/* Logout */}
-            <div className="absolute bottom-6 left-5 right-5">
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                 <NavLink
                     to="/login"
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-gray-800 transition-all"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-gray-800 transition-all"
                 >
                     <FaSignOutAlt />
                     Logout
@@ -351,4 +274,3 @@ const AdminSidebar = () => {
 };
 
 export default AdminSidebar;
-
