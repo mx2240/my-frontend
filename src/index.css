@@ -1,12 +1,11 @@
-/* stylelint-disable at-rule-no-unknown */
-@import "tailwindcss";
+/* index.css - minimal and clean for Tailwind */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-
-
-/* .input {
+/* Example custom style using @apply (optional)
+.input {
     @apply border rounded-lg px-3 py-2 w-full shadow-sm focus:ring-2 focus:ring-blue-500;
-} */
+}
+*/
