@@ -224,7 +224,7 @@ const AdminSidebar = () => {
                         Overview
                     </p>
                     <NavLink
-                        to="/admin/dashboard"
+                        to="/admin"
                         className={({ isActive }) =>
                             `${navItem} ${isActive ? activeItem : inactiveItem}`
                         }
