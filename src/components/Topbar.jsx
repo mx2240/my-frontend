@@ -1,7 +1,12 @@
 import React from "react";
 import { FaMoon, FaSun } from "react-icons/fa";
+import { FaUserCircle, FaBars } from "react-icons/fa";
+import React, { useState } from "react";
+
 
 const AdminTopbar = ({ darkMode, setDarkMode }) => {
+    const [showProfileMenu, setShowProfileMenu] = useState(false);
+
     return (
         <div className="w-full bg-white dark:bg-gray-800 shadow-md p-4 rounded-xl flex justify-between items-center transition-all">
 
