@@ -1,9 +1,6 @@
-/* src/index.css */
+@import "tailwindcss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Example custom styles using @apply */
-.input {
-    @apply border rounded-lg px-3 py-2 w-full shadow-sm focus:ring-2 focus:ring-blue-500;
-}
+/* You can remove the previous .input class entirely to avoid @apply errors */

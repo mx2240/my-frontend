@@ -21,7 +21,6 @@
 // };
 
 // export default AdminTopbar;
-
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useTheme } from "../context/ThemeContext";
 
@@ -30,7 +29,9 @@ const AdminTopbar = () => {
 
     return (
         <header className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-4 py-3 flex justify-between items-center">
-            <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Admin Dashboard</h1>
+            <h1 className="text-lg font-semibold text-gray-800 dark:text-white">
+                Admin Dashboard
+            </h1>
             <button
                 onClick={toggleTheme}
                 className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition"
@@ -42,4 +43,5 @@ const AdminTopbar = () => {
 };
 
 export default AdminTopbar;
+
 
