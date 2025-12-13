@@ -32,12 +32,7 @@ const AdminTopbar = () => {
             <h1 className="text-lg font-semibold text-gray-800 dark:text-white">
                 Admin Dashboard
             </h1>
-            <button
-                onClick={toggleTheme}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition"
-            >
-                {darkMode ? <FaSun className="text-yellow-400" /> : <FaMoon className="text-gray-700" />}
-            </button>
+
         </header>
     );
 };
