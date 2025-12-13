@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import fetch from "../../fetch"; // custom axios wrapper
+import fetch from "../../fetch";
 import toast from "react-hot-toast";
 import AdminLayout from "../../layouts/AdminLayout";
 
@@ -12,7 +12,6 @@ export default function AdminEnroll() {
     const [loading, setLoading] = useState(false);
     const [pageLoading, setPageLoading] = useState(true);
 
-    // MAIN DATA LOADER
     const load = async () => {
         try {
             setPageLoading(true);
@@ -26,18 +25,17 @@ export default function AdminEnroll() {
             setStudents(s.data?.body || s.data?.students || []);
             setCourses(c.data?.body || c.data?.courses || []);
             setEnrollments(e.data?.body || e.data?.enrollments || []);
-
-        } catch (err) {
-            console.error(err);
+        } catch {
             toast.error("Failed to load enrollment data");
         } finally {
             setPageLoading(false);
         }
     };
 
-    useEffect(() => { load(); }, []);
+    useEffect(() => {
+        load();
+    }, []);
 
-    // ENROLL ACTION
     const enroll = async () => {
         if (!selected.studentId || !selected.courseId) {
             toast.error("Please select both student and course");
@@ -47,21 +45,16 @@ export default function AdminEnroll() {
         try {
             setLoading(true);
 
-            const res = await fetch.post("/enrollments/admin/enroll", {
-                studentId: selected.studentId,
-                courseId: selected.courseId,
-            });
+            const res = await fetch.post("/enrollments/admin/enroll", selected);
 
             if (res.data?.ok) {
                 toast.success("Student enrolled successfully");
-
                 setSelected({ studentId: "", courseId: "" });
-                load(); // refresh data
+                load();
             } else {
-                toast.error(res.data?.message || "Failed to enroll");
+                toast.error(res.data?.message || "Enrollment failed");
             }
         } catch (err) {
-            console.error(err);
             toast.error(err.response?.data?.message || "Enrollment failed");
         } finally {
             setLoading(false);
@@ -70,80 +63,112 @@ export default function AdminEnroll() {
 
     return (
         <AdminLayout>
-            <div className="p-6 max-w-6xl mx-auto">
+            <div className="p-6 max-w-7xl mx-auto space-y-8">
 
-                <h2 className="text-2xl font-bold mb-4">Admin Enrollment</h2>
+                {/* PAGE HEADER */}
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-800">
+                        Student Enrollment
+                    </h1>
+                    <p className="text-gray-500 mt-1">
+                        Assign students to courses
+                    </p>
+                </div>
 
-                {/* PAGE LOADING */}
                 {pageLoading ? (
-                    <p className="text-gray-600">Loading data...</p>
+                    <div className="text-gray-500">Loading enrollment data...</div>
                 ) : (
                     <>
-                        {/* SELECTION AREA */}
-                        <div className="grid md:grid-cols-3 gap-3 mb-6">
+                        {/* ENROLL CARD */}
+                        <div className="bg-white rounded-2xl shadow p-6">
+                            <h2 className="text-xl font-semibold mb-4">
+                                New Enrollment
+                            </h2>
 
-                            {/* STUDENT SELECT */}
-                            <select
-                                value={selected.studentId}
-                                onChange={(e) =>
-                                    setSelected({ ...selected, studentId: e.target.value })
-                                }
-                                className="p-2 border rounded"
-                            >
-                                <option value="">Select Student</option>
-                                {students.map((s) => (
-                                    <option key={s._id} value={s._id}>
-                                        {s.name} ({s.email})
-                                    </option>
-                                ))}
-                            </select>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {/* STUDENT */}
+                                <select
+                                    value={selected.studentId}
+                                    onChange={(e) =>
+                                        setSelected({ ...selected, studentId: e.target.value })
+                                    }
+                                    className="border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                                >
+                                    <option value="">Select Student</option>
+                                    {students.map((s) => (
+                                        <option key={s._id} value={s._id}>
+                                            {s.name} ({s.email})
+                                        </option>
+                                    ))}
+                                </select>
 
-                            {/* COURSE SELECT */}
-                            <select
-                                value={selected.courseId}
-                                onChange={(e) =>
-                                    setSelected({ ...selected, courseId: e.target.value })
-                                }
-                                className="p-2 border rounded"
-                            >
-                                <option value="">Select Course</option>
-                                {courses.map((c) => (
-                                    <option key={c._id} value={c._id}>
-                                        {c.title}
-                                    </option>
-                                ))}
-                            </select>
+                                {/* COURSE */}
+                                <select
+                                    value={selected.courseId}
+                                    onChange={(e) =>
+                                        setSelected({ ...selected, courseId: e.target.value })
+                                    }
+                                    className="border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                                >
+                                    <option value="">Select Course</option>
+                                    {courses.map((c) => (
+                                        <option key={c._id} value={c._id}>
+                                            {c.title}
+                                        </option>
+                                    ))}
+                                </select>
 
-                            {/* ENROLL BUTTON */}
-                            <button
-                                onClick={enroll}
-                                disabled={loading}
-                                className="bg-green-600 text-white p-2 rounded hover:bg-green-700 disabled:bg-gray-400"
-                            >
-                                {loading ? "Enrolling..." : "Enroll"}
-                            </button>
+                                {/* BUTTON */}
+                                <button
+                                    onClick={enroll}
+                                    disabled={loading}
+                                    className="bg-green-600 text-white rounded-lg px-6 py-3 hover:bg-green-700 disabled:opacity-50"
+                                >
+                                    {loading ? "Enrolling..." : "Enroll Student"}
+                                </button>
+                            </div>
                         </div>
 
                         {/* ENROLLMENTS LIST */}
-                        <div className="bg-white p-4 rounded shadow mt-4">
-                            <h3 className="font-semibold mb-3 text-lg">Enrollments</h3>
+                        <div className="bg-white rounded-2xl shadow p-6">
+                            <h2 className="text-xl font-semibold mb-4">
+                                Enrolled Students
+                            </h2>
 
                             {enrollments.length === 0 ? (
-                                <p className="text-gray-600">No enrollments found</p>
+                                <p className="text-gray-500">
+                                    No enrollments found.
+                                </p>
                             ) : (
-                                <ul className="space-y-2">
-                                    {enrollments.map((en) => (
-                                        <li
-                                            key={en._id}
-                                            className="border-b pb-2 flex justify-between items-center"
-                                        >
-                                            <span>
-                                                <strong>{en.student?.name}</strong> enrolled in{" "}
-                                                <strong>{en.course?.title}</strong>
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full text-sm">
+                                        <thead>
+                                            <tr className="border-b text-gray-600">
+                                                <th className="text-left py-2 px-3">Student</th>
+                                                <th className="text-left py-2 px-3">Email</th>
+                                                <th className="text-left py-2 px-3">Course</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {enrollments.map((en) => (
+                                                <tr
+                                                    key={en._id}
+                                                    className="border-b hover:bg-gray-50"
+                                                >
+                                                    <td className="py-3 px-3 font-medium">
+                                                        {en.student?.name}
+                                                    </td>
+                                                    <td className="py-3 px-3 text-gray-600">
+                                                        {en.student?.email}
+                                                    </td>
+                                                    <td className="py-3 px-3">
+                                                        {en.course?.title}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             )}
                         </div>
                     </>
