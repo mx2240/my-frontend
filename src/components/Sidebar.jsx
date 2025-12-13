@@ -6,35 +6,36 @@ import { Link } from "react-router-dom";
 const AdminSidebar = () => {
     return (
 
+        <div className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
 
 
-        <div className="fixed left-0 top-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl p-6 transition-all">
+            <div className="fixed left-0 top-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl p-6 transition-all">
 
-            <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-10">
-                Admin Panel
-            </h1>
+                <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-10">
+                    Admin Panel
+                </h1>
 
-            <ul className="space-y-4">
-                <li>
-                    <Link
-                        to="/admin/dasbord"
-                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white 
+                <ul className="space-y-4">
+                    <li>
+                        <Link
+                            to="/admin/dasbord"
+                            className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white 
                       rounded-lg transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
-                    >
-                        <FaTachometerAlt /> Dashboard
-                    </Link>
-                </li>
+                        >
+                            <FaTachometerAlt /> Dashboard
+                        </Link>
+                    </li>
 
-                <li>
-                    <Link
-                        to="/add-student"
-                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                    <li>
+                        <Link
+                            to="/add-student"
+                            className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                       transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
-                    >
-                        <FaUsers /> Students
-                    </Link>
+                        >
+                            <FaUsers /> Students
+                        </Link>
 
-                    {/* <Link
+                        {/* <Link
                         to="/students"
                         className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
@@ -42,7 +43,7 @@ const AdminSidebar = () => {
                         <FaUsers />Mangement
                     </Link> */}
 
-                    {/* <Link
+                        {/* <Link
                         to="/student-list"
                         className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
@@ -54,17 +55,17 @@ const AdminSidebar = () => {
 
 
 
-                    <Link
-                        to="/admin/enrollment"
-                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                        <Link
+                            to="/admin/enrollment"
+                            className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
-                    >
-                        <FaUsers />Enrrollment
-                    </Link>
+                        >
+                            <FaUsers />Enrrollment
+                        </Link>
 
 
 
-                    {/* <Link
+                        {/* <Link
                         to="/admin/enrollment/form"
                         className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
@@ -72,106 +73,107 @@ const AdminSidebar = () => {
                         <FaUsers />Enrrollment Form
                     </Link> */}
 
-                </li>
+                    </li>
 
-                <li>
-                    <Link
-                        to="/courses"
-                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                    <li>
+                        <Link
+                            to="/courses"
+                            className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
-                    >
-                        <FaBook /> Courses
-                    </Link>
-                </li>
+                        >
+                            <FaBook /> Courses
+                        </Link>
+                    </li>
 
-                {/* 
+                    {/* 
                 <li>
                     <a href="/admin/add-course" className="block px-4 py-2 hover:bg-blue-100">
                         ➕ Add Course
                     </a>
                 </li> */}
 
-                <li>
-                    <Link
-                        to="/admin/fees"
-                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                    <li>
+                        <Link
+                            to="/admin/fees"
+                            className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
-                    >
-                        <FaMoneyBill /> Fees & Payments
-                    </Link>
+                        >
+                            <FaMoneyBill /> Fees & Payments
+                        </Link>
 
-                    <Link
-                        to="/admin/assignfee"
-                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                        <Link
+                            to="/admin/assignfee"
+                            className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
-                    >
-                        <FaMoneyBill /> Assign fees
-                    </Link>
+                        >
+                            <FaMoneyBill /> Assign fees
+                        </Link>
 
-                    <Link
-                        to="/admin/feetracking"
-                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                        <Link
+                            to="/admin/feetracking"
+                            className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
-                    >
-                        <FaMoneyBill /> Fees Tracking
-                    </Link>
+                        >
+                            <FaMoneyBill /> Fees Tracking
+                        </Link>
 
-                    {/* <Link
+                        {/* <Link
                         to="/fee"
                         className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
                     >
                         <FaMoneyBill /> Fees Management
                     </Link> */}
-                </li>
+                    </li>
 
-                <li>
+                    <li>
 
-                    <Link
-                        to="/events"
-                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                        <Link
+                            to="/events"
+                            className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
-                    >
-                        <FaCog /> Event
-                    </Link>
+                        >
+                            <FaCog /> Event
+                        </Link>
 
 
 
-                    <Link
-                        to="/ad-profile"
-                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                        <Link
+                            to="/ad-profile"
+                            className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
-                    >
-                        <FaCog /> Profiles
-                    </Link>
+                        >
+                            <FaCog /> Profiles
+                        </Link>
 
 
 
-                    <Link
-                        to="/admin/settings"
-                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                        <Link
+                            to="/admin/settings"
+                            className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
-                    >
-                        <FaCog /> Settings
-                    </Link>
+                        >
+                            <FaCog /> Settings
+                        </Link>
 
 
 
-                    <Link
-                        to="/login"
-                        className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
+                        <Link
+                            to="/login"
+                            className="flex items-center gap-3 p-3 hover:bg-blue-500 hover:text-white rounded-lg 
                        transition-all cursor-pointer dark:text-gray-300 dark:hover:bg-blue-600"
-                    >
-                        <FaCog /> logout
-                    </Link>
+                        >
+                            <FaCog /> logout
+                        </Link>
 
 
-                    {/* <li onClick={logout}>Logout</li> */}
+                        {/* <li onClick={logout}>Logout</li> */}
 
 
 
-                </li>
-            </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
 
     );
