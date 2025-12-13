@@ -27,7 +27,7 @@
 
 
 import React, { useState } from "react";
-import { FaBell, FaUserCircle, FaBars, FaSearch } from "react-icons/fa";
+import { FaUserCircle, FaBars } from "react-icons/fa";
 
 const AdminTopbar = ({ toggleSidebar }) => {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -49,56 +49,35 @@ const AdminTopbar = ({ toggleSidebar }) => {
                     </h1>
                 </div>
 
-                {/* Middle: Search */}
-                <div className="hidden md:flex flex-1 mx-6">
-                    <div className="relative w-full">
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            className="w-full border rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-700 dark:text-white"
-                        />
-                        <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
-                    </div>
-                </div>
-
-                {/* Right: Notifications + Profile */}
-                <div className="flex items-center gap-4">
-                    {/* Notifications */}
-                    <button className="relative text-gray-700 dark:text-gray-200 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                        <FaBell size={20} />
-                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                {/* Right: Profile Dropdown */}
+                <div className="relative">
+                    <button
+                        onClick={() => setShowProfileMenu(!showProfileMenu)}
+                        className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded transition"
+                    >
+                        <FaUserCircle size={24} />
+                        <span className="hidden md:inline">Admin</span>
                     </button>
 
-                    {/* Profile Dropdown */}
-                    <div className="relative">
-                        <button
-                            onClick={() => setShowProfileMenu(!showProfileMenu)}
-                            className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded transition"
-                        >
-                            <FaUserCircle size={24} />
-                            <span className="hidden md:inline">Admin</span>
-                        </button>
-
-                        {showProfileMenu && (
-                            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg py-2 z-50">
-                                <button className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                                    Profile
-                                </button>
-                                <button className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                                    Settings
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        localStorage.removeItem("token");
-                                        window.location.href = "/login";
-                                    }}
-                                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded"
-                                >
-                                    Logout
-                                </button>
-                            </div>
-                        )}
-                    </div>
+                    {showProfileMenu && (
+                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg py-2 z-50">
+                            <button className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                Profile
+                            </button>
+                            <button className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                Settings
+                            </button>
+                            <button
+                                onClick={() => {
+                                    localStorage.removeItem("token");
+                                    window.location.href = "/login";
+                                }}
+                                className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </header>
@@ -106,5 +85,3 @@ const AdminTopbar = ({ toggleSidebar }) => {
 };
 
 export default AdminTopbar;
-
-
