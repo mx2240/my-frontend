@@ -33,10 +33,10 @@ const AdminTopbar = ({ darkMode, setDarkMode }) => {
                 {showProfileMenu && (
                     <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg py-2 z-50">
                         <button className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                            Profile
+                            <a href="/ad-profile"> Profile</a>
                         </button>
                         <button className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                            Settings
+                            <a href="/admin/settings"> Settings</a>
                         </button>
                         <button
                             onClick={() => {
