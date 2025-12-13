@@ -9,12 +9,12 @@ const AdminTopbar = ({ darkMode, setDarkMode }) => {
                 Admin Dashboard
             </h2>
 
-            <button
+            {/* <button
                 className="p-3 bg-gray-200 dark:bg-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
                 onClick={() => setDarkMode(!darkMode)}
             >
                 {darkMode ? <FaSun className="text-yellow-400" /> : <FaMoon className="text-gray-600" />}
-            </button>
+            </button> */}
 
         </div>
     );
