@@ -335,7 +335,7 @@ const AdminSidebar = () => {
                     </NavLink>
                 </div>
             </nav>
-
+            <br />
             {/* Logout */}
             <div className="absolute bottom-6 left-5 right-5">
                 <NavLink
