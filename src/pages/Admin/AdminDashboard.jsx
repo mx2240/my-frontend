@@ -425,7 +425,7 @@ export default function Dashboard() {
     const fetchStats = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${process.env.REACT_APP_API}/dashboard-stats`, {
+            const res = await fetch(`/dashboard-stats`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
