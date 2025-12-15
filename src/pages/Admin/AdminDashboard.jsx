@@ -209,9 +209,8 @@ import {
 import { Line } from "react-chartjs-2";
 import "chart.js/auto";
 import AdminLayout from "../../layouts/AdminLayout";
-import fetch from "../../fetch";
 
-/* ---------------- STAT CARD ---------------- */
+/* ---------- Stat Card ---------- */
 const StatCard = ({ icon: Icon, label, value, color }) => (
     <div className="rounded-2xl bg-white p-6 shadow-sm hover:shadow-md transition">
         <div className="flex items-center gap-4">
@@ -226,7 +225,6 @@ const StatCard = ({ icon: Icon, label, value, color }) => (
     </div>
 );
 
-/* ---------------- DASHBOARD ---------------- */
 export default function AdminDashboard() {
     const [stats, setStats] = useState({
         students: 0,
@@ -236,162 +234,77 @@ export default function AdminDashboard() {
     });
 
     const [chartData, setChartData] = useState(null);
-    const [loading, setLoading] = useState(true);
 
-    /* ---------- Helper: Group by Month ---------- */
-    const groupByMonth = (items, dateKey) => {
-        const map = {};
+    useEffect(() => {
+        /**
+         * FRONTEND-ONLY DATA
+         * Replace later when backend stats are ready
+         */
+        const students = 120;
+        const courses = 18;
+        const enrollments = 95;
+        const revenue = 8400;
 
-        items.forEach(item => {
-            if (!item[dateKey]) return;
-            const month = new Date(item[dateKey]).toLocaleString("default", {
-                month: "short",
-            });
-            map[month] = (map[month] || 0) + 1;
+        setStats({
+            students,
+            courses,
+            enrollments,
+            revenue,
         });
 
-        return map;
-    };
-
-    /* ---------- Load Dashboard Data ---------- */
-    const loadDashboardData = async () => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem("token");
-
-            const [studentsRes, coursesRes, enrollmentsRes, paymentsRes] =
-                await Promise.all([
-                    fetch.get("/students", { headers: { Authorization: `Bearer ${token}` } }),
-                    fetch.get("/courses", { headers: { Authorization: `Bearer ${token}` } }),
-                    fetch.get("/enrollments", { headers: { Authorization: `Bearer ${token}` } }),
-                    fetch.get("/payments", { headers: { Authorization: `Bearer ${token}` } }),
-                ]);
-
-            const students = studentsRes.data.students || [];
-            const courses = coursesRes.data.courses || [];
-            const enrollments = enrollmentsRes.data.enrollments || [];
-            const payments = paymentsRes.data.payments || [];
-
-            /* ---- Calculate Stats ---- */
-            const totalRevenue = payments.reduce(
-                (sum, p) => sum + (p.amount || 0),
-                0
-            );
-
-            setStats({
-                students: students.length,
-                courses: courses.length,
-                enrollments: enrollments.length,
-                revenue: totalRevenue,
-            });
-
-            /* ---- Chart Data ---- */
-            const enrollmentMonthly = groupByMonth(enrollments, "createdAt");
-            const paymentMonthly = groupByMonth(payments, "createdAt");
-
-            const labels = Array.from(
-                new Set([...Object.keys(enrollmentMonthly), ...Object.keys(paymentMonthly)])
-            );
-
-            setChartData({
-                labels,
-                datasets: [
-                    {
-                        label: "Enrollments",
-                        data: labels.map(l => enrollmentMonthly[l] || 0),
-                        borderColor: "#2563eb",
-                        backgroundColor: "rgba(37,99,235,0.2)",
-                        tension: 0.4,
-                        fill: true,
-                    },
-                    {
-                        label: "Payments",
-                        data: labels.map(l => paymentMonthly[l] || 0),
-                        borderColor: "#16a34a",
-                        backgroundColor: "rgba(22,163,74,0.2)",
-                        tension: 0.4,
-                        fill: true,
-                    },
-                ],
-            });
-
-        } catch (err) {
-            console.error("Dashboard load error:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    /* ---------- Load on Mount ---------- */
-    useEffect(() => {
-        loadDashboardData();
-
-        // OPTIONAL: auto-refresh every 60s
-        const interval = setInterval(loadDashboardData, 60000);
-        return () => clearInterval(interval);
+        setChartData({
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+            datasets: [
+                {
+                    label: "Enrollments",
+                    data: [12, 18, 14, 22, 25, 30],
+                    borderColor: "#2563eb",
+                    backgroundColor: "rgba(37,99,235,0.2)",
+                    fill: true,
+                    tension: 0.4,
+                },
+                {
+                    label: "Revenue",
+                    data: [400, 600, 550, 700, 800, 900],
+                    borderColor: "#16a34a",
+                    backgroundColor: "rgba(22,163,74,0.2)",
+                    fill: true,
+                    tension: 0.4,
+                },
+            ],
+        });
     }, []);
 
     return (
         <AdminLayout>
             <div className="p-4 sm:p-6 lg:p-8 bg-gray-100 min-h-screen">
 
-                {/* HEADER */}
+                {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-800">
                         Dashboard Overview
                     </h1>
                     <p className="text-sm text-gray-500">
-                        Real-time data from your system
+                        Frontend simulated statistics
                     </p>
                 </div>
 
-                {/* STATS */}
+                {/* Stats */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-                    <StatCard
-                        icon={FaUsers}
-                        label="Total Students"
-                        value={stats.students}
-                        color="bg-blue-600"
-                    />
-                    <StatCard
-                        icon={FaBook}
-                        label="Courses"
-                        value={stats.courses}
-                        color="bg-emerald-600"
-                    />
-                    <StatCard
-                        icon={FaClipboardList}
-                        label="Enrollments"
-                        value={stats.enrollments}
-                        color="bg-amber-500"
-                    />
-                    <StatCard
-                        icon={FaDollarSign}
-                        label="Revenue"
-                        value={`GH₵ ${stats.revenue}`}
-                        color="bg-rose-600"
-                    />
+                    <StatCard icon={FaUsers} label="Students" value={stats.students} color="bg-blue-600" />
+                    <StatCard icon={FaBook} label="Courses" value={stats.courses} color="bg-emerald-600" />
+                    <StatCard icon={FaClipboardList} label="Enrollments" value={stats.enrollments} color="bg-amber-500" />
+                    <StatCard icon={FaDollarSign} label="Revenue" value={`GH₵ ${stats.revenue}`} color="bg-rose-600" />
                 </div>
 
-                {/* CHART */}
+                {/* Chart */}
                 <div className="bg-white rounded-2xl shadow p-6">
                     <h2 className="text-lg font-semibold mb-4">
-                        Enrollments & Payments Trend
+                        Enrollment & Revenue Trend
                     </h2>
-
-                    {loading || !chartData ? (
-                        <p className="text-gray-500">Loading chart...</p>
-                    ) : (
-                        <div className="h-[320px]">
-                            <Line
-                                data={chartData}
-                                options={{
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                }}
-                            />
-                        </div>
-                    )}
+                    <div className="h-[320px]">
+                        {chartData && <Line data={chartData} />}
+                    </div>
                 </div>
 
             </div>
