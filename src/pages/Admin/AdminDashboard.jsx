@@ -209,6 +209,7 @@
 //     Title,
 //     Tooltip,
 //     Legend,
+//     Filler
 // } from "chart.js";
 // import fetch from "../../fetch"; // your axios wrapper
 // import toast from "react-hot-toast";
@@ -371,14 +372,11 @@
 
 // export default Dashboard;
 
+
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import { FaUsers, FaBook, FaClipboardList, FaDollarSign } from "react-icons/fa";
 import { Line } from "react-chartjs-2";
-import toast from "react-hot-toast";
-import fetch from "../../fetch"; // your axios wrapper
-
-// Chart.js imports
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -388,23 +386,16 @@ import {
     Title,
     Tooltip,
     Legend,
-    Filler,
-} from "chart.js";
-
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
     Filler
-);
+} from "chart.js";
+import fetch from "../../fetch"; // Axios wrapper
+import toast from "react-hot-toast";
 
-// Stat Card
+// Register Chart.js components including Filler
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
+
 const StatCard = ({ icon: Icon, label, value, color }) => (
-    <div className={`group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm hover:shadow-lg transition`}>
+    <div className={`group relative overflow-hidden rounded-2xl bg-white p-6 shadow hover:shadow-lg transition`}>
         <div className={`absolute inset-0 opacity-5 group-hover:opacity-10 transition ${color}`} />
         <div className="relative flex items-center gap-4">
             <div className={`flex h-12 w-12 items-center justify-center rounded-xl text-white ${color}`}>
@@ -418,58 +409,66 @@ const StatCard = ({ icon: Icon, label, value, color }) => (
     </div>
 );
 
-export default function Dashboard() {
+const Dashboard = () => {
     const [stats, setStats] = useState(null);
+    const [chartData, setChartData] = useState({ labels: [], datasets: [] });
     const [loading, setLoading] = useState(true);
 
-    const fetchStats = async () => {
+    const fetchDashboard = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`/admin/dashboard-stats`, {
+            const res = await fetch.get("/admin/dashboard-stats", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            const data = await res.json();
-            if (!data.ok) throw new Error(data.message || "Failed to fetch stats");
+            if (res.data.ok) {
+                const data = res.data.data || {};
 
-            setStats(data.data);
+                setStats({
+                    totalStudents: data.totalStudents || 0,
+                    totalCourses: data.totalCourses || 0,
+                    totalEnrollments: data.totalEnrollments || 0,
+                    totalFees: data.totalFees || 0,
+                });
+
+                setChartData({
+                    labels: data.months || ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+                    datasets: [
+                        {
+                            label: "New Enrollments",
+                            data: data.monthlyEnrollments || Array(7).fill(0),
+                            borderColor: "#2563eb",
+                            backgroundColor: "rgba(37,99,235,0.2)",
+                            tension: 0.4,
+                            fill: true,
+                        },
+                        {
+                            label: "Fees Collected",
+                            data: data.monthlyFees || Array(7).fill(0),
+                            borderColor: "#16a34a",
+                            backgroundColor: "rgba(22,163,74,0.2)",
+                            tension: 0.4,
+                            fill: true,
+                        },
+                    ],
+                });
+            } else {
+                toast.error(res.data.message || "Failed to load dashboard stats");
+            }
         } catch (err) {
             console.error("Dashboard load error:", err);
-            toast.error("Failed to load dashboard stats");
+            toast.error("Error fetching dashboard stats");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchStats();
+        fetchDashboard();
     }, []);
 
     if (loading) return <AdminLayout><p className="p-6">Loading dashboard...</p></AdminLayout>;
     if (!stats) return <AdminLayout><p className="p-6 text-red-500">No data available</p></AdminLayout>;
-
-    // Chart data
-    const chartData = {
-        labels: stats.months,
-        datasets: [
-            {
-                label: "Enrollments",
-                data: stats.monthlyEnrollments,
-                borderColor: "#2563eb",
-                backgroundColor: "rgba(37,99,235,0.2)",
-                tension: 0.4,
-                fill: true,
-            },
-            {
-                label: "Fees Collected",
-                data: stats.monthlyFees,
-                borderColor: "#16a34a",
-                backgroundColor: "rgba(22,163,74,0.2)",
-                tension: 0.4,
-                fill: true,
-            },
-        ],
-    };
 
     const chartOptions = {
         responsive: true,
@@ -487,7 +486,10 @@ export default function Dashboard() {
     return (
         <AdminLayout>
             <div className="min-h-screen bg-gray-100 p-6">
-                <h1 className="text-3xl font-bold mb-6 text-gray-800">Dashboard Overview</h1>
+                <header className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Dashboard Overview</h1>
+                    <span className="text-sm text-gray-500">Updated just now</span>
+                </header>
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
@@ -499,17 +501,15 @@ export default function Dashboard() {
 
                 {/* Chart + Quick Summary */}
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    {/* Chart */}
-                    <div className="xl:col-span-2 bg-white rounded-2xl shadow p-6">
-                        <h2 className="text-lg font-semibold mb-4">Enrollments & Fees Trend</h2>
+                    <div className="xl:col-span-2 rounded-2xl bg-white p-6 shadow">
+                        <h2 className="mb-4 text-lg font-semibold text-gray-800">Enrollment & Fees Trend</h2>
                         <div className="h-[350px] sm:h-[400px]">
                             <Line data={chartData} options={chartOptions} />
                         </div>
                     </div>
 
-                    {/* Quick Summary */}
-                    <div className="bg-white rounded-2xl shadow p-6">
-                        <h2 className="text-lg font-semibold mb-4">Quick Summary</h2>
+                    <div className="rounded-2xl bg-white p-6 shadow">
+                        <h2 className="mb-4 text-lg font-semibold text-gray-800">Quick Summary</h2>
                         <ul className="space-y-4 text-sm">
                             <li className="flex justify-between text-gray-600">
                                 <span>Active Students</span>
@@ -533,5 +533,6 @@ export default function Dashboard() {
             </div>
         </AdminLayout>
     );
-}
+};
 
+export default Dashboard;
