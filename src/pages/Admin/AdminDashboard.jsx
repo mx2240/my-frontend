@@ -373,159 +373,193 @@
 
 
 
-// frontend/src/pages/admin/Dashboard.js
 import React, { useEffect, useState } from "react";
-import AdminLayout from "../../layouts/AdminLayout";
+import axios from "axios"; // Assuming you use axios for API requests
+import { Line } from "react-chartjs-2"; // For chart rendering
 import { FaUsers, FaBook, FaClipboardList, FaDollarSign } from "react-icons/fa";
-import { Line } from "react-chartjs-2";
-import {
-    Chart as ChartJS,
-    LineElement,
-    PointElement,
-    CategoryScale,
-    LinearScale,
-    Tooltip,
-    Legend,
-    Filler,
-} from "chart.js";
-import fetch from "../../fetch";
-import toast from "react-hot-toast";
 
-// Register Chart.js components including Filler
-ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, Filler);
+import AdminLayout from "../../layouts/AdminLayout";
 
-const StatCard = ({ icon: Icon, label, value, color }) => (
-    <div className={`group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm hover:shadow-lg transition`}>
-        <div className={`absolute inset-0 opacity-5 group-hover:opacity-10 transition ${color}`} />
-        <div className="relative flex items-center gap-4">
-            <div className={`flex h-12 w-12 items-center justify-center rounded-xl text-white ${color}`}>
-                <Icon className="text-xl" />
-            </div>
-            <div>
-                <p className="text-sm text-gray-500">{label}</p>
-                <p className="text-2xl font-bold text-gray-800">{value}</p>
-            </div>
-        </div>
-    </div>
-);
-
-export default function Dashboard() {
+const Dashboard = () => {
     const [stats, setStats] = useState({
         totalStudents: 0,
         totalCourses: 0,
         totalEnrollments: 0,
         totalFees: 0,
-    });
-
-    const [chartData, setChartData] = useState({
-        labels: [],
-        datasets: [],
+        months: [],
+        monthlyEnrollments: [],
+        monthlyFees: [],
     });
 
     useEffect(() => {
-        const fetchDashboard = async () => {
+        const fetchStats = async () => {
             try {
-                const res = await fetch.get("/admin/dashboard-stats"); // Your backend endpoint
-                const data = res.data;
-
-                setStats({
-                    totalStudents: data.totalStudents || 0,
-                    totalCourses: data.totalCourses || 0,
-                    totalEnrollments: data.totalEnrollments || 0,
-                    totalFees: data.totalFees || 0,
+                const res = await axios.get("/admin/dashboard-stats", {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
                 });
-
-                setChartData({
-                    labels: data.months || [],
-                    datasets: [
-                        {
-                            label: "New Enrollments",
-                            data: data.enrollmentsPerMonth || [],
-                            borderColor: "#2563eb",
-                            backgroundColor: "rgba(37,99,235,0.2)",
-                            fill: true,
-                            tension: 0.4,
-                        },
-                        {
-                            label: "Fees Collected",
-                            data: data.feesPerMonth || [],
-                            borderColor: "#16a34a",
-                            backgroundColor: "rgba(22,163,74,0.2)",
-                            fill: true,
-                            tension: 0.4,
-                        },
-                    ],
-                });
+                if (res.data.ok) {
+                    setStats(res.data.data);
+                } else {
+                    console.error("Failed to fetch stats");
+                }
             } catch (err) {
-                console.error("Dashboard load error:", err);
-                toast.error("Failed to load dashboard stats");
+                console.error("Error fetching stats", err);
             }
         };
 
-        fetchDashboard();
+        fetchStats();
     }, []);
 
     return (
         <AdminLayout>
-            <div className="min-h-screen bg-gray-100 p-6">
-                <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <h1 className="text-3xl font-bold text-gray-800">Dashboard Overview</h1>
-                    <span className="text-sm text-gray-500">Updated just now</span>
-                </div>
+            <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+                <main className="p-4 sm:p-6 lg:p-8">
+                    {/* Header */}
+                    <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
+                            Dashboard Overview
+                        </h1>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                            Updated just now
+                        </span>
+                    </div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-                    <StatCard icon={FaUsers} label="Total Students" value={stats.totalStudents} color="bg-blue-600" />
-                    <StatCard icon={FaBook} label="Total Courses" value={stats.totalCourses} color="bg-emerald-600" />
-                    <StatCard icon={FaClipboardList} label="Enrollments" value={stats.totalEnrollments} color="bg-amber-500" />
-                    <StatCard icon={FaDollarSign} label="Fees Collected" value={`GH₵ ${stats.totalFees}`} color="bg-rose-600" />
-                </div>
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+                        <StatCard
+                            icon={FaUsers}
+                            label="Total Students"
+                            value={stats.totalStudents}
+                            color="bg-blue-600"
+                        />
+                        <StatCard
+                            icon={FaBook}
+                            label="Total Courses"
+                            value={stats.totalCourses}
+                            color="bg-emerald-600"
+                        />
+                        <StatCard
+                            icon={FaClipboardList}
+                            label="Enrollments"
+                            value={stats.totalEnrollments}
+                            color="bg-amber-500"
+                        />
+                        <StatCard
+                            icon={FaDollarSign}
+                            label="Fees Collected"
+                            value={`GH₵ ${stats.totalFees}`}
+                            color="bg-rose-600"
+                        />
+                    </div>
 
-                {/* Charts */}
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div className="xl:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
-                        <h2 className="mb-4 text-lg font-semibold text-gray-800">Enrollment & Fees Trend</h2>
-                        <div className="h-[320px] sm:h-[380px]">
-                            <Line
-                                data={chartData}
-                                options={{
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: { labels: { color: "#6b7280" } },
-                                    },
-                                    scales: {
-                                        x: { ticks: { color: "#6b7280" } },
-                                        y: { ticks: { color: "#6b7280" } },
-                                    },
-                                }}
-                            />
+                    {/* Charts Section */}
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                        <div className="xl:col-span-2 rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-sm">
+                            <h2 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">
+                                Enrollment & Fees Trend
+                            </h2>
+                            <div className="h-[320px] sm:h-[380px]">
+                                <Line
+                                    data={{
+                                        labels: stats.months,
+                                        datasets: [
+                                            {
+                                                label: "New Enrollments",
+                                                data: stats.monthlyEnrollments,
+                                                borderColor: "#2563eb",
+                                                backgroundColor: "rgba(37,99,235,0.2)",
+                                                tension: 0.4,
+                                                fill: true,
+                                            },
+                                            {
+                                                label: "Fees Collected",
+                                                data: stats.monthlyFees,
+                                                borderColor: "#16a34a",
+                                                backgroundColor: "rgba(22,163,74,0.2)",
+                                                tension: 0.4,
+                                                fill: true,
+                                            },
+                                        ],
+                                    }}
+                                    options={{
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                labels: {
+                                                    color: "#9ca3af",
+                                                },
+                                            },
+                                        },
+                                        scales: {
+                                            x: { ticks: { color: "#9ca3af" } },
+                                            y: { ticks: { color: "#9ca3af" } },
+                                        },
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Side Summary */}
+                        <div className="rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-sm">
+                            <h2 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">
+                                Quick Summary
+                            </h2>
+                            <ul className="space-y-4 text-sm">
+                                <li className="flex justify-between text-gray-600 dark:text-gray-300">
+                                    <span>Active Students</span>
+                                    <span className="font-medium text-gray-800 dark:text-white">
+                                        {stats.totalStudents}
+                                    </span>
+                                </li>
+                                <li className="flex justify-between text-gray-600 dark:text-gray-300">
+                                    <span>Courses Offered</span>
+                                    <span className="font-medium text-gray-800 dark:text-white">
+                                        {stats.totalCourses}
+                                    </span>
+                                </li>
+                                <li className="flex justify-between text-gray-600 dark:text-gray-300">
+                                    <span>Total Enrollments</span>
+                                    <span className="font-medium text-gray-800 dark:text-white">
+                                        {stats.totalEnrollments}
+                                    </span>
+                                </li>
+                                <li className="flex justify-between text-gray-600 dark:text-gray-300">
+                                    <span>Revenue</span>
+                                    <span className="font-medium text-gray-800 dark:text-white">
+                                        GH₵ {stats.totalFees}
+                                    </span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-
-                    <div className="bg-white rounded-2xl p-6 shadow-sm">
-                        <h2 className="mb-4 text-lg font-semibold text-gray-800">Quick Summary</h2>
-                        <ul className="space-y-4 text-sm">
-                            <li className="flex justify-between text-gray-600">
-                                <span>Active Students</span>
-                                <span className="font-medium text-gray-800">{stats.totalStudents}</span>
-                            </li>
-                            <li className="flex justify-between text-gray-600">
-                                <span>Courses Offered</span>
-                                <span className="font-medium text-gray-800">{stats.totalCourses}</span>
-                            </li>
-                            <li className="flex justify-between text-gray-600">
-                                <span>Total Enrollments</span>
-                                <span className="font-medium text-gray-800">{stats.totalEnrollments}</span>
-                            </li>
-                            <li className="flex justify-between text-gray-600">
-                                <span>Revenue</span>
-                                <span className="font-medium text-gray-800">GH₵ {stats.totalFees}</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                </main>
             </div>
         </AdminLayout>
     );
-}
+};
+
+const StatCard = ({ icon: Icon, label, value, color }) => (
+    <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-sm hover:shadow-lg transition">
+        <div
+            className={`absolute inset-0 opacity-5 group-hover:opacity-10 transition ${color}`}
+        />
+        <div className="relative flex items-center gap-4">
+            <div
+                className={`flex h-12 w-12 items-center justify-center rounded-xl text-white ${color}`}
+            >
+                <Icon className="text-xl" />
+            </div>
+            <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
+                <p className="text-2xl font-bold text-gray-800 dark:text-white">{value}</p>
+            </div>
+        </div>
+    </div>
+);
+
+
+
+export default Dashboard;
