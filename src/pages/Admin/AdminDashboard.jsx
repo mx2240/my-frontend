@@ -376,6 +376,7 @@ import AdminLayout from "../../layouts/AdminLayout";
 import { FaUsers, FaBook, FaClipboardList, FaDollarSign } from "react-icons/fa";
 import { Line } from "react-chartjs-2";
 import toast from "react-hot-toast";
+import fetch from "../../fetch"; // your axios wrapper
 
 // Chart.js imports
 import {
