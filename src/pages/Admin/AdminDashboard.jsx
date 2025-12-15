@@ -210,6 +210,8 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
+import fetch from "../../fetch"; // your axios wrapper
+import toast from "react-hot-toast";
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -242,51 +244,63 @@ const Dashboard = () => {
         datasets: [],
     });
 
-    // Simulate frontend-only stats
+    const [loading, setLoading] = useState(true);
+
+    // Fetch dashboard stats from backend
+    const fetchDashboard = async () => {
+        try {
+            const token = localStorage.getItem("token"); // admin token
+            const res = await fetch.get("/admin/dashboard-stats", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (res.data.ok) {
+                const data = res.data.data;
+
+                setStats({
+                    totalStudents: data.totalStudents || 0,
+                    totalCourses: data.totalCourses || 0,
+                    totalEnrollments: data.totalEnrollments || 0,
+                    totalFees: data.totalFees || 0,
+                });
+
+                setChartData({
+                    labels: data.months || ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+                    datasets: [
+                        {
+                            label: "New Enrollments",
+                            data: data.monthlyEnrollments || [0, 0, 0, 0, 0, 0, 0],
+                            borderColor: "#2563eb",
+                            backgroundColor: "rgba(37,99,235,0.2)",
+                            tension: 0.4,
+                            fill: true,
+                        },
+                        {
+                            label: "Fees Collected",
+                            data: data.monthlyFees || [0, 0, 0, 0, 0, 0, 0],
+                            borderColor: "#16a34a",
+                            backgroundColor: "rgba(22,163,74,0.2)",
+                            tension: 0.4,
+                            fill: true,
+                        },
+                    ],
+                });
+            } else {
+                toast.error(res.data.message || "Failed to load dashboard stats");
+            }
+        } catch (err) {
+            console.error("Dashboard load error:", err);
+            toast.error("Error fetching dashboard stats");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchStats = async () => {
-            // Frontend dummy data (replace with real API if available)
-            const data = {
-                totalStudents: 120,
-                totalCourses: 15,
-                totalEnrollments: 95,
-                totalFees: 5000,
-                monthlyEnrollments: [12, 19, 14, 23, 20, 25, 30],
-                monthlyFees: [200, 400, 300, 500, 450, 600, 700],
-            };
-
-            setStats({
-                totalStudents: data.totalStudents || 0,
-                totalCourses: data.totalCourses || 0,
-                totalEnrollments: data.totalEnrollments || 0,
-                totalFees: data.totalFees || 0,
-            });
-
-            setChartData({
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
-                datasets: [
-                    {
-                        label: "New Enrollments",
-                        data: data.monthlyEnrollments || [0, 0, 0, 0, 0, 0, 0],
-                        borderColor: "#2563eb",
-                        backgroundColor: "rgba(37,99,235,0.2)",
-                        tension: 0.4,
-                        fill: true,
-                    },
-                    {
-                        label: "Fees Collected",
-                        data: data.monthlyFees || [0, 0, 0, 0, 0, 0, 0],
-                        borderColor: "#16a34a",
-                        backgroundColor: "rgba(22,163,74,0.2)",
-                        tension: 0.4,
-                        fill: true,
-                    },
-                ],
-            });
-        };
-
-        fetchStats();
+        fetchDashboard();
     }, []);
+
+    if (loading) return <AdminLayout><p className="p-6">Loading dashboard...</p></AdminLayout>;
 
     return (
         <AdminLayout>
