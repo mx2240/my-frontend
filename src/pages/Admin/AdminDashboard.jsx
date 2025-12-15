@@ -374,7 +374,7 @@
 
 
 import React, { useEffect, useState } from "react";
-import axios from "axios"; // Assuming you use axios for API requests
+import fetch from "../../fetch"; // Assuming you use axios for API requests
 import { Line } from "react-chartjs-2"; // For chart rendering
 import { FaUsers, FaBook, FaClipboardList, FaDollarSign } from "react-icons/fa";
 
@@ -394,7 +394,7 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await axios.get("/admin/dashboard-stats", {
+                const res = await fetch.get("/admin/dashboard-stats", {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
                     },
