@@ -43,7 +43,7 @@ export default function Login() {
 
             {/* 🔹 TOP NAV BAR */}
             <nav className="w-full bg-white shadow px-6 py-4 flex justify-between items-center">
-                <h1 className="text-xl font-bold text-blue-700">School Portal</h1>
+                <h1 className="text-xl font-bold text-blue-700"> Admin Portal</h1>
 
                 <div className="space-x-6">
                     <Link className="text-gray-600 hover:text-blue-700" to="https://vite-react-delta-six-49.vercel.app/">
